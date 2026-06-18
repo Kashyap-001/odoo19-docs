@@ -106,7 +106,7 @@ To keep the 3-Tier architecture in your head, remember **MVP**:
 **Odoo 19 Masterclass** was developed and is owned by **Kashyap Patel**. It was created as a definitive guide to empower developers worldwide to achieve architectural mastery in the Odoo ecosystem.
 
 **Connect with Kashyap:**  
-🔗 [LinkedIn Profile](https://www.linkedin.com/in/kashyap-patel/)  
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/kashyap-patel6334/)  
 🐙 [GitHub Repositories](https://github.com/Kashyap-001)
 
 ---
