@@ -98,14 +98,83 @@ def test_invalid_bid_amount(self):
 
 ---
 
-## Why Testing Matters for CI/CD
+## Running Tests via the CLI
 
-1. **Regression Prevention:** Automatically detect if new changes break existing features.
-2. **Refactoring Confidence:** Safely optimize code knowing the behavior is locked by tests.
-3. **Automated Documentation:** Tests serve as executable examples of how the system is intended to work.
-4. **Faster Delivery:** Integrated into CI/CD pipelines (like GitHub Actions or Odoo.sh), tests allow for continuous deployment with high confidence.
+Writing tests is only half the battle; knowing how to execute them efficiently without crashing your main database is critical.
 
-!!! tip "Senior Tip: Coverage"
+### The Basic Command
+To run tests, you must tell Odoo to update the module (`-u`) and enable the test runner (`--test-enable`). The `--stop-after-init` flag ensures the server shuts down immediately after the tests finish.
+
+```bash
+./odoo-bin -c odoo.conf -d my_test_db -u pways_auction --test-enable --stop-after-init
+```
+
+### Tag Filtering (`--test-tags`)
+Running the entire test suite can take hours. As a developer, you usually only want to run the specific test you are working on.
+
+**1. Run a specific module:**
+```bash
+./odoo-bin ... --test-tags /pways_auction
+```
+
+**2. Run a specific class:**
+```bash
+./odoo-bin ... --test-tags /pways_auction:TestAuctionBidding
+```
+
+**3. Run a specific method:**
+```bash
+./odoo-bin ... --test-tags /pways_auction:TestAuctionBidding.test_invalid_low_bid
+```
+
+### Interpreting the Output
+When tests run, you should look for the `odoo.tests` logger in the console output.
+- **`INFO` / `OK`**: The test passed.
+- **`WARNING`**: A test was skipped (e.g., using `@unittest.skip`).
+- **`ERROR`**: A test failed (an assertion was false) or crashed (a Python error occurred).
+
+To see only test results and hide standard Odoo startup logs, append `--log-level=test` to your command.
+
+---
+
+## Senior: CI/CD Pipeline Integration
+
+Professional teams never rely solely on developers running tests locally. Tests must run automatically on every Pull Request.
+
+### Example: GitHub Actions YAML
+This is a standard template for running Odoo tests in an isolated CI environment using Docker.
+
+```yaml
+name: Odoo 19 Test Suite
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Odoo Requirements
+        run: pip install -r https://raw.githubusercontent.com/odoo/odoo/19.0/requirements.txt
+      - name: Run Tests
+        run: |
+          git clone --depth 1 --branch 19.0 https://github.com/odoo/odoo.git odoo_src
+          python odoo_src/odoo-bin -d test_db --db_host=localhost --db_user=odoo --db_password=odoo -i base,pways_auction --test-enable --stop-after-init --log-level=test
+```
+
+!!! tip "Architect Tip: Coverage"
     Aim for 80%+ coverage on business logic models. Don't waste time testing Odoo's core framework; focus on your custom `@api.depends`, `@api.constrains`, and action methods.
 
 ---

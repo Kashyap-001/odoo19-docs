@@ -57,6 +57,37 @@ class Project(models.Model):
 
 ---
 
+## Customizing Dropdown Search (`_name_search`)
+
+While `_compute_display_name` controls what the user **sees**, the `_name_search()` method controls how the user **finds** a record. When you type into a `Many2one` field, Odoo calls this method to generate the list of results.
+
+### When to override?
+By default, Odoo only searches the `_rec_name` field (usually `name`). Override this if you want users to find records by other criteria, such as:
+- Internal Reference / Code
+- Phone Number or Email
+- Related Parent Name
+
+### Example: Searching by Code or Name
+In the **Auction Marketplace**, we want users to find auctions by typing their unique reference (e.g., `AUC/001`) OR their title.
+
+```python
+@api.model
+def _name_search(self, name, domain=None, operator='ilike', limit=100, order=None):
+    domain = domain or []
+    if name:
+        # Search by title OR internal reference
+        name_domain = ['|', ('name', operator, name), ('reference', operator, name)]
+        if operator in expression.NEGATIVE_TERM_OPERATORS:
+            name_domain = ['&', ('name', operator, name), ('reference', operator, name)]
+        domain = expression.AND([domain, name_domain])
+    return self._search(domain, limit=limit, order=order)
+```
+
+!!! info "Note on _name_search vs name_search"
+    In Odoo 19, `_name_search` (with underscore) is the primary entry point for customizing autocomplete logic. It returns a recordset or a domain image, making it more efficient than the older `name_search` which returned a list of tuples.
+
+---
+
 ## Why use _compute_display_name?
 
 | Advantage | Description |

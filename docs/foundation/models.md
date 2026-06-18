@@ -77,6 +77,32 @@ Used as a **template** or **mixin**. It defines fields and methods that other mo
 - **Key Feature:** Does not create a database table.
 - **Example:** Odoo's internal `mail.thread` is a mixin that provides "Chatter" functionality to any model that inherits it.
 
+### Senior: SQL View Models (`_auto = False`)
+Sometimes you need to report on data joined from multiple massive tables. Instead of using a standard `Model` or a slow Python compute method, you can tell Odoo to read from a **PostgreSQL View**.
+
+To do this, use a standard `models.Model`, but set `_auto = False` and override the `init()` method to run your custom SQL `CREATE VIEW` statement. Odoo will skip its automatic table creation and use your SQL view instead.
+
+```python
+class AuctionReport(models.Model):
+    _name = 'auction.report'
+    _description = 'Auction Statistics'
+    _auto = False # Do not create a table!
+
+    # Define fields to match the SQL view columns
+    seller_id = fields.Many2one('res.users', readonly=True)
+    total_bids = fields.Integer(readonly=True)
+
+    def init(self):
+        # Create the SQL view
+        self.env.cr.execute("""
+            CREATE OR REPLACE VIEW auction_report AS (
+                SELECT seller_id, COUNT(id) as total_bids 
+                FROM auction_bid 
+                GROUP BY seller_id
+            )
+        """)
+```
+
 ---
 
 ## 3. Field Types Deep Dive

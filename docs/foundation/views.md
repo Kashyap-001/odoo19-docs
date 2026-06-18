@@ -114,16 +114,32 @@ The Search view defines the filtering and grouping options available in the top-
 
 ---
 
-## 5. Common Widgets
+## 5. Master Widget Catalogue
 
-Widgets change how a field is rendered without changing the underlying data.
+Widgets change how a field is rendered in the UI without altering the underlying database structure. Odoo 19 provides dozens of built-in widgets.
 
-| Widget | Field Type | Result |
-| :--- | :--- | :--- |
-| `monetary` | Float/Monetary | Adds currency symbol ($100.00). |
-| `badge` | Selection | Displays as a rounded pill. |
-| `many2one_avatar_user` | M2O | Displays user avatar + name. |
-| `image` | Binary | Renders an uploaded image. |
+| Widget | Compatible Fields | UI Result | Example Use Case |
+| :--- | :--- | :--- | :--- |
+| `monetary` | Float, Monetary | Adds currency symbol & formatting. | `amount` ($100.00) |
+| `statusbar` | Selection, Many2one | Clickable horizontal progress bar. | `state` (Draft > Open > Closed) |
+| `badge` | Selection, Many2one | Rounded, colored pill (badge). | `status` (Active / Archieved) |
+| `handle` | Integer | Drag-and-drop icon for reordering rows. | `sequence` in List views |
+| `html` | Html, Text | Rich text editor (WYSIWYG). | `description` |
+| `many2many_tags` | Many2many | Colored tag chips. | `category_ids` |
+| `many2one_avatar` | Many2one | Shows user/partner profile picture. | `seller_id` |
+| `progressbar` | Float, Integer | Visual progress bar (0-100%). | `completion_rate` |
+| `percentage_pie` | Float | Small circular pie chart. | `win_probability` |
+| `radio` | Selection, Many2one | Radio button list instead of dropdown. | `gender` |
+| `boolean_toggle` | Boolean | iOS-style toggle switch. | `is_published` |
+| `char_domain` | Char | Advanced domain builder widget. | Dynamic rules |
+| `image` | Binary | Renders an uploaded image. | `photo` |
+
+### Using Widgets in XML
+```xml
+<field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+<field name="category_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+<field name="is_published" widget="boolean_toggle"/>
+```
 
 !!! warning "Note"
     While older `<kanban-box>` templates still work for compatibility, new Odoo 19 modules should always use the `<card>` element for a future-proof UI.

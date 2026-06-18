@@ -83,7 +83,51 @@ class Task(models.Model):
             self.email = self.partner_id.email
 ```
 
-### When to use what?
+---
+
+## @api.model
+The `@api.model` decorator is used for methods where `self` is the **model class**, not a specific recordset. This is most common for creating records or fetching default values.
+
+### Example: Custom Logic on `default_get`
+If you need to calculate complex defaults (e.g., from the context or current date), override `default_get`.
+
+```python
+@api.model
+def default_get(self, fields_list):
+    res = super().default_get(fields_list)
+    if 'bid_date' in fields_list:
+        res['bid_date'] = fields.Datetime.now()
+    return res
+```
+
+---
+
+## @api.model_create_multi
+Since Odoo 13, the standard way to create records is in **batches**. This decorator tells Odoo that the `create()` method will receive a **list of dictionaries** (`vals_list`) instead of just one.
+
+### Why Batch Create?
+- **Performance:** Reduces the number of SQL `INSERT` statements.
+- **Scalability:** Essential for mass imports or synchronizations.
+
+### Example: Overriding `create()`
+In the **Auction Marketplace**, we want to ensure that every new listing automatically gets an internal reference code.
+
+```python
+@api.model_create_multi
+def create(self, vals_list):
+    for vals in vals_list:
+        # Custom logic for each record in the batch
+        if not vals.get('reference'):
+            vals['reference'] = self.env['ir.sequence'].next_by_code('auction.listing')
+    return super().create(vals_list)
+```
+
+!!! danger "Breaking Change"
+    In Odoo 19, the old single-dict `create()` override is officially deprecated. Always use `@api.model_create_multi` for compatibility and speed.
+
+---
+
+## When to use what?
 
 ```mermaid
 graph TD

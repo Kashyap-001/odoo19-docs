@@ -1,0 +1,131 @@
+# QWeb: The Odoo Template Engine
+
+QWeb is the primary templating engine used by Odoo. It is used for **PDF Reports**, **Email Templates**, and **OWL Component Templates**. Unlike other engines, QWeb is written entirely in XML.
+
+---
+
+## 1. Outputting Data
+
+QWeb provides several ways to render variables from Python or JavaScript.
+
+| Directive | Purpose | Safety |
+| :--- | :--- | :--- |
+| **`t-out`** | Renders content (Recommended). | HTML-Escaped |
+| **`t-esc`** | Older version of `t-out`. | HTML-Escaped |
+| **`t-raw`** | Renders raw HTML. | **Dangerous** (XSS Risk) |
+
+```xml
+<!-- Simple field output -->
+<span t-out="record.name"/>
+
+<!-- Odoo-specific field rendering with widgets -->
+<span t-field="record.amount" t-options="{'widget': 'monetary'}"/>
+```
+
+---
+
+## 2. Conditionals & Loops
+
+### `t-if` / `t-elif` / `t-else`
+Controls the visibility of elements based on logic.
+```xml
+<div t-if="record.state == 'open'" class="alert alert-success">
+    This auction is active!
+</div>
+<div t-elif="record.state == 'draft'" class="alert alert-info">
+    Not yet started.
+</div>
+<div t-else="" class="alert alert-danger">
+    Closed.
+</div>
+```
+
+### `t-foreach` / `t-as`
+Used to iterate over recordsets or lists.
+```xml
+<ul>
+    <li t-foreach="record.bid_ids" t-as="bid">
+        <span t-out="bid.bidder_id.name"/>: <span t-out="bid.amount"/>
+    </li>
+</ul>
+```
+
+---
+
+## 3. Dynamic Attributes
+
+To make HTML attributes dynamic (like `class`, `href`, or `style`), use `t-att`.
+
+- **Simple:** `t-att-name="value"`
+- **Formatted (f-string):** `t-attf-class="btn btn-{{ 'primary' if active else 'secondary' }}"`
+- **Mapping:** `t-att="{'disabled': not editable}"`
+
+---
+
+## 4. Reusing Templates
+
+### `t-set`
+Assigns a value to a variable within the template scope.
+```xml
+<t t-set="is_high_bid" t-value="bid.amount > 1000"/>
+```
+
+### `t-call`
+Includes another template.
+```xml
+<t t-call="web.external_layout">
+    <div class="page">
+        <h1>Auction Report</h1>
+    </div>
+</t>
+```
+
+---
+
+## 5. Senior: High-Performance QWeb
+
+### `t-cache` (Odoo 16+)
+Generating complex reports or web pages can be slow. `t-cache` allows you to cache a block of HTML based on a key (like the record's write date).
+
+```xml
+<div t-cache="record.id, record.write_date">
+    <!-- This block will only be re-rendered if the record is modified -->
+    <t t-call="my_module.expensive_sub_template"/>
+</div>
+```
+
+!!! tip "Architect Insight"
+    In Odoo 19, always prefer `t-out` over `t-esc`. `t-out` is smarter and handles modern OWL components and specialized HTML objects more safely than the legacy `t-esc`.
+
+---
+
+## 🏁 Senior Checkpoint
+*   **Key Concept:** QWeb is an XML-based language for generating HTML/PDF content dynamically.
+*   **Architect Insight:** Use `t-cache` to solve bottleneck rendering in reports with hundreds of lines.
+*   **Verify Your Knowledge:** What is the difference between `t-esc` and `t-raw`? (Answer: `t-esc` escapes HTML tags to prevent XSS; `t-raw` renders them as-is).
+
+---
+
+## 💻 Code Challenge
+
+**Write a QWeb loop to show only bids higher than 100:**
+
+<div class="code-challenge">
+<pre><code>&lt;div t-foreach="record.bid_ids" t-as="bid"&gt;
+    &lt;p <input type="text" class="quiz-input-inline w-120" data-answer="t-if=\"bid.amount > 100\""&gt;
+        Bidder: &lt;span <input type="text" class="quiz-input-inline w-100" data-answer="t-out=\"bid.name\""&gt;&lt;/span&gt;
+    &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
+---
+
+<div class="feedback-container">
+    <span class="feedback-label">Was this page helpful?</span>
+    <div class="feedback-buttons">
+        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
+        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
+    </div>
+</div>

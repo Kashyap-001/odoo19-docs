@@ -22,30 +22,41 @@ listing.write({
 
 ---
 
-## Relational Commands (using Command)
+## Relational Commands (The 5 Magic Tuples)
 
-```mermaid
-graph LR
-    Write[write method] --> CMD{Command ID}
-    
-    CMD -- create --> New[Command.create]
-    CMD -- update --> Upd[Command.update]
-    CMD -- delete --> Del[Command.delete]
-    CMD -- unlink --> Unl[Command.unlink]
-    CMD -- link --> Lnk[Command.link]
-    CMD -- clear --> Clr[Command.clear]
-    CMD -- set --> Rep[Command.set]
+Updating relational fields (`One2many` or `Many2many`) is different from updating standard fields. You cannot pass a list of IDs directly. Instead, Odoo uses special "Command Tuples."
+
+| Command Tuple | `odoo.Command` Helper | Action |
+| :--- | :--- | :--- |
+| `(0, 0, {vals})` | `Command.create({vals})` | Create a new record and link it. |
+| `(1, id, {vals})` | `Command.update(id, {vals})` | Update an existing record. |
+| `(2, id, 0)` | `Command.delete(id)` | **Remove and Delete** from database. |
+| `(3, id, 0)` | `Command.unlink(id)` | **Unlink** only (removes relationship). |
+| `(4, id, 0)` | `Command.link(id)` | Link an existing record. |
+| `(5, 0, 0)` | `Command.clear()` | Remove ALL links (doesn't delete). |
+| `(6, 0, [ids])` | `Command.set([ids])` | **Replace All** existing links with these IDs. |
+
+### Most Common Patterns
+
+**1. Adding a Single Tag (M2M)**
+```python
+from odoo import Command
+listing.write({'tag_ids': [Command.link(new_tag_id)]})
 ```
 
-| Method | Syntax | Action |
-| :--- | :--- | :--- |
-| **`Command.create(vals)`** | `(0, 0, {values})` | **Create** a new record and link it. |
-| **`Command.update(id, vals)`** | `(1, id, {values})` | **Update** an existing linked record. |
-| **`Command.delete(id)`** | `(2, id, 0)` | **Remove and Delete** the linked record. |
-| **`Command.unlink(id)`** | `(3, id, 0)` | **Unlink** (remove relationship) but don't delete. |
-| **`Command.link(id)`** | `(4, id, 0)` | **Link** an existing record. |
-| **`Command.clear()`** | `(5, 0, 0)` | **Unlink All** records (doesn't delete them). |
-| **`Command.set([ids])`** | `(6, 0, [ids])` | **Replace All** existing links with this specific list of IDs. |
+**2. Replacing All Tags (M2M)**
+This is the standard way to "sync" tags from a UI selection.
+```python
+listing.write({'tag_ids': [Command.set([1, 2, 3])]})
+```
+
+**3. Adding Bids (O2M)**
+```python
+listing.write({'bid_ids': [Command.create({'amount': 500})]})
+```
+
+!!! danger "Common Mistake"
+    Passing a raw list of IDs like `write({'tag_ids': [1, 2, 3]})` will **FAIL** or behave unexpectedly. You must use the `Command.set` or tuple syntax.
 
 ---
 
@@ -101,46 +112,53 @@ listing.write({
 
 ---
 
-## Senior: Overriding Duplication
+## Senior: Master of Duplication
 
-When a user clicks **Action > Duplicate** in the Odoo UI, the ORM calls the `copy()` method.
+When a user duplicates a record, Odoo's goal is to create a fresh copy while keeping the core data. As an architect, you must control this flow to prevent data corruption.
 
-### 1. `copy_data()` (The "What to duplicate")
-This method returns the values that will be used to create the new record. Override this if you want to exclude specific fields or modify them during duplication.
+### 1. Preventing Duplication (`copy=False`)
+By default, all fields are copied. You can prevent this at the field level:
+```python
+# The internal code should NEVER be duplicated
+code = fields.Char("Reference", copy=False)
+```
+
+### 2. Odoo 19: `_copy_skip_fields`
+Instead of adding `copy=False` to every field, you can define a list of fields to ignore during duplication at the model level. This is cleaner for models with many technical fields.
+
+```python
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+    _copy_skip_fields = ['state', 'bid_ids', 'winner_id']
+```
+
+### 3. Deep vs. Shallow Copying
+- **Many2one:** Copied by default (The new record points to the same parent).
+- **One2many:** **NOT** copied by default unless you explicitly allow it. This is to prevent "shared lines" where editing a line in the copy also changes the original.
+- **Many2many:** Copied by default (The new record gets the same set of tags).
+
+### 4. Overriding `copy_data()`
+This is the **preferred** way to modify values during duplication.
 
 ```python
 def copy_data(self, default=None):
     vals_list = super().copy_data(default=default)
     for vals in vals_list:
-        # Prevent copying the internal reference code
-        vals['code'] = False 
         # Append " (copy)" to the name
         if 'name' in vals:
             vals['name'] = _("%s (copy)", vals['name'])
     return vals_list
 ```
 
-### 2. `copy()` (The "Process of duplication")
-This method calls `copy_data()` and then `create()`. You generally override `copy()` if you need to perform additional logic *after* the new record is created (like duplicating non-relational files or sending a notification).
-
-```python
-@api.returns('self', lambda value: value.id)
-def copy(self, default=None):
-    # Perform logic BEFORE
-    new_record = super().copy(default=default)
-    # Perform logic AFTER
-    return new_record
-```
-
-!!! tip "Architect Tip"
-    Always prefer overriding `copy_data()` over `copy()` when possible. It is cleaner and handles multi-record duplication (Batch Copy) more efficiently.
+!!! tip "Architect Tip: Batch Performance"
+    Odoo 19 uses `copy_data()` to generate values for *all* records being duplicated in a batch. Overriding `copy()` instead would trigger a loop of individual `create()` calls, which is significantly slower for large recordsets.
 
 ---
 
 ## 🏁 Senior Checkpoint
-*   **Key Concept:** `write()` updates all records in a recordset simultaneously with a single dictionary.
-*   **Architect Insight:** Command 6 (Replace All) is the standard for Many2many fields like tags, ensuring a clean state in one call.
-*   **Verify Your Knowledge:** What is the difference between Command 2 and Command 3? (Answer: Command 2 deletes the child record; Command 3 only removes the link).
+*   **Key Concept:** `write()` updates recordsets; `copy()` clones them.
+*   **Architect Insight:** `copy=False` and `_copy_skip_fields` are your primary tools for ensuring data integrity during duplication.
+*   **Verify Your Knowledge:** What happens to a One2many field during duplication by default? (Answer: It is cleared/not copied to avoid data corruption between the original and the clone).
 
 !!! success "Next Step"
     You can write. Now learn to find what you need with [Search & Domains](../search/search.md).

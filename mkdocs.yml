@@ -111,13 +111,14 @@ nav:
           - "XML Data Engine": foundation/data_files.md
           - "Security & ACLs": business/security.md
           - "Views Syntax (List, Form, Kanban)": foundation/views.md
+          - "Search Views & Panels": foundation/search_view.md
       - "🧩 Phase 2: Inheritance":
           - "Inheritance Masterclass": business/inheritance.md
           - "Core Mixins (Chatter & Activities)": business/mixins.md
           - "XPath & View Overrides": foundation/xpath.md
           - "Record Rules (Row-level Security)": business/rules.md
       - "🛠️ Phase 3: The ORM Engine":
-          - "Environment Mastery (Sudo, Context)": env/sudo.md
+          - "Environment & Modifiers": env/modifiers.md
           - "Context & Flags": env/context.md
           - "ensure_one() Safety": env/ensure_one.md
           - "CRUD Operations Overview": crud/index.md
@@ -130,6 +131,7 @@ nav:
           - "Unique Sequences (ir.sequence)": business/sequences.md
       - "🧠 Phase 4: Business Intelligence":
           - "Decorators (@api)": advanced/decorators.md
+          - "Exceptions & Error Handling": advanced/exceptions.md
           - "Wizards & TransientModels": wizards/wizards.md
           - "Scheduled Actions (Crons)": business/crons.md
           - "Reporting & Specialized Views": foundation/advanced_views.md
@@ -142,10 +144,12 @@ nav:
   - "🎨 Part 2: Frontend & Integration":
       - "🌐 Phase 5: Modern Frontend (OWL)":
           - "OWL 2.0 Basics": frontend/owl.md
+          - "OWL Services Catalogue": frontend/owl_services.md
           - "JS to Python (orm.call)": frontend/orm_call.md
           - "Assets & Bundles": frontend/assets.md
           - "Reactive State": advanced_owl/store.md
           - "Patching Components": advanced_owl/patching.md
+          - "QWeb Template Reference": frontend/qweb_reference.md
           - "QWeb & Reports (v19)": frontend/reports.md
       - "🏢 Phase 6: Multi-Company & Portal":
           - "Multi-Company Logic": multi_company/logic.md

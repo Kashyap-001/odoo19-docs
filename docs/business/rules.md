@@ -151,7 +151,7 @@ If a user is in **two groups** and each group has a record rule for the same mod
 *   **Verify Your Knowledge:** Does the Admin user (UID 1) follow Record Rules? (Answer: No, the Superuser bypasses all security).
 
 !!! success "Next Step"
-    The skeleton is complete. Now dive into the [ORM Engine](../env/sudo.md) to write the brain of your app.
+    The skeleton is complete. Now dive into the [ORM Engine](../env/modifiers.md) to write the brain of your app.
 
 ---
 
