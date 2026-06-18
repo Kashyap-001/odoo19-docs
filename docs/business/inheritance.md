@@ -59,20 +59,35 @@ It uses the `_inherits` dictionary where the key is the parent model and the val
 ```python
 class AuctionListing(models.Model):
     _name = 'auction.listing'
+    # Inherits from product.template via the product_tmpl_id field
     _inherits = {'product.template': 'product_tmpl_id'}
 
-    product_tmpl_id = fields.Many2one('product.template', required=True, ondelete='cascade')
+    # The physical link to the parent table
+    product_tmpl_id = fields.Many2one(
+        'product.template', 
+        required=True, 
+        ondelete='cascade'
+    )
+    
+    # Child-specific fields
     start_price = fields.Float("Starting Price")
+    bid_count = fields.Integer("Total Bids")
 ```
+
+### Senior Deep Dive: The Database Reality
+When you use `_inherits`, Odoo does **not** copy the parent's fields into the child's database table.
+- **Accessing Fields**: When you do `listing.name` (a field from `product.template`), Odoo's ORM intercepts the call, follows the `product_tmpl_id` link, and transparently reads the value from the parent table.
+- **Creation**: When you do `env['auction.listing'].create({'name': 'Watch', 'start_price': 100})`, Odoo first creates a `product.template` with the name "Watch", gets its ID, and then creates the `auction.listing` with that ID in `product_tmpl_id`.
+- **Deletion**: Because we set `ondelete='cascade'`, deleting the listing deletes the underlying product.
 
 ### When to use:
 * When you want to "be" another object but keep your own identity. 
-* Example: A `res.users` inherits from `res.partner`. Every user is a partner, but not every partner is a user.
+* Example: `res.users` inherits from `res.partner`. Every user is a partner, but not every partner is a user.
 * When you need to avoid "polluting" the parent table with too many specific fields.
 
 !!! tip "Key Difference"
-    * **_inherit**: Modifies the existing table or copies it.
-    * **_inherits**: Creates a separate table and links them via a Many2one field, providing seamless access to parent fields.
+    * **`_inherit`**: Modifies the existing table or copies it.
+    * **`_inherits`**: Creates a separate table and links them via a Many2one field, providing seamless "transparent" access to parent fields.
 
 ---
 

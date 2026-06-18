@@ -161,6 +161,37 @@ In OWL 2.0, the `setup()` method is the **only** place where you can call hooks 
 
 ---
 
+## Senior: OWL Registries
+
+Registries are the "Key-Value" storage system Odoo uses to manage its modularity in the frontend. Instead of hardcoding components, Odoo looks them up in a registry.
+
+### Common Registry Categories
+- **`services`**: Global JS utilities.
+- **`fields`**: Custom field widgets (e.g., a special slider for "Bid Amount").
+- **`views`**: Entirely custom view types.
+- **`main_components`**: Components that should always be present in the UI.
+
+### Example: Registering a Custom Field Widget
+```javascript
+import { registry } from "@web/core/registry";
+import { CharField } from "@web/views/fields/char/char_field";
+
+class MyCustomField extends CharField {
+    // Custom logic here
+}
+
+// Add it to the "fields" category
+registry.category("fields").add("auction_star_rating", {
+    component: MyCustomField,
+    supportedTypes: ["integer"],
+});
+```
+
+!!! tip "Architect Insight"
+    Registries allow you to extend Odoo without ever touching the core source code. By adding your component to a registry category, Odoo's generic views (like Form or List) can dynamically discover and use your code.
+
+---
+
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** OWL is a reactive, component-based framework tailored for Odoo.
 *   **Architect Insight:** `onWillStart` is the only hook that supports `async`, making it the mandatory place for initial ORM/RPC data fetching.

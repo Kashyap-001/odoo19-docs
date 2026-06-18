@@ -110,6 +110,57 @@ setup() {
 
 ---
 
+## 5. Senior Architect: Bus Service & Longpolling
+
+For true real-time applications (like a live auction countdown or instant chat), polling with `setInterval` is highly inefficient. Instead, Odoo provides the `bus_service`, which uses longpolling (and websockets in modern deployments) to push server events to the browser.
+
+### Triggering the Event (Python)
+First, the backend must broadcast an event to a specific channel.
+```python
+# In python (e.g., when a bid is placed)
+self.env['bus.bus']._sendone(
+    'auction_channel',  # The channel name
+    'new_bid_placed',   # The event type
+    {'amount': 500}     # The payload
+)
+```
+
+### Listening to the Event (OWL / JavaScript)
+Inject the `bus_service` and subscribe to the channel.
+
+```javascript
+import { Component, onWillUnmount } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+
+export class LiveAuction extends Component {
+    setup() {
+        this.busService = useService("bus_service");
+
+        // 1. Tell the bus we want to listen to this channel
+        this.busService.addChannel("auction_channel");
+
+        // 2. Define the handler
+        const onNotification = (notifications) => {
+            for (const { payload, type } of notifications) {
+                if (type === "new_bid_placed") {
+                    console.log("Live Bid Received:", payload.amount);
+                }
+            }
+        };
+
+        // 3. Attach the listener
+        this.busService.addEventListener("notification", onNotification);
+
+        // 4. Clean up to prevent memory leaks!
+        onWillUnmount(() => {
+            this.busService.removeEventListener("notification", onNotification);
+        });
+    }
+}
+```
+
+---
+
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** Services are singleton utilities injected into components via `useService()`.
 *   **Architect Insight:** Custom services registered in the `services` category are instantiated exactly once when the Odoo web client boots up, making them perfect for persistent connections or shared state.

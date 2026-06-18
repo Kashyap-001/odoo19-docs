@@ -78,9 +78,43 @@ When you access a field on one record in a recordset (e.g., `self[0].name`), Odo
 Odoo maintains an in-memory cache for the duration of a transaction.
 - When you read a field, Odoo checks the cache first.
 - When you write a field, Odoo updates the cache and marks it "dirty" to be flushed to SQL later.
-- **Manual Flush:** Use `self.env.flush_all()` if you need to run raw SQL that depends on recently changed ORM data.
 
-### 3. Recordsets vs. Loops
+#### Cache Management Hooks
+As a Senior Architect, you must manually manage the cache when mixing ORM calls with raw SQL.
+- **`flush_model(fields)`**: Forces the ORM to write pending changes for specific fields from the cache to the database. Essential before running a raw SQL `SELECT`.
+- **`invalidate_recordset(fields)`**: Tells the ORM that the data in the database has changed (e.g., via a raw SQL `UPDATE`) and the cache should be cleared so the next read fetches fresh data.
+
+```python
+# Force-write name changes to DB so SQL can see them
+self.env['auction.listing'].flush_model(['name'])
+
+# Run raw SQL
+self.env.cr.execute("UPDATE auction_listing SET name = 'Fixed' WHERE id = %s", [self.id])
+
+# Clear cache so recordset sees the SQL update
+self.invalidate_recordset(['name'])
+```
+
+### 3. Safe Raw SQL with the `SQL()` Wrapper
+Odoo 19 (and backported to late 17/18) introduces the `odoo.tools.SQL` wrapper. It is the new gold standard for writing raw SQL that is safe from injection while being highly readable.
+
+```python
+from odoo.tools import SQL
+
+def get_high_bids(self, limit):
+    query = SQL(
+        "SELECT id FROM auction_bid WHERE amount > %s LIMIT %s",
+        5000, limit
+    )
+    self.env.cr.execute(query)
+    return self.env.cr.fetchall()
+```
+!!! success "Why use SQL()?"
+    It prevents accidental SQL injection by automatically handling parameter escaping and allowing you to compose complex queries by nesting `SQL()` objects.
+
+---
+
+### 4. Recordsets vs. Loops
 Always prefer **Set Operations** over manual Python loops.
 - **Bad:** `[r.id for r in records if r.state == 'open']`
 - **Good:** `records.filtered(lambda r: r.state == 'open').ids`
