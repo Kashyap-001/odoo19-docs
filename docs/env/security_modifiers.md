@@ -9,9 +9,9 @@ Odoo's security model (ACLs and Record Rules) is applied by default to every ope
 
 ---
 
-## 1. `self.sudo()` (Bypass Security)
+## 1. `self.sudo()` (The "SuperUser" Mode)
 
-`sudo()` returns a new recordset that bypasses all security rules and access rights.
+`sudo()` returns a new recordset that bypasses all security rules and access rights. Think of it as **logging in as the Administrator** just for this one operation.
 
 ```python
 # Dangerous: This bypasses all record rules!
@@ -19,7 +19,7 @@ Odoo's security model (ACLs and Record Rules) is applied by default to every ope
 listings = self.env['auction.listing'].sudo().search([])
 ```
 
-**Architect Tip:** Always use `sudo()` with extreme caution. If you are reading data, consider if there is a more secure way (e.g., using a specific access group). **Never** use `sudo()` when writing data unless absolutely necessary.
+**⚠️ Architect Tip:** Always use `sudo()` with extreme caution. If you are reading data, consider if there is a more secure way (e.g., using a specific access group). **Never** use `sudo()` when writing data unless absolutely necessary, as it can allow unauthorized users to modify sensitive records.
 
 ---
 
@@ -44,6 +44,23 @@ In a multi-company environment, a record might belong to a company different fro
 for listing in self:
     listing.with_company(listing.company_id).action_check_something()
 ```
+
+---
+
+## 🏗️ Master Project Challenge: Security
+1.  **Task**: Your `auction.listing` has a `winner_id` field. Currently, only the Admin can see winning bids.
+2.  **Goal**: Use `sudo()` to allow users to see the winning bid *only* if the auction has finished, without giving them permanent access to all records.
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What does sudo() do?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It bypasses all security rules and access rights, effectively acting as the Administrator for that operation." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
 
 ---
 
