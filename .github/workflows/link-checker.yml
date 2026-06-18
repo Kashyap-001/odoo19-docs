@@ -1,0 +1,28 @@
+name: Link Checker
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Run every Sunday at midnight
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  link-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress './docs/**/*.md' './README.md'
+          fail: false # Don't fail the build, just create an issue
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Create Issue From File
+        if: env.lychee_exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Broken links detected 🔗
+          content-filepath: ./lychee/out.md
+          labels: report, automated issue

@@ -50,6 +50,7 @@ theme:
 
 plugins:
   - search
+  - social
   - minify:
       minify_html: true
   - git-revision-date-localized:
