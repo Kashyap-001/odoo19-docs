@@ -68,6 +68,10 @@
 }
 
 /* --- GLOBAL LAYOUT & RESPONSIVENESS --- */
+html {
+  scroll-padding-top: 100px; /* Offset for better TOC scroll-spy accuracy */
+}
+
 html, body {
   width: 100%;
   -webkit-overflow-scrolling: touch;
