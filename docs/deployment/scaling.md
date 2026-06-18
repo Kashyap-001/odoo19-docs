@@ -1,79 +1,67 @@
-# Scaling Odoo Horizontally
+---
+title: Odoo 19 Senior Architecture: High Performance & Production
+description: Advanced techniques for scaling Odoo: Database indexing, profiling, worker configuration, and production deployment best practices.
+---
 
-When a single server can no longer handle the load (CPU or RAM bottleneck), you must scale horizontally. This involves running multiple Odoo instances behind a load balancer.
+# Odoo 19: Senior Architecture
 
-## Architecture for Scale
+To master Odoo at a senior level, you must understand what happens *outside* the Python code. Scaling, database integrity, and production-ready deployments are what separate junior hacks from senior-level architectural solutions.
 
-A scalable Odoo environment requires a "Stateless" application tier.
+---
 
-1.  **Separate DB Server:** PostgreSQL should run on a dedicated, tuned instance (e.g., AWS RDS or a bare-metal server).
-2.  **Shared Filestore:** Since Odoo stores attachments on disk, all instances must share the same `/filestore`. Use NFS, AWS EFS, or an S3 wrapper.
-3.  **Load Balancer:** Nginx or HAProxy distributes traffic across Odoo nodes.
+## 1. PostgreSQL Indexing (`index=True`)
+Never allow Odoo to perform full table scans. If a field is frequently used in `search()` domains, index it.
 
-### Visualizing the Flow
-
-```mermaid
-graph TD
-    User((User)) --> LB[Load Balancer / Nginx]
-    
-    subgraph "Application Tier (Odoo Nodes)"
-        LB --> Node1[Odoo Node 1]
-        LB --> Node2[Odoo Node 2]
-        LB --> Node3[Odoo Node 3]
-    end
-    
-    subgraph "Data & Storage Tier"
-        Node1 & Node2 & Node3 --> DB[(PostgreSQL)]
-        Node1 & Node2 & Node3 --> NFS{Shared Filestore / S3}
-        Node1 & Node2 & Node3 --> Redis((Redis / Sessions))
-    end
+```python
+# In your Model
+name = fields.Char(index=True)
+# Or for combined indexes:
+_sql_constraints = [
+    ('name_uniq', 'unique(name, company_id)', 'Name must be unique per company!')
+]
 ```
 
-## Handling State
+---
 
-### Session Management
-Odoo sessions are stored on the filesystem by default. In a multi-node setup, you have two choices:
-*   **Sticky Sessions:** Configure the Load Balancer to send the same user to the same node (e.g., `ip_hash` in Nginx).
-*   **Shared Sessions:** Mount the `/sessions` directory via NFS so any node can read any session.
+## 2. Profiling Performance
+If your Odoo instance is slow, **don't guess.** Measure.
 
-!!! tip "Architect Tip: Sticky Sessions"
-    Sticky sessions are generally preferred as they reduce NFS overhead. However, if a node goes down, users assigned to it will be logged out.
+*   **Server Profiler:** Start Odoo with `--dev=profile` to identify bottlenecks.
+*   **Database:** Use `EXPLAIN ANALYZE` on SQL queries to identify missing indexes.
 
-## Long-Polling and ImBus
+---
 
-The `long-polling` (port 8072) is used for real-time notifications and chat. 
+## 3. Scaling: Workers and Longpolling
+By default, Odoo runs in a single process. For production, you **must** use multiple workers.
 
-*   In a single server, Odoo uses `gevent`.
-*   In a scaled environment, you must ensure the Load Balancer correctly routes `/websocket` or `/longpolling` requests.
+```ini
+# odoo.conf
+workers = 4
+# How many workers per CPU
+# Formula: (2 * CPU) + 1
+```
 
-### Redis for Bus (Advanced)
-By default, Odoo uses the database to poll for messages. For extremely high-concurrency chat applications, architects often implement a Redis-based bus to reduce DB load.
+*   **Longpolling:** Required for real-time WebSocket communication (Bus/Websocket). Ensure it is configured correctly in `odoo.conf` and Nginx.
 
-## Database Scaling
+---
 
-As you add more Odoo nodes, the Database becomes the new bottleneck.
-*   **Connection Pooling:** Use `pgbouncer` between Odoo and PostgreSQL. This allows Odoo to maintain thousands of virtual connections with only a few hundred real ones.
-*   **Read Replicas:** Use read-only replicas for heavy reporting tasks, though this requires custom code or specific Odoo Enterprise features to direct traffic.
+## 🏗️ Master Project Challenge: Architecture
+1.  **Task**: Your `auction.listing` model has high traffic on the `name` field.
+2.  **Goal**: Add `index=True` to the `name` field, and calculate the optimal `workers` value for a 4-CPU server.
 
-!!! tip "Architect Tip: Pgbouncer"
-    Always deploy `pgbouncer` in "Transaction Mode" for Odoo. This is the single most effective way to improve DB performance in a multi-node environment.
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Why is setting `workers` > 0 essential for production?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It allows Odoo to handle multiple concurrent requests by using multiple processes, improving performance and responsiveness." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
 
 ---
 
 ## 🏁 Senior Checkpoint
-*   **Key Concept:** Horizontal scaling requires a stateless application tier and shared storage.
-*   **Architect Insight:** `pgbouncer` in Transaction Mode is the mandatory bridge between Odoo nodes and PostgreSQL for large-scale concurrency.
-*   **Verify Your Knowledge:** What are the two ways to handle session state in multi-node? (Answer: Sticky Sessions in Load Balancer or Shared Sessions via NFS/Redis).
-
-!!! success "Next Step"
-    Scaling mastered. Now learn about [Migration Scripts](../migration/scripts.md).
-
----
-
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+*   **Architect Insight:** Scaling Odoo is a triangle: Database (Postgres) + Application Server (Workers) + Frontend Proxy (Nginx). All three must be tuned.
+*   **Pro Tip:** Use Queue Job (OCA) to offload heavy asynchronous tasks, drastically reducing response times for users.
