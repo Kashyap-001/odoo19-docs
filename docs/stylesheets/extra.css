@@ -574,22 +574,36 @@ pre {
 }
 
 .md-footer__link {
-  background-color: var(--odoo-teal) !important;
-  color: white !important;
-  padding: 8px 16px !important;
-  border-radius: 4px !important;
+  background-color: transparent !important;
+  color: var(--odoo-purple) !important;
+  border: 2px solid var(--odoo-purple) !important;
+  padding: 8px 20px !important;
+  border-radius: 6px !important;
   text-decoration: none !important;
   display: inline-flex;
   align-items: center;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease-in-out;
   box-shadow: none !important;
   width: auto !important;
   max-width: 45%;
 }
 
 .md-footer__link:hover {
-  opacity: 0.85;
-  transform: none !important;
+  background-color: var(--odoo-purple) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(113, 75, 103, 0.2) !important;
+}
+
+[data-md-color-scheme="slate"] .md-footer__link {
+  color: var(--odoo-teal) !important;
+  border-color: var(--odoo-teal) !important;
+}
+
+[data-md-color-scheme="slate"] .md-footer__link:hover {
+  background-color: var(--odoo-teal) !important;
+  color: #0f172a !important; /* theme-bg */
+  box-shadow: 0 4px 8px rgba(1, 126, 132, 0.2) !important;
 }
 
 /* Hide the large title, just show Previous/Next like W3Schools */
