@@ -442,6 +442,12 @@ body {
   border-radius: 8px;
   overflow-x: auto !important;
   max-width: 100% !important;
+  transition: filter 0.3s ease;
+}
+
+/* Fix for Mermaid diagrams in Dark Mode */
+[data-md-color-scheme="slate"] .mermaid svg {
+  filter: invert(0.88) hue-rotate(180deg) brightness(1.1);
 }
 
 /* --- FIX FOR HOME PAGE TIME SECTION --- */
