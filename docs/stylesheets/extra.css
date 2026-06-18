@@ -68,54 +68,52 @@
 }
 
 /* --- GLOBAL LAYOUT & RESPONSIVENESS --- */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--theme-bg);
   color: var(--theme-text);
 }
 
-/* Ensure the main container is responsive */
-.md-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.md-main__inner {
-  margin-top: 0;
-  padding-top: 1rem;
+.md-typeset {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Responsive Grid Adjustments */
 @media screen and (min-width: 76.25em) {
   .md-grid {
     max-width: 96%;
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 
 /* Mobile & Tablet Fixes */
 @media screen and (max-width: 60em) {
   .md-content {
-    padding: 1rem !important;
+    padding: 0.5rem !important;
   }
   
-  /* Resetting the sidebar override that was causing the overlay issue */
-  .md-sidebar {
-    width: initial;
-    display: initial;
-  }
-
-  /* Ensuring the drawer is clean and doesn't flicker */
-  .md-nav--primary {
-    background-color: var(--theme-sidebar-bg) !important;
+  /* Code blocks and tables need to be strictly contained on mobile */
+  .md-typeset pre, 
+  .md-typeset table {
+    max-width: 100% !important;
+    overflow-x: auto !important;
   }
 }
 
 /* --- Top Navigation --- */
 .md-header {
   background-color: var(--odoo-purple) !important;
-  z-index: 10; /* Ensure header stays above content */
+  z-index: 100; /* High z-index to stay above everything */
+}
+
+.md-header__button {
+  z-index: 101; /* Ensure hamburger/logo are clickable */
 }
 
 .md-header__button.md-logo img {
@@ -185,16 +183,20 @@ body {
   background-color: var(--theme-pre-bg) !important;
   border-left: 4px solid var(--odoo-purple) !important;
   border-radius: 4px;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 [data-md-color-scheme="slate"] .md-typeset pre {
   border-left-color: var(--odoo-teal) !important;
 }
 
-/* Admonition Dark Mode Sync */
+/* Admonition Dark Mode Sync --- Ensure responsive containers */
 .md-typeset .admonition, .md-typeset details {
   background-color: var(--theme-code-bg);
   border-radius: 4px;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 /* Footer & Pagination Responsiveness */
@@ -427,7 +429,8 @@ body {
   background-color: var(--theme-content-bg) !important;
   padding: 1rem;
   border-radius: 8px;
-  overflow-x: auto;
+  overflow-x: auto !important;
+  max-width: 100% !important;
 }
 
 /* --- FIX FOR HOME PAGE TIME SECTION --- */
@@ -513,4 +516,40 @@ body {
 @media print {
   body { background: white !important; }
   #shortcuts-overlay, .md-header, .md-sidebar, .md-footer, .feedback-container { display: none !important; }
+}
+
+/* --- MOBILE SPECIFIC OVERFLOW FIXES --- */
+@media screen and (max-width: 480px) {
+  .md-header__title {
+    display: none; /* Hide title on very small screens to make room for logo/menu */
+  }
+  
+  .md-header__button.md-logo {
+    margin-right: 0.5rem;
+  }
+  
+  .md-content__inner {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 1rem 0.5rem !important;
+  }
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for long words in content */
+.md-typeset {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Force horizontal scroll for all pre blocks */
+pre {
+  overflow-x: auto !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
 }
