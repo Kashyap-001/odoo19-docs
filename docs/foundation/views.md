@@ -122,6 +122,7 @@ Widgets change how a field is rendered in the UI without altering the underlying
 | :--- | :--- | :--- | :--- |
 | `monetary` | Float, Monetary | Adds currency symbol & formatting. | `amount` ($100.00) |
 | `statusbar` | Selection, Many2one | Clickable horizontal progress bar. | `state` (Draft > Open > Closed) |
+| `priority` | Selection | Star-based rating widget (0-5). | `priority` (High/Medium/Low) |
 | `badge` | Selection, Many2one | Rounded, colored pill (badge). | `status` (Active / Archieved) |
 | `handle` | Integer | Drag-and-drop icon for reordering rows. | `sequence` in List views |
 | `html` | Html, Text | Rich text editor (WYSIWYG). | `description` |
