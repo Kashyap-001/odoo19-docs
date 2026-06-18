@@ -88,6 +88,29 @@ def _name_search(self, name, domain=None, operator='ilike', limit=100, order=Non
 
 ---
 
+## Customizing Defaults (`default_get`)
+
+The `default_get()` method is called when a user clicks the "New" button but before the form is displayed. It returns the initial values for the fields.
+
+### When to override?
+Use `default_get()` for complex defaults that can't be set with a static `default=` parameter, such as:
+- Pulling values from the `context`.
+- Logic based on the current user's profile.
+- Calculations involving the current date/time.
+
+### Example: Setting Dynamic Defaults
+```python
+@api.model
+def default_get(self, fields_list):
+    res = super().default_get(fields_list)
+    # Automatically set the 'start_date' to tomorrow if not provided
+    if 'start_date' in fields_list:
+        res['start_date'] = fields.Date.today() + timedelta(days=1)
+    return res
+```
+
+---
+
 ## Why use _compute_display_name?
 
 | Advantage | Description |

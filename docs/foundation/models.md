@@ -76,9 +76,33 @@ Inherit from this for **Wizards**. Data is stored in the database but is automat
 - **Limit:** Access rights are usually broader, but data is not meant for long-term storage.
 
 ### Abstract Model (`models.AbstractModel`)
-Used as a **template** or **mixin**. It defines fields and methods that other models can inherit.
-- **Key Feature:** Does not create a database table.
-- **Example:** Odoo's internal `mail.thread` is a mixin that provides "Chatter" functionality to any model that inherits it.
+Used as a **template** or **mixin**. It defines fields and methods that other models can inherit, but it **never creates a database table** for itself.
+
+- **Primary Use:** To share code across unrelated models (e.g., adding a "Followers" system or "Archive" logic).
+- **Behavior:** When another model inherits from an `AbstractModel`, the abstract fields and methods are added to the *inheritor's* database table and class.
+
+#### Example: Creating a Custom Mixin
+```python
+class DiscountMixin(models.AbstractModel):
+    _name = "auction.discount.mixin"
+    _description = "Handles shared discount logic"
+
+    discount_rate = fields.Float(string="Discount %", default=0.0)
+
+    def apply_discount(self, price):
+        return price * (1 - (self.discount_rate / 100))
+
+# Usage in a standard model
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+    _inherit = ['auction.discount.mixin'] # Logic is "mixed in"
+    
+    name = fields.Char()
+    price = fields.Float()
+```
+
+!!! tip "Architect Insight"
+    Use `AbstractModel` instead of standard inheritance when you want the functionality to be reusable but you don't need a central table that links all the children together.
 
 ### Senior: SQL View Models (`_auto = False`)
 Sometimes you need to report on data joined from multiple massive tables. Instead of using a standard `Model` or a slow Python compute method, you can tell Odoo to read from a **PostgreSQL View**.

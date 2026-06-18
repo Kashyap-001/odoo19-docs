@@ -64,6 +64,30 @@ Occurs when you loop over a recordset and access a relational field that hasn't 
 
 ---
 
+## ORM Internals: Why Odoo is Fast (or Slow)
+
+To be a Senior Architect, you must understand how the ORM handles data behind the scenes.
+
+### 1. Prefetching: The Anti-N+1 Shield
+When you access a field on one record in a recordset (e.g., `self[0].name`), Odoo doesn't just fetch that one field. It automatically fetches that field for **all records** in the current recordset and stores them in the cache.
+
+- **How it works:** Odoo tracks a "prefetch set" for every recordset. 
+- **Senior Tip:** If you are processing thousands of records and only need one field, you can disable prefetching to save memory: `records.with_context(prefetch_fields=False)`.
+
+### 2. The Environment Cache (`self.env.cache`)
+Odoo maintains an in-memory cache for the duration of a transaction.
+- When you read a field, Odoo checks the cache first.
+- When you write a field, Odoo updates the cache and marks it "dirty" to be flushed to SQL later.
+- **Manual Flush:** Use `self.env.flush_all()` if you need to run raw SQL that depends on recently changed ORM data.
+
+### 3. Recordsets vs. Loops
+Always prefer **Set Operations** over manual Python loops.
+- **Bad:** `[r.id for r in records if r.state == 'open']`
+- **Good:** `records.filtered(lambda r: r.state == 'open').ids`
+- **Why?** Set operations are implemented in optimized C/Python and better utilize Odoo's prefetching logic.
+
+---
+
 ## 💻 Code Challenge: Optimization
 
 Rewrite the following inefficient method using Odoo 19 best practices.

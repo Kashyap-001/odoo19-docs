@@ -76,6 +76,44 @@ For Senior Architects, static search panels are often not enough. If you need to
 ### Python-side Dynamic Filtering
 While most search panel logic is handled by the web client, you can influence it by overriding `search_panel_select_multi_range` or using `search_panel_select_range`.
 
+---
+
+## 5. Senior: Advanced Logic & Inheritance
+
+### Multi-field Searching with `filter_domain`
+By default, a `<field>` in a search view only searches its own column. `filter_domain` allows one field to search across multiple attributes using an OR (`|`) domain.
+
+```xml
+<!-- One search box that checks both name AND reference -->
+<field name="name" string="Title or Ref" 
+       filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"/>
+```
+
+### Search View Inheritance
+Just like Forms or Lists, you can inherit and extend existing search views. This is critical for adding custom filters to core Odoo modules (like CRM or Sales).
+
+```xml
+<record id="view_auction_listing_search_inherit" model="ir.ui.view">
+    <field name="inherit_id" ref="pways_auction.view_auction_listing_search"/>
+    <field name="model">auction.listing</field>
+    <field name="arch" type="xml">
+        <xpath expr="//filter[@name='state_open']" position="after">
+            <filter string="High Value" name="high_value" domain="[('price', '>', 5000)]"/>
+        </xpath>
+    </field>
+</record>
+```
+
+### Explicitly Selecting a Search View
+If a model has multiple search views, you can specify which one a Window Action should use by setting the `search_view_id`.
+
+```xml
+<record id="action_auction_special" model="ir.actions.act_window">
+    ...
+    <field name="search_view_id" ref="view_auction_listing_search_advanced"/>
+</record>
+```
+
 !!! tip "Architect Insight"
     The Search Panel is a "heavy" component. Avoid using it on fields with thousands of unique values (like `res.partner`), as it will slow down the initial view load significantly.
 
@@ -83,7 +121,7 @@ While most search panel logic is handled by the web client, you can influence it
 
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** Search views define the interface for `fields`, `filters`, and `groups`.
-*   **Architect Insight:** Use `<searchpanel>` to provide an e-commerce-like browsing experience, but always cap the cardinality of the fields used to maintain performance.
+*   **Architect Insight:** Use `filter_domain` to create intuitive "Global Search" fields and `<searchpanel>` for e-commerce-style sidebar filtering.
 *   **Verify Your Knowledge:** How do you make a filter active by default? (Answer: Use `search_default_<filter_name>` in the action context).
 
 ---

@@ -45,7 +45,34 @@ def _check_price(self):
 
 ---
 
-## 3. Actionable Errors: `RedirectWarning`
+## 3. Security & Integrity: Access & Missing Errors
+
+These exceptions are often raised automatically by Odoo, but senior developers use them to manually enforce high-level security.
+
+### `AccessError` (Permissions)
+Raised when a user tries to perform an action they aren't allowed to do (e.g., a Seller trying to delete another Seller's auction).
+```python
+from odoo.exceptions import AccessError
+
+def action_delete_auction(self):
+    if self.seller_id != self.env.user:
+        raise AccessError("You can only delete your own auctions.")
+```
+
+### `MissingError` (Data Sync)
+Raised when you try to access a record that no longer exists in the database.
+```python
+from odoo.exceptions import MissingError
+
+def process_queued_bid(self, bid_id):
+    bid = self.env['auction.bid'].browse(bid_id)
+    if not bid.exists():
+        raise MissingError("The bid you are trying to process was recently deleted.")
+```
+
+---
+
+## 4. Actionable Errors: `RedirectWarning`
 
 Sometimes, telling the user they made a mistake isn't enough—you should help them fix it. `RedirectWarning` allows you to provide a button that triggers an Odoo Action (like opening their profile).
 

@@ -58,7 +58,33 @@ class TestAuctionListing(TransactionCase):
 
 ---
 
-## Mocking and Patching
+## 2. Specialized Test Classes
+
+While `TransactionCase` handles 90% of your needs, Odoo provides other classes for specific scenarios.
+
+### `HttpCase` (Web & Integration)
+Inherit from `HttpCase` when you need to test controllers, website routes, or run **JavaScript Tours**.
+- **Features:** Provides a built-in browser (`Chrome`), session management, and `self.url_open()`.
+- **Transaction:** Unlike `TransactionCase`, it does **not** automatically rollback by default (it uses its own transaction management).
+
+```python
+from odoo.tests import HttpCase
+
+class TestAuctionWeb(HttpCase):
+    def test_listing_page(self):
+        # Open the public listing page and check for 200 OK
+        response = self.url_open('/auction/listings')
+        self.assertEqual(response.status_code, 200)
+```
+
+### `SavepointCase` (Legacy/Internal)
+You may see `SavepointCase` in older Odoo code. 
+- **The Shift:** In modern Odoo 19, `TransactionCase` has been optimized to handle the heavy lifting that `SavepointCase` used to do.
+- **Architect Note:** For new modules, always prefer `TransactionCase` unless you are maintaining legacy v12/v13 code.
+
+---
+
+## 3. Mocking and Patching
 
 Sometimes you need to simulate external services or bypass complex logic. Odoo uses the standard `unittest.mock` library.
 

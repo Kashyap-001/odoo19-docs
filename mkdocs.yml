@@ -46,8 +46,7 @@ theme:
     - toc.follow
 
 plugins:
-  - search:
-      prebuild_index: true
+  - search
   - minify:
       minify_html: true
   - git-revision-date-localized:

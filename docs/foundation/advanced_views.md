@@ -65,7 +65,44 @@ The Calendar view displays records on a timeline, essential for scheduling aucti
 
 ---
 
-## 4. Activity View (`<activity>`)
+## 4. Enterprise Reporting: Cohort, Dashboard & Map
+
+For Senior Architects working on Enterprise projects, Odoo 19 provides high-end visualization views.
+
+### Cohort View (`<cohort>`)
+Used for retention and churn analysis (e.g., "How many bidders return every month?").
+```xml
+<cohort string="Bidder Retention" 
+        date_start="create_date" 
+        date_stop="last_bid_date" 
+        interval="month" 
+        sample="1"/>
+```
+
+### Dashboard View (`<dashboard>`)
+Allows combining multiple Graph and Pivot views into a single, interactive cockpit.
+```xml
+<dashboard>
+    <view type="graph" ref="pways_auction.view_bid_graph"/>
+    <view type="pivot" ref="pways_auction.view_bid_pivot"/>
+    <group>
+        <aggregate name="total_revenue" field="amount" string="Total Revenue"/>
+        <formula name="avg_bid" value="total_revenue / count" string="Average Bid"/>
+    </group>
+</dashboard>
+```
+
+### Map View (`<map>`)
+Visualizes records on a real-time map (e.g., "Where are my sellers located?").
+```xml
+<map res_partner="seller_id">
+    <field name="name" string="Seller Name"/>
+</map>
+```
+
+---
+
+## 5. Activity View (`<activity>`)
 
 The Activity view provides a dashboard for the `mail.activity.mixin`. It is used to manage follow-ups, calls, and meetings across all records.
 
