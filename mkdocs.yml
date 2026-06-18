@@ -104,6 +104,7 @@ nav:
   - "🏠 Home": 
       - "Welcome": index.md
       - "About Us": about.md
+      - "Privacy & Terms": about/policy.md
       - "📊 My Progress": dashboard.md
       - "📜 Senior Cheat Sheets": advanced/cheat_sheets.md
       - "🚀 v18 → v19 Migration Delta": migration/cheat_sheet.md
