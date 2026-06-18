@@ -620,4 +620,13 @@ pre {
   border-top: 1px solid var(--theme-border);
   background-color: var(--theme-content-bg);
   padding: 1rem 0;
+  color: var(--theme-text) !important;
+}
+
+.md-footer-meta a {
+  color: var(--odoo-purple) !important;
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta a {
+  color: var(--odoo-teal) !important;
 }

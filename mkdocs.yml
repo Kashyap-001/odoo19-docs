@@ -53,6 +53,15 @@ plugins:
       type: date
       enable_creation_date: true
 
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/kashyap-patel/
+      name: Connect with Kashyap on LinkedIn
+    - icon: fontawesome/brands/github
+      link: https://github.com/Kashyap-001
+      name: View my GitHub Profile
+
 extra_css:
   - stylesheets/extra.css
 
