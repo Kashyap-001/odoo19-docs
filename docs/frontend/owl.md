@@ -27,26 +27,77 @@ sequenceDiagram
     OWL->>Comp: 3. render()
     Comp->>DOM: Patching DOM
     OWL->>Comp: 4. onMounted() (DOM is ready)
-    
+
     Note over Comp: Component Updates...
-    
+
     OWL->>Comp: 5. onWillUnmount() (Cleanup)
     Comp->>DOM: Removed from DOM
 ```
 
-### Master Project Challenge: OWL
-1.  **Task**: Add a `useEffect` hook to your `AuctionTimer` component that logs "Component Mounted" on initialization.
-2.  **Goal**: Understand when state becomes reactive in the lifecycle.
+---
+
+## 🏗️ Mastering Advanced OWL
+
+### 1. OWL Services (`useService`)
+Services allow components to access global functionality (like ORM, Notification, Action).
+
+```javascript
+import { useService } from "@web/core/utils/hooks";
+
+// Inside setup()
+this.orm = useService("orm");
+this.notification = useService("notification");
+```
+
+### 2. The Registry
+The Registry is a central place to store and retrieve plugins, services, or components.
+
+```javascript
+import { registry } from "@web/core/registry";
+
+// Register a new action
+registry.category("actions").add("my_custom_action", MyAction);
+```
+
+### 3. Hooks (`useState`, `useEffect`)
+Hooks are functions that let you "hook into" OWL features.
+
+```javascript
+import { useState, useEffect } from "@odoo/owl";
+
+setup() {
+    this.state = useState({ count: 0 });
+
+    // Trigger side effects when state changes
+    useEffect(() => {
+        console.log("Count changed:", this.state.count);
+    }, () => [this.state.count]);
+}
+```
 
 ---
 
-## What is OWL?
+## 🏗️ Master Project Challenge: OWL
+1.  **Task**: Add a `useEffect` hook to your `AuctionTimer` component that logs "Component Mounted" on initialization.
+2.  **Goal**: Use `useService('orm')` to fetch the auction end time from the server instead of hardcoding it.
 
-OWL is a declarative component framework, similar to Vue or React, but specifically optimized for the Odoo ecosystem.
+---
 
-- **Component-based**: UI is split into small, reusable pieces.
-- **Reactive**: The UI updates automatically when data changes.
-- **Templates**: Uses QWeb templates for rendering.
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the primary purpose of useService?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="To inject global Odoo framework services (like orm, notification, action) into a component." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+---
+
+## 🏁 Senior Checkpoint
+*   **Architect Insight:** Always inject services in `setup()`.
+*   **Pro Tip:** Use the Registry to decouple your components. Instead of hardcoding component references, register them and retrieve them via the Registry category.
+
 - **Hooks**: Specialized functions for lifecycle and service management.
 
 ---
