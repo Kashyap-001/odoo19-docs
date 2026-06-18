@@ -69,7 +69,7 @@
 
 /* --- GLOBAL LAYOUT & RESPONSIVENESS --- */
 html {
-  scroll-padding-top: 150px; /* Offset for dual sticky headers (main + tabs) */
+  scroll-padding-top: 135px; /* Precision offset: Header (4.8rem) + Tabs (2.4rem) + Buffer */
 }
 
 html, body {
