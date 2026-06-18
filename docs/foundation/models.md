@@ -165,11 +165,11 @@ class AuctionListing(models.Model):
 <div class="code-challenge">
 <pre><code>from odoo import models, fields
 
-class AuctionListing(<input type="text" class="quiz-input-inline" data-answer="models.Model" style="width: 120px">):
-    <input type="text" class="quiz-input-inline" data-answer="_name" style="width: 60px"> = 'auction.listing'
+class AuctionListing(<input type="text" class="quiz-input-inline w-120" data-answer="models.Model">):
+    <input type="text" class="quiz-input-inline w-60" data-answer="_name"> = 'auction.listing'
     _description = 'Auction Listing'
     
-    name = fields.Char(string="Title", <input type="text" class="quiz-input-inline" data-answer="required=True" style="width: 120px">)
+    name = fields.Char(string="Title", <input type="text" class="quiz-input-inline w-120" data-answer="required=True">)
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>

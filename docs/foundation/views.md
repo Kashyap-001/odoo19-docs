@@ -139,11 +139,11 @@ While mostly deprecated in favor of `get_views()`, these older hooks are sometim
 **Complete the XML definition for a simple Odoo 19 list view:**
 
 <div class="code-challenge">
-<pre><code>&lt;<input type="text" class="quiz-input-inline" data-answer="list" style="width: 50px">&gt;
+<pre><code>&lt;<input type="text" class="quiz-input-inline w-50" data-answer="list">&gt;
     &lt;field name="name"/&gt;
     &lt;field name="amount" widget="monetary"/&gt;
-    &lt;field name="state" <input type="text" class="quiz-input-inline" data-answer="widget" style="width: 60px">="badge"/&gt;
-&lt;/<input type="text" class="quiz-input-inline" data-answer="list" style="width: 50px">&gt;
+    &lt;field name="state" <input type="text" class="quiz-input-inline w-60" data-answer="widget">="badge"/&gt;
+&lt;/<input type="text" class="quiz-input-inline w-50" data-answer="list">&gt;
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>

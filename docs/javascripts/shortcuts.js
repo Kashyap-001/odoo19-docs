@@ -1,59 +1,54 @@
-let lastKey = '';
-let lastTime = 0;
-
 document.addEventListener('keydown', (e) => {
-    const currentTime = new Date().getTime();
-    const key = e.key.toLowerCase();
+    // Only trigger if no input/textarea is focused
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
 
-    // Check for sequence: G then [target]
-    if (lastKey === 'g' && (currentTime - lastTime) < 1000) {
-        switch (key) {
-            case 'h': window.location.href = window.location.origin + '/index.html'; break;
-            case 'c': window.location.href = window.location.origin + '/advanced/cheat_sheets/index.html'; break;
-            case 'd': window.location.href = window.location.origin + '/dashboard/index.html'; break;
-            case 's': window.location.href = window.location.origin + '/foundation/setup/index.html'; break;
-            case 'f': window.location.href = window.location.origin + '/foundation/fields/index.html'; break;
-            case 'o': window.location.href = window.location.origin + '/crud/index/index.html'; break;
-            case 'p': window.location.href = window.location.origin + '/advanced/performance_profiling/index.html'; break;
-        }
-        e.preventDefault();
-        lastKey = ''; // Reset
-    } else {
-        lastKey = key;
-        lastTime = currentTime;
-    }
-
-    // Modal Help for shortcuts: Press '?'
-    if (e.key === '?') {
+    if (e.key === 'h') {
+        window.location.href = '/';
+    } else if (e.key === 'd') {
+        window.location.href = '/dashboard/';
+    } else if (e.key === 's') {
+        const searchInput = document.querySelector('.md-search__input');
+        if (searchInput) searchInput.focus();
+    } else if (e.key === '?') {
         showShortcutsHelp();
     }
 });
 
 function showShortcutsHelp() {
-    if (document.getElementById('shortcuts-help-modal')) return;
+    const help = document.createElement('div');
+    help.id = 'shortcuts-overlay';
+    help.style.position = 'fixed';
+    help.style.top = '50%';
+    help.style.left = '50%';
+    help.style.transform = 'translate(-50%, -50%)';
+    help.style.backgroundColor = 'var(--theme-content-bg)';
+    help.style.padding = '2rem';
+    help.style.borderRadius = '12px';
+    help.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
+    help.style.zIndex = '10000';
+    help.style.border = '2px solid var(--odoo-purple)';
+    help.style.color = 'var(--theme-text)';
+    help.style.maxWidth = '90%';
 
-    const modal = document.createElement('div');
-    modal.id = 'shortcuts-help-modal';
-    modal.style = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: #1e293b; color: white; padding: 2rem; border-radius: 12px;
-        z-index: 20000; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        font-family: 'Inter', sans-serif; min-width: 300px;
-    `;
-    modal.innerHTML = `
-        <h3 style="margin-top:0; color: #818cf8;">Senior Pro Shortcuts</h3>
-        <p style="font-size: 0.9rem; color: #94a3b8;">Press <strong>G</strong> then follow with:</p>
+    help.innerHTML = `
+        <h3 style="margin-top:0; color: var(--odoo-teal);">Senior Pro Shortcuts</h3>
+        <p style="font-size: 0.9rem; color: var(--theme-text-light);">Master the Odoo 19 Masterclass UI with these keys:</p>
         <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.5rem;"><code>H</code> &rarr; 🏠 Home</li>
-            <li style="margin-bottom: 0.5rem;"><code>C</code> &rarr; 📜 Cheat Sheets</li>
-            <li style="margin-bottom: 0.5rem;"><code>D</code> &rarr; 📊 Dashboard</li>
-            <li style="margin-bottom: 0.5rem;"><code>O</code> &rarr; 🛠️ ORM Engine</li>
-            <li style="margin-bottom: 0.5rem;"><code>P</code> &rarr; 🔬 Performance</li>
+            <li style="margin-bottom: 0.5rem;"><strong>H</strong> - Go to Home</li>
+            <li style="margin-bottom: 0.5rem;"><strong>D</strong> - Go to Dashboard</li>
+            <li style="margin-bottom: 0.5rem;"><strong>S</strong> - Focus Search</li>
+            <li style="margin-bottom: 0.5rem;"><strong>?</strong> - Show this help</li>
         </ul>
-        <button onclick="this.parentElement.remove()" style="
-            background: #334155; border: none; color: white; padding: 0.5rem 1rem;
-            border-radius: 6px; cursor: pointer; width: 100%; margin-top: 1rem;
-        ">Close</button>
+        <button onclick="this.parentElement.remove()" style="margin-top: 1rem; background: var(--odoo-purple); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%;">Close</button>
     `;
-    document.body.appendChild(modal);
+    document.body.appendChild(help);
+
+    // Close on escape
+    const closeOnEsc = (e) => {
+        if (e.key === 'Escape') {
+            help.remove();
+            document.removeEventListener('keydown', closeOnEsc);
+        }
+    };
+    document.addEventListener('keydown', closeOnEsc);
 }

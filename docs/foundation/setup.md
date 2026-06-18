@@ -74,8 +74,8 @@ pip install -r requirements.txt
 **Fill in the missing parts to create and activate a virtual environment for Odoo 19:**
 
 <div class="code-challenge">
-<pre><code>python3.12 -m <input type="text" class="quiz-input-inline" data-answer="venv" style="width: 50px"> odoo-venv
-<input type="text" class="quiz-input-inline" data-answer="source" style="width: 60px"> odoo-venv/bin/<input type="text" class="quiz-input-inline" data-answer="activate" style="width: 80px">
+<pre><code>python3.12 -m <input type="text" class="quiz-input-inline w-50" data-answer="venv"> odoo-venv
+<input type="text" class="quiz-input-inline w-60" data-answer="source"> odoo-venv/bin/<input type="text" class="quiz-input-inline w-80" data-answer="activate">
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>

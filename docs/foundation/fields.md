@@ -230,7 +230,7 @@ As a Senior Developer, you must be aware of these fundamental shifts in Odoo 19:
 **Define a Many2one field that links to the 'res.partner' model and deletes the record if the partner is removed.**
 
 <div class="code-challenge">
-<pre><code>partner_id = fields.<input type="text" class="quiz-input-inline" data-answer="Many2one" style="width: 80px">('<input type="text" class="quiz-input-inline" data-answer="res.partner" style="width: 100px">', string="Partner", ondelete='<input type="text" class="quiz-input-inline" data-answer="cascade" style="width: 70px">')
+<pre><code>partner_id = fields.<input type="text" class="quiz-input-inline w-80" data-answer="Many2one">('<input type="text" class="quiz-input-inline w-100" data-answer="res.partner">', string="Partner", ondelete='<input type="text" class="quiz-input-inline w-70" data-answer="cascade">')
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
@@ -280,7 +280,7 @@ As a Senior Developer, you must be aware of these fundamental shifts in Odoo 19:
 
 ---
 
-<div style="background-color: #ffffcc; padding: 15px; border-left: 6px solid #ffeb3b;">
+<div class="senior-note">
   <strong>Senior Tip:</strong> When using a <strong>Monetary</strong> field, Odoo 19 requires you to have a <code>currency_id</code> field (Many2one to 'res.currency') on the same model. If your field is named <code>currency_id</code>, Odoo finds it automatically. If you use a different name, you must specify it using <code>currency_field='your_field_name'</code>.
 </div>
 

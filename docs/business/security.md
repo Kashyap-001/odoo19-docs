@@ -123,7 +123,7 @@ In XML, you can assign multiple groups to a single record (like a menu or an act
 **Complete the CSV header for a standard Odoo security file:**
 
 <div class="code-challenge">
-<pre><code>id,name,<input type="text" class="quiz-input-inline" data-answer="model_id:id" style="width: 100px">,<input type="text" class="quiz-input-inline" data-answer="group_id:id" style="width: 100px">,perm_read,perm_write,perm_create,perm_unlink
+<pre><code>id,name,<input type="text" class="quiz-input-inline w-100" data-answer="model_id:id">,<input type="text" class="quiz-input-inline w-100" data-answer="group_id:id">,perm_read,perm_write,perm_create,perm_unlink
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>

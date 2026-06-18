@@ -111,7 +111,7 @@ While `//field[@name='x']` is common, it is slow on very large XML views (like t
 **Use XPath to insert a new field named 'expiry_date' immediately after the 'list_price' field.**
 
 <div class="code-challenge">
-<pre><code>&lt;xpath <input type="text" class="quiz-input-inline" data-answer="expr" style="width: 50px">="//field[@name='list_price']" <input type="text" class="quiz-input-inline" data-answer="position" style="width: 80px">="<input type="text" class="quiz-input-inline" data-answer="after" style="width: 60px">"&gt;
+<pre><code>&lt;xpath <input type="text" class="quiz-input-inline w-50" data-answer="expr">="//field[@name='list_price']" <input type="text" class="quiz-input-inline w-80" data-answer="position">="<input type="text" class="quiz-input-inline w-60" data-answer="after">"&gt;
     &lt;field name="expiry_date"/&gt;
 &lt;/xpath&gt;
 </code></pre>

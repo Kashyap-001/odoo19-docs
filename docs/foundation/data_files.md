@@ -108,9 +108,9 @@ When a field expects a non-string value.
 **Create a new record for the 'auction.listing' model with the unique ID 'listing_vintage_car'.**
 
 <div class="code-challenge">
-<pre><code>&lt;<input type="text" class="quiz-input-inline" data-answer="record" style="width: 60px"> id="<input type="text" class="quiz-input-inline" data-answer="listing_vintage_car" style="width: 160px">" <input type="text" class="quiz-input-inline" data-answer="model" style="width: 60px">="auction.listing"&gt;
+<pre><code>&lt;<input type="text" class="quiz-input-inline w-60" data-answer="record"> id="<input type="text" class="quiz-input-inline w-160" data-answer="listing_vintage_car">" <input type="text" class="quiz-input-inline w-60" data-answer="model">="auction.listing"&gt;
     &lt;field name="name"&gt;Vintage Car&lt;/field&gt;
-&lt;/<input type="text" class="quiz-input-inline" data-answer="record" style="width: 60px">&gt;
+&lt;/<input type="text" class="quiz-input-inline w-60" data-answer="record">&gt;
 </code></pre>
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
