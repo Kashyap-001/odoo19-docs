@@ -69,7 +69,7 @@
 
 /* --- GLOBAL LAYOUT & RESPONSIVENESS --- */
 html {
-  scroll-padding-top: 100px; /* Offset for better TOC scroll-spy accuracy */
+  scroll-padding-top: 150px; /* Offset for dual sticky headers (main + tabs) */
 }
 
 html, body {
