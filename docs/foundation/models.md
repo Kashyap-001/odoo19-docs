@@ -54,9 +54,32 @@ In Odoo 19, the `_name` attribute is now **optional**. If omitted, Odoo derives 
         name = fields.Char(string="Title")
     ```
 
+## 2. Model Types
+
+Odoo provides three main types of models, each serving a distinct purpose in the ecosystem.
+
+| Model Type | Base Class | Use Case | Persistence |
+| :--- | :--- | :--- | :--- |
+| **Standard Model** | `models.Model` | Main business data (Products, Partners). | Permanent (DB Table) |
+| **Transient Model** | `models.TransientModel` | Wizards, temporary UI state. | Temporary (Vacuumed) |
+| **Abstract Model** | `models.AbstractModel` | Mixins, base classes for other models. | None (No DB Table) |
+
+### Standard Model (`models.Model`)
+The most common type. Data is stored permanently in the database. Use this for anything that needs to persist (e.g., `auction.listing`).
+
+### Transient Model (`models.TransientModel`)
+Inherit from this for **Wizards**. Data is stored in the database but is automatically deleted (vacuumed) periodically. 
+- **Key Feature:** Perfect for multi-step processes where you need to collect user input before performing an action.
+- **Limit:** Access rights are usually broader, but data is not meant for long-term storage.
+
+### Abstract Model (`models.AbstractModel`)
+Used as a **template** or **mixin**. It defines fields and methods that other models can inherit.
+- **Key Feature:** Does not create a database table.
+- **Example:** Odoo's internal `mail.thread` is a mixin that provides "Chatter" functionality to any model that inherits it.
+
 ---
 
-## 2. Field Types Deep Dive
+## 3. Field Types Deep Dive
 Fields define the "columns" of your database table. Odoo provides a rich set of field types to handle different data formats.
 
 ### Basic Fields
@@ -99,7 +122,7 @@ Fields define the "columns" of your database table. Odoo provides a rich set of 
 
 ---
 
-## 3. Common Field Parameters
+## 4. Common Field Parameters
 You can customize how fields behave using several parameters:
 
 | Parameter | Purpose |
@@ -116,7 +139,7 @@ You can customize how fields behave using several parameters:
 
 ---
 
-## 4. Special Odoo 19 Attributes
+## 5. Special Odoo 19 Attributes
 Odoo 19 introduces cleaner ways to handle database-level configurations.
 
 ### `models.Constraint` (New)

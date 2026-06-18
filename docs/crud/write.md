@@ -101,6 +101,42 @@ listing.write({
 
 ---
 
+## Senior: Overriding Duplication
+
+When a user clicks **Action > Duplicate** in the Odoo UI, the ORM calls the `copy()` method.
+
+### 1. `copy_data()` (The "What to duplicate")
+This method returns the values that will be used to create the new record. Override this if you want to exclude specific fields or modify them during duplication.
+
+```python
+def copy_data(self, default=None):
+    vals_list = super().copy_data(default=default)
+    for vals in vals_list:
+        # Prevent copying the internal reference code
+        vals['code'] = False 
+        # Append " (copy)" to the name
+        if 'name' in vals:
+            vals['name'] = _("%s (copy)", vals['name'])
+    return vals_list
+```
+
+### 2. `copy()` (The "Process of duplication")
+This method calls `copy_data()` and then `create()`. You generally override `copy()` if you need to perform additional logic *after* the new record is created (like duplicating non-relational files or sending a notification).
+
+```python
+@api.returns('self', lambda value: value.id)
+def copy(self, default=None):
+    # Perform logic BEFORE
+    new_record = super().copy(default=default)
+    # Perform logic AFTER
+    return new_record
+```
+
+!!! tip "Architect Tip"
+    Always prefer overriding `copy_data()` over `copy()` when possible. It is cleaner and handles multi-record duplication (Batch Copy) more efficiently.
+
+---
+
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** `write()` updates all records in a recordset simultaneously with a single dictionary.
 *   **Architect Insight:** Command 6 (Replace All) is the standard for Many2many fields like tags, ensuring a clean state in one call.

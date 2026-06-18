@@ -81,7 +81,40 @@ The `<card>` element provides a structured way to define Kanban layouts without 
 
 ---
 
-## 4. Common Widgets
+## 4. The Search View (`<search>`)
+
+The Search view defines the filtering and grouping options available in the top-right search bar of List and Kanban views.
+
+### Basic Structure
+```xml
+<search>
+    <field name="name"/>
+    <field name="seller_id"/>
+    <field name="category_id" operator="child_of"/>
+    
+    <!-- Filters: Quick toggle for specific domains -->
+    <filter string="Open Auctions" name="open_state" domain="[('state', '=', 'open')]"/>
+    <filter string="My Listings" name="my_listings" domain="[('seller_id', '=', uid)]"/>
+    
+    <separator/>
+    
+    <!-- Group By: Cluster records by a field -->
+    <group expand="0" string="Group By">
+        <filter string="Seller" name="group_by_seller" context="{'group_by': 'seller_id'}"/>
+        <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+    </group>
+    
+    <!-- Search Panel: Left-side navigation (Odoo 19 Style) -->
+    <searchpanel>
+        <field name="category_id" icon="fa-filter" groupby="parent_id" select="multi"/>
+        <field name="state" icon="fa-list" select="multi"/>
+    </searchpanel>
+</search>
+```
+
+---
+
+## 5. Common Widgets
 
 Widgets change how a field is rendered without changing the underlying data.
 

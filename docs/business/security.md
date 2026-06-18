@@ -12,6 +12,48 @@ The first layer of defense is the **Access Control List (ACL)**.
 
 ---
 
+## 0. Defining Security Groups (`res.groups`)
+
+Before you can assign permissions in a CSV, you must define the **Groups** themselves. Groups are defined in XML and typically belong to a **Category** (which clusters groups together in the User Form).
+
+### Example: Defining Auction Groups
+Create a file named `security/security.xml`:
+
+```xml
+<odoo>
+    <data noupdate="1">
+        <!-- 1. Define a Category for our App -->
+        <record id="module_category_auction" model="ir.module.category">
+            <field name="name">Auction Management</field>
+            <field name="description">Helps you manage auction roles.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- 2. Define the User Group -->
+        <record id="group_auction_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_auction"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- 3. Define the Manager Group (Inherits from User) -->
+        <record id="group_auction_manager" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_category_auction"/>
+            <field name="implied_ids" eval="[(4, ref('group_auction_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>
+```
+
+### Key Attributes
+- **`category_id`**: Groups this role under "Auction Management" in the User settings.
+- **`implied_ids`**: This is **inheritance for groups**. If a user is added to "Administrator", they are automatically added to "User" and "Internal User" (`base.group_user`).
+- **`noupdate="1"`**: Important! This prevents Odoo from overwriting manual changes made by admins in the UI when the module is updated.
+
+---
+
 ## 1. The `ir.model.access.csv` File
 
 In Odoo, model-level permissions are managed via a CSV file located at `security/ir.model.access.csv`. This file is loaded into the `ir.model.access` model during module installation/update.

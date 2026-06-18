@@ -27,26 +27,38 @@ my_module/
 
 This is the most important file in your module. It tells Odoo the name, version, and dependencies of your addon.
 
-### Example Manifest
+### Key Metadata Keys
+- **`name`**: The user-friendly title of the module.
+- **`version`**: Use [Semantic Versioning](https://semver.org/) (e.g., `19.0.1.0.0`). The first part (`19.0`) should match the Odoo version.
+- **`depends`**: List of other modules required. **Always** include `base`.
+
+### The Three Pillars of Data
+One of the most common beginner confusions is where to put XML and JS files. The manifest uses three distinct keys:
+
+| Key | Use Case | When is it loaded? |
+| :--- | :--- | :--- |
+| **`data`** | **Mandatory** files: Security (ACL), Views, Menus, Actions, Cron jobs. | Always (Install & Update). |
+| **`demo`** | **Optional** files: Sample records for testing or sales pitches. | Only if "Demo Data" is checked on the DB. |
+| **`assets`** | **Frontend** files: JavaScript (OWL), CSS/SCSS, XML templates (static). | Loaded by the Web Client. |
+
+!!! danger "Warning: Data Order"
+    Files in the `data` list are loaded **sequentially**. 
+    - **Incorrect**: Loading a View before the Model's Security (will cause access errors).
+    - **Correct**: `security/ir.model.access.csv` → `views/my_views.xml`.
+
+### Modern Odoo 19 `assets` Structure
+Unlike `data`, which is a simple list, `assets` is a dictionary grouped by "bundles".
 ```python
-{
-    'name': 'Auction Marketplace',
-    'version': '1.0',
-    'category': 'Sales',
-    'summary': 'Manage real-time auctions',
-    'depends': ['base', 'product', 'mail'],
-    'data': [
-        'security/ir.model.access.csv',
-        'views/auction_listing_views.xml',
+'assets': {
+    'web.assets_backend': [
+        'my_module/static/src/components/**/*.js',
+        'my_module/static/src/scss/style.scss',
     ],
-    'installable': True,
-    'application': True,
-    'license': 'LGPL-3',
+    'web.assets_frontend': [
+        # Used for Website/Portal-specific JS
+    ],
 }
 ```
-
-!!! info "Important"
-    The order of files in the `data` list matters. Security files should generally be loaded before views.
 
 ---
 

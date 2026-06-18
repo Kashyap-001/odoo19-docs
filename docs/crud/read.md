@@ -81,6 +81,40 @@ data = partners.read(['name', 'email', 'city'])
 
 ---
 
+## Senior: Customizing Search & Display
+
+In professional Odoo development, you often need to control how records are identified and selected in the UI (specifically in `Many2one` dropdowns).
+
+### 1. `_compute_display_name()` (The "What you see")
+Odoo 19 uses this method to determine the string representation of a record. By default, it uses the `_rec_name` (usually `name`).
+
+```python
+def _compute_display_name(self):
+    for record in self:
+        record.display_name = f"[{record.code}] {record.name}"
+```
+
+### 2. `name_search()` (The "How you find")
+When a user types into a `Many2one` field, Odoo calls `name_search()`. Override this to allow searching by multiple fields (e.g., search a Partner by name OR by phone number).
+
+```python
+@api.model
+def _name_search(self, name, domain=None, operator='ilike', limit=100, order=None):
+    domain = domain or []
+    if name:
+        # Search by name OR by internal code
+        name_domain = ['|', ('name', operator, name), ('code', operator, name)]
+        if operator in expression.NEGATIVE_TERM_OPERATORS:
+            name_domain = ['&', ('name', operator, name), ('code', operator, name)]
+        domain = expression.AND([domain, name_domain])
+    return self._search(domain, limit=limit, order=order)
+```
+
+!!! info "Note on name_search vs _name_search"
+    In modern Odoo, you should generally override `_name_search` (with underscore). The framework handles the higher-level logic, and you focus on the domain building.
+
+---
+
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** Odoo's prefetching engine makes field access on recordsets extremely efficient.
 *   **Architect Insight:** `browse()` is "Lazy"; it doesn't hit the database until you access a field. `read()` is "Eager" and returns raw dictionaries.

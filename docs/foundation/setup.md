@@ -135,6 +135,22 @@ Once everything is installed, start the server with:
 ```
 Open your browser and go to `http://localhost:8069`.
 
+### CLI Mastery: Install vs. Upgrade
+One of the most common beginner frustrations is seeing "no changes" in Odoo after updating code. You must tell Odoo to re-read your files using these flags:
+
+| Flag | Meaning | Use Case |
+| :--- | :--- | :--- |
+| **`-i <module>`** | **Install** | Use this the **first time** you add a module to a database. It creates the tables and loads all data. |
+| **`-u <module>`** | **Update** | Use this **every time** you change XML views, security rules, or manifest keys. It re-reads the files. |
+| **`-c <file>`** | **Config** | Loads settings (ports, DB passwords) from a `.conf` file instead of passing them as flags. |
+
+!!! tip "Fast Development Workflow"
+    To update your module and restart the server in one command:
+    ```bash
+    ./odoo-bin --addons-path=addons -d my_db -u my_module --stop-after-init
+    ```
+    (Remove `--stop-after-init` to keep the server running).
+
 ---
 
 <div class="feedback-container">

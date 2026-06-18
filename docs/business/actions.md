@@ -4,6 +4,41 @@ Actions define what happens when a user clicks a button or a menu item. They are
 
 ---
 
+## 0. The Beginner's Flow: Linking it All Together
+
+Before diving into complex actions, every beginner must understand the **Trinity of Navigation**. To see your module in Odoo, you must link three things in this exact order:
+
+```mermaid
+graph LR
+    Menu[1. Menu Item] -- Trigger --> Action[2. Window Action]
+    Action -- Render --> View[3. View (List/Form)]
+```
+
+### The Recipe for Visibility
+1.  **Define the View**: (e.g., `<list>` or `<form>`) - *See [Views](../foundation/views.md)*.
+2.  **Define the Window Action**: Tells Odoo *which* model and *which* views to open.
+3.  **Define the Menu Item**: The clickable link in the top bar.
+
+!!! example "Complete Linking Example"
+    ```xml
+    <!-- 1. The Action -->
+    <record id="action_auction_listing" model="ir.actions.act_window">
+        <field name="name">Auctions</field>
+        <field name="res_model">auction.listing</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- 2. The Menus -->
+    <menuitem id="menu_auction_root" name="Auction App" sequence="10"/>
+    <menuitem id="menu_auction_listing" 
+              name="All Listings" 
+              parent="menu_auction_root" 
+              action="action_auction_listing" 
+              sequence="10"/>
+    ```
+
+---
+
 ## 1. Window Actions
 
 Window Actions (`ir.actions.act_window`) tell Odoo to open a specific view (Form, List, etc.) for a specific model.
@@ -56,7 +91,7 @@ One of the most revolutionary features of Odoo 19 is the ability to use **Natura
 
 ---
 
-4. **Batch Actions**
+## 4. Batch Actions
 If you set `binding_model_id`, your action will appear in the "Action" menu at the top of a list view, allowing users to run it on multiple selected records.
 
 ```xml
@@ -73,7 +108,7 @@ If you set `binding_model_id`, your action will appear in the "Action" menu at t
 
 ---
 
-## Senior: AI Automation & Prompt Engineering
+## 5. Senior: AI Automation & Prompt Engineering
 
 ### 1. The `AI_CONTEXT` Object
 When using Odoo 19's AI server actions, the framework provides an `AI_CONTEXT` object. This contains metadata about the user, the record history, and the surrounding business environment to help the LLM make better decisions.
