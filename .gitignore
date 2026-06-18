@@ -17,3 +17,10 @@ Thumbs.db
 
 # Local context (if not needed in repo)
 website_context/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
