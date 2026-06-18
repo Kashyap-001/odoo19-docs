@@ -164,7 +164,8 @@ nav:
           - "UI Tours & JS Tests": testing/tours.md
           - "Translations (i18n)": advanced/translations.md
           - "UI Display & name_get": advanced/ui_display.md
-      - "⚙️ Phase 9: Senior Ops & Migration":
+      - "⚙️ Phase 9: Senior Ops & Architecture":
+          - "Architecture Patterns": advanced/architecture_patterns.md
           - "Deployment Config": deployment/config.md
           - "Docker Mastery": deployment/docker.md
           - "Horizontal Scaling": deployment/scaling.md
