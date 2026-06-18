@@ -653,9 +653,3 @@ pre {
   color: var(--odoo-teal) !important;
   fill: var(--odoo-teal) !important;
 }
-
-/* --- UI POLISH: HIDE HEADER REPO LINK --- */
-/* We keep repo_url in mkdocs.yml so 'Edit this page' works, but hide the header icon */
-.md-header__source {
-  display: none !important;
-}
