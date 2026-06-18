@@ -68,13 +68,17 @@
 }
 
 /* --- GLOBAL LAYOUT & RESPONSIVENESS --- */
-html {
-  scroll-padding-top: 250px; /* Aggressive offset to ensure titles are fully visible before TOC highlights */
-}
-
 html, body {
   width: 100%;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Precise Scroll-Spy & Anchor Offset for Dual Headers */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  scroll-margin-top: 200px !important;
 }
 
 body {
