@@ -1,0 +1,19 @@
+# MkDocs build directory
+site/
+
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local context (if not needed in repo)
+website_context/

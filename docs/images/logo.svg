@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Unique Geometric "Mastery" Icon -->
+  <!-- Background Shield/Foundation -->
+  <path d="M256 40L440 120V240C440 345 362 442 256 472C150 442 72 345 72 240V120L256 40Z" fill="#714B67"/>
+  
+  <!-- 3-Tier Architecture Layers (Teal) -->
+  <!-- Layer 1: Database (Bottom) -->
+  <rect x="156" y="340" width="200" height="30" rx="4" fill="#017E84"/>
+  <!-- Layer 2: Logic (Middle) -->
+  <rect x="136" y="280" width="240" height="30" rx="4" fill="#017E84"/>
+  <!-- Layer 3: UI (Top) -->
+  <rect x="116" y="220" width="280" height="30" rx="4" fill="#017E84"/>
+  
+  <!-- "Mastery" Peak -->
+  <path d="M256 100L310 180H202L256 100Z" fill="#FFFFFF"/>
+  
+  <!-- Accents -->
+  <circle cx="256" cy="40" r="10" fill="#017E84"/>
+</svg>

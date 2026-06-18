@@ -1,0 +1,159 @@
+site_name: Odoo 19 Masterclass
+site_description: The ultimate Zero-to-Senior guide for Odoo 19 development.
+site_author: Kashyap Patel
+site_url: https://odoo19-masterclass.pages.dev/
+copyright: "Copyright &copy; 2026 Kashyap Patel - Odoo 19 Masterclass"
+
+theme:
+  name: material
+  logo: images/logo.svg
+  favicon: images/logo.svg
+  language: en
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tooltips
+    - content.tabs.link
+    - toc.follow
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      type: date
+      enable_creation_date: true
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/progress.js
+  - javascripts/quiz.js
+  - javascripts/feedback.js
+  - javascripts/dashboard.js
+  - javascripts/shortcuts.js
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+
+nav:
+  - "🏠 Home": 
+      - "Welcome": index.md
+      - "📊 My Progress": dashboard.md
+      - "📜 Senior Cheat Sheets": advanced/cheat_sheets.md
+  - "📚 Part 1: Backend Developer":
+      - "🚀 Phase 1: Foundations":
+          - "Odoo 19 Architecture": foundation/architecture.md
+          - "Setup Environment": foundation/setup.md
+          - "Addon Anatomy": foundation/structure.md
+          - "Defining Models": foundation/models.md
+          - "Advanced Fields": foundation/fields.md
+          - "XML Data Engine": foundation/data_files.md
+          - "Security & ACLs": business/security.md
+          - "Views Syntax (List, Form, Kanban)": foundation/views.md
+      - "🧩 Phase 2: Inheritance":
+          - "Inheritance Masterclass": business/inheritance.md
+          - "XPath & View Overrides": foundation/xpath.md
+          - "Record Rules (Row-level Security)": business/rules.md
+      - "🛠️ Phase 3: The ORM Engine":
+          - "Environment Mastery (Sudo, Context)": env/sudo.md
+          - "Context & Flags": env/context.md
+          - "ensure_one() Safety": env/ensure_one.md
+          - "CRUD Operations Overview": crud/index.md
+          - "create() Multi": crud/create.md
+          - "read() & browse()": crud/read.md
+          - "write() & unlink()": crud/write.md
+          - "Deleting Records (unlink)": crud/unlink.md
+          - "Search & Domains": search/search.md
+          - "search_fetch() [New v19]": crud/search_fetch.md
+      - "🧠 Phase 4: Business Intelligence":
+          - "Decorators (@api)": advanced/decorators.md
+          - "Wizards & TransientModels": wizards/wizards.md
+          - "Scheduled Actions (Crons)": business/crons.md
+          - "mapped() Method": search/mapped.md
+          - "filtered() Method": search/filtered.md
+          - "sorted() Method": search/sorted.md
+          - "Actions & AI Automation": business/actions.md
+          - "Constraints & Indexes": advanced/constraints_indexes.md
+          - "Cache Management": advanced/cache_management.md
+  - "🎨 Part 2: Frontend & Integration":
+      - "🌐 Phase 5: Modern Frontend (OWL)":
+          - "OWL 2.0 Basics": frontend/owl.md
+          - "Assets & Bundles": frontend/assets.md
+          - "Reactive State": advanced_owl/store.md
+          - "Patching Components": advanced_owl/patching.md
+          - "QWeb & Reports (v19)": frontend/reports.md
+      - "🏢 Phase 6: Multi-Company & Portal":
+          - "Multi-Company Logic": multi_company/logic.md
+          - "Multi-Website Support": multi_company/website.md
+      - "🔌 Phase 7: External Integration":
+          - "Controllers & Web": integration/controllers.md
+          - "External API (XML-RPC)": integration/api.md
+          - "SQL Performance": integration/performance.md
+  - "🚀 Part 3: Senior Architect":
+      - "🧪 Phase 8: Professional Quality":
+          - "Unit Testing": testing/unit_tests.md
+          - "UI Tours & JS Tests": testing/tours.md
+          - "Translations (i18n)": advanced/translations.md
+          - "UI Display & name_get": advanced/ui_display.md
+      - "⚙️ Phase 9: Senior Ops & Migration":
+          - "Deployment Config": deployment/config.md
+          - "Docker Mastery": deployment/docker.md
+          - "Horizontal Scaling": deployment/scaling.md
+          - "Migration Scripts": migration/scripts.md
+          - "Performance Profiling": migration/profiling.md
+          - "SQL & Performance": advanced/performance_profiling.md
+      - "🛠️ Phase 10: Career & Standards":
+          - "Senior Toolkit": advanced/senior_toolkit.md
+          - "The Debugging Vault": advanced/debugging_vault.md
+          - "Migration Cheat Sheet": migration/cheat_sheet.md
