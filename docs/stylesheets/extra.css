@@ -94,19 +94,28 @@ body {
   }
 }
 
-/* Mobile & Tablet Padding */
+/* Mobile & Tablet Fixes */
 @media screen and (max-width: 60em) {
   .md-content {
-    padding: 1.5rem !important;
+    padding: 1rem !important;
   }
+  
+  /* Resetting the sidebar override that was causing the overlay issue */
   .md-sidebar {
-    width: 100%;
+    width: initial;
+    display: initial;
+  }
+
+  /* Ensuring the drawer is clean and doesn't flicker */
+  .md-nav--primary {
+    background-color: var(--theme-sidebar-bg) !important;
   }
 }
 
 /* --- Top Navigation --- */
 .md-header {
   background-color: var(--odoo-purple) !important;
+  z-index: 10; /* Ensure header stays above content */
 }
 
 .md-header__button.md-logo img {
@@ -118,7 +127,7 @@ body {
   background-color: var(--odoo-purple-dark) !important;
 }
 
-/* --- Sidebar --- */
+/* --- Sidebar & Navigation Drawer --- */
 .md-nav__link {
   color: var(--theme-text) !important;
   transition: color 0.25s, background-color 0.25s;
@@ -136,6 +145,12 @@ body {
 
 [data-md-color-scheme="slate"] .md-nav__link--active {
   color: #ff9ff3 !important;
+}
+
+/* Styling for the mobile drawer specifically */
+.md-nav--primary .md-nav__title {
+  background-color: var(--odoo-purple) !important;
+  color: white !important;
 }
 
 /* --- Content Typography --- */
