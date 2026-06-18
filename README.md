@@ -14,6 +14,8 @@ This project was designed to bridge the gap between basic Odoo tutorials and the
 ### Key Highlights:
 - **28+ Hours of Content**: A structured, phase-by-phase roadmap.
 - **Master Project (`pways_auction`)**: Build a real-world Auction Marketplace throughout the course.
+- **v18 to v19 Migration Delta**: A deep dive into breaking changes and new Odoo 19 APIs.
+- **Senior Architect's Toolkit**: Professional VS Code setup, CLI aliases, and debugging workflows.
 - **Deep Framework Internals**: Coverage of `_inherits`, `SQL()`, `bus_service`, OWL Registries, and Prefetching mechanisms.
 - **Professional DevOps**: Docker, scaling, and migration scripts.
 - **Interactive Progress**: A custom built-in dashboard to track your learning journey.

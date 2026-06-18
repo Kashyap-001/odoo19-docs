@@ -106,6 +106,8 @@ nav:
       - "About Us": about.md
       - "📊 My Progress": dashboard.md
       - "📜 Senior Cheat Sheets": advanced/cheat_sheets.md
+      - "🚀 v18 → v19 Migration Delta": migration/cheat_sheet.md
+      - "🛠️ Senior Architect's Toolkit": advanced/senior_toolkit.md
   - "📚 Part 1: Backend Developer":
       - "🚀 Phase 1: Foundations":
           - "Odoo 19 Architecture": foundation/architecture.md
