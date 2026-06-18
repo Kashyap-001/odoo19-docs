@@ -20,6 +20,39 @@ This project was designed to bridge the gap between basic Odoo tutorials and the
 
 ---
 
+## ✨ Features & User Guide
+
+### 1. Interactive Progress Dashboard
+Track your journey from Phase 1 to Phase 10.
+- **How to Use**: Visit the [My Progress](https://odoo19-docs.kashyap6334.workers.dev/dashboard/) page. Lessons are automatically marked as "Complete" when you scroll to the bottom of the page or pass the chapter quizzes.
+- **Goal**: Reach 100% mastery to unlock the **Senior Odoo Architect Certificate**.
+
+### 2. Odoo Enterprise Theme (Dual Mode)
+Switch between professionally tuned light and dark modes.
+- **Odoo Enterprise (Light)**: High-contrast, clean UI for daylight reading.
+- **Midnight Enterprise (Dark)**: Optimized for late-night coding sessions.
+- **How to Use**: Click the ☀️/🌙 icon in the top header.
+
+### 3. Senior Insights & Checkpoints
+Throughout the guide, look for specialized containers:
+- **Senior Insights**: Architectural tips that go beyond the basic API.
+- **Senior Checkpoints**: Summary tables and verification questions at the end of every chapter.
+
+### 4. Interactive Quizzes & Code Challenges
+Verify your knowledge without leaving the browser.
+- **Quizzes**: Multiple-choice and text-input questions with instant feedback.
+- **Code Challenges**: Interactive "fill-in-the-blank" code blocks to practice Odoo syntax.
+
+### 5. Mermaid Architecture Diagrams
+Complex flows are visualized using responsive diagrams.
+- **Flows**: ORM lifecycles, view inheritance chains, and security layers are all explained visually.
+
+### 6. Search & Navigation
+- **Global Search**: Press `F` or `/` to search the entire masterclass instantly.
+- **Trinity of Navigation**: Explicit links between Models, Views, and Actions are provided in every backend lesson.
+
+---
+
 ## 📖 How to Use This Repo
 This repository is the source code for the documentation site. 
 
