@@ -129,7 +129,8 @@ nav:
           - "XPath & View Overrides": foundation/xpath.md
           - "Record Rules (Row-level Security)": business/rules.md
       - "🛠️ Phase 3: The ORM Engine":
-          - "Environment & Modifiers": env/modifiers.md
+          - "Environment Deep Dive": env/env_deep_dive.md
+          - "Security Modifiers (sudo)": env/security_modifiers.md
           - "Context & Flags": env/context.md
           - "ensure_one() Safety": env/ensure_one.md
           - "CRUD Operations Overview": crud/index.md
@@ -139,6 +140,9 @@ nav:
           - "Lookups & name_search": crud/lookups_names.md
           - "write() & copy()": crud/write.md
           - "Relational Commands (Command)": crud/relational_commands.md
+          - "Batch Operations": crud/batch_operations.md
+          - "Prefetching Mechanism": advanced/prefetching.md
+          - "Performance Optimization": search/performance_optimization.md
           - "Deleting Records (unlink)": crud/unlink.md
           - "Search & Domains": search/search.md
           - "search_fetch() [New v19]": crud/search_fetch.md
@@ -157,12 +161,12 @@ nav:
           - "Cache Management": advanced/cache_management.md
   - "🎨 Part 2: Frontend & Integration":
       - "🌐 Phase 5: Modern Frontend (OWL)":
-          - "OWL 2.0 Basics": frontend/owl.md
-          - "OWL Services Catalogue": frontend/owl_services.md
+          - "OWL Basics": frontend/owl.md
+          - "Services & Registry": frontend/owl_services_registry.md
+          - "Hooks & Patching": frontend/owl_hooks_patching.md
+          - "Real-time (Bus)": frontend/bus_websocket.md
           - "JS to Python (orm.call)": frontend/orm_call.md
           - "Assets & Bundles": frontend/assets.md
-          - "Reactive State": advanced_owl/store.md
-          - "Patching Components": advanced_owl/patching.md
           - "QWeb Template Reference": frontend/qweb_reference.md
           - "QWeb & Reports (v19)": frontend/reports.md
       - "🏢 Phase 6: Multi-Company & Portal":

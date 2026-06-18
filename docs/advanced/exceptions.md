@@ -11,7 +11,46 @@ In Odoo, exceptions are not just for debugging—they are a primary way to commu
 
 ---
 
-## 1. The Core Exceptions
+## 1. Odoo Exception Taxonomy
+
+| Exception | UI Feedback | Typical Usage |
+| :--- | :--- | :--- |
+| `UserError` | Yellow Warning Box | Business logic violations (e.g., "Auction already confirmed"). |
+| `ValidationError` | Red Error Box | Data integrity issues (e.g., "Price must be positive"). |
+| `AccessError` | Red Access Denied Modal | Security/ACL violations. |
+| `MissingError` | Red Error Modal | Attempting to access a deleted record. |
+| `RedirectWarning` | Redirect Button in UI | Guiding users to fix setup errors (e.g., missing data). |
+
+---
+
+## 2. When to Use Which Exception
+
+### `UserError` (Business Logic Violations)
+Use for errors that relate to the **state** of the system. Odoo shows a friendly **Yellow Warning Box**.
+```python
+from odoo.exceptions import UserError
+
+def action_confirm(self):
+    if self.state != 'draft':
+        raise UserError("An auction must be in 'draft' to be confirmed.")
+```
+
+### `ValidationError` (Data Integrity Constraints)
+Use inside `@api.constrains` or when a field value itself is invalid. Odoo shows a strict **Red Error Box**.
+```python
+from odoo.exceptions import ValidationError
+
+@api.constrains('price')
+def _check_price(self):
+    if self.price <= 0:
+        raise ValidationError("The starting price must be strictly positive.")
+```
+
+---
+
+## 3. 🏁 Senior Checkpoint
+*   **Architect Insight:** `RedirectWarning` is the hallmark of a great user experience. If a user can resolve the issue by navigating to another screen, do not raise a `UserError`—guide them there!
+*   **Pro Tip:** Never use generic Python `Exception` types. They do not trigger the correct Odoo UI feedback and will likely crash the request, leaving the user with a useless stack trace.
 
 Odoo provides a specialized set of exceptions in `odoo.exceptions`.
 
