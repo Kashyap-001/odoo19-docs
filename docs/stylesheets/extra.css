@@ -454,9 +454,20 @@ body {
   transition: filter 0.3s ease;
 }
 
-/* Fix for Mermaid diagrams in Dark Mode */
+/* Smart Fix for Mermaid diagrams in Dark Mode (Double Inversion Trick) */
+/* 1. Invert the entire SVG so lines and text become white */
 [data-md-color-scheme="slate"] .mermaid svg {
-  filter: invert(0.88) hue-rotate(180deg) brightness(1.1);
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* 2. Re-invert the nodes to restore their original hue (e.g., green stays green) */
+/* This ensures white text is readable against the original box color */
+[data-md-color-scheme="slate"] .mermaid svg .node rect,
+[data-md-color-scheme="slate"] .mermaid svg .node circle,
+[data-md-color-scheme="slate"] .mermaid svg .node polygon,
+[data-md-color-scheme="slate"] .mermaid svg .node path,
+[data-md-color-scheme="slate"] .mermaid svg .cluster rect {
+  filter: invert(1) hue-rotate(180deg) brightness(0.7);
 }
 
 /* --- FIX FOR HOME PAGE TIME SECTION --- */
