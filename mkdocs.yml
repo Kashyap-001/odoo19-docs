@@ -67,6 +67,7 @@ extra_css:
   - stylesheets/extra.css
 
 extra_javascript:
+  - javascripts/google_analytics.js
   - javascripts/progress.js
   - javascripts/quiz.js
   - javascripts/feedback.js

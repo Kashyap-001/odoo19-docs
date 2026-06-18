@@ -10,6 +10,13 @@ function sendFeedback(helpful) {
         </div>
     `;
     
-    // In a real app, you would send this to an API
+    // Send event to Google Analytics
+    if (typeof gtag === 'function') {
+        gtag('event', 'helpful_vote', {
+            'page_path': window.location.pathname,
+            'is_helpful': helpful ? 'yes' : 'no'
+        });
+    }
+
     console.log("Feedback sent:", helpful, window.location.pathname);
 }
