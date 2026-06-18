@@ -105,6 +105,7 @@ markdown_extensions:
 nav:
   - "🏠 Home": 
       - "Welcome": index.md
+      - "Course Roadmap": learning_path.md
       - "About Us": about.md
       - "Privacy & Terms": about/policy.md
       - "📊 My Progress": dashboard.md
