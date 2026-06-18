@@ -1,3 +1,8 @@
+---
+title: Odoo 18 to Odoo 19 Migration Guide & Breaking Changes
+description: A technical deep dive into the Odoo 19 migration delta. Learn about the new SQL() wrapper, search_fetch(), and OWL 2.0 changes.
+---
+
 # 🚀 Odoo 18 to Odoo 19: The Migration Delta
 
 This guide tracks the critical technical changes between Odoo 18 and 19. If you are migrating a module or preparing for v19 development, these are the "Senior" breaking changes you must know.

@@ -1,3 +1,8 @@
+---
+title: Senior Odoo Architect's Toolkit - Extensions & Aliases
+description: Boost your Odoo 19 development speed with the best VS Code extensions, CLI power aliases, and professional debugging tools.
+---
+
 # 🛠️ The Senior Architect's Toolkit
 
 Being a Senior Odoo Architect isn't just about code; it's about the tools you use to build faster and more reliably. Here is the exact setup used for professional Odoo 19 development.

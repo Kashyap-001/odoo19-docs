@@ -1,4 +1,10 @@
-# Odoo 19 Senior Masterclass
+---
+title: Odoo 19 Masterclass - Zero to Senior Guide
+description: The most comprehensive guide to Odoo 19 development. Master the ORM, OWL 2.0, and advanced architecture patterns.
+---
+
+# Odoo 19 Senior Masterclass 🏆
+
 
 Welcome to the **most comprehensive Odoo 19 development guide** on the web. This curriculum is designed to take you from a complete beginner (newbie) to a Senior Odoo Architect.
 

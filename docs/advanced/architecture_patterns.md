@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Architecture Patterns - Domain-Driven Design & Best Practices
+description: Master advanced Odoo 19 architectural patterns. Learn about Service Layers, AbstractModels, and Domain-Driven Design in Odoo.
+---
+
 # Odoo 19 Architecture Patterns: Where Code Lives
 
 A junior developer knows *how* to write a method. A Senior Architect knows *where* it belongs. Placing business logic in the wrong layer leads to "Spaghetti Code," circular dependencies, and unmaintainable modules.

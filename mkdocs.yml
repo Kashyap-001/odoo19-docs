@@ -1,5 +1,5 @@
 site_name: Odoo 19 Masterclass
-site_description: The ultimate Zero-to-Senior guide for Odoo 19 development.
+site_description: The definitive Zero-to-Senior guide for Odoo 19 development. Learn ORM internals, OWL 2.0, SQL optimization, and professional Odoo architecture.
 site_author: Kashyap Patel
 site_url: https://odoo19-docs.kashyap6334.workers.dev/
 copyright: >
@@ -33,6 +33,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
+    - navigation.instant
     - navigation.footer
     - navigation.top
     - navigation.tracking
@@ -57,6 +58,7 @@ plugins:
       enable_creation_date: true
 
 extra:
+  keywords: odoo 19, odoo development, odoo tutorial, odoo orm, owl 2.0, odoo architecture, senior odoo developer, odoo migration
   social:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/kashyap-patel6334/
