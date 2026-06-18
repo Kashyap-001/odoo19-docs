@@ -617,10 +617,16 @@ pre {
 
 /* Let the copyright footer show normally again */
 .md-footer-meta {
-  border-top: 1px solid var(--theme-border);
-  background-color: var(--theme-content-bg);
-  padding: 1rem 0;
-  color: var(--theme-text) !important;
+  border-top: 1px solid var(--theme-border) !important;
+  background-color: var(--theme-content-bg) !important;
+  padding: 1rem 0 !important;
+}
+
+.md-footer-meta,
+.md-footer-meta .md-copyright,
+.md-footer-meta .md-social__link {
+  color: var(--theme-text-light) !important;
+  fill: var(--theme-text-light) !important; /* For SVGs/Icons */
 }
 
 .md-footer-meta a {
