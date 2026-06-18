@@ -553,3 +553,136 @@ pre {
   white-space: pre !important;
   word-wrap: normal !important;
 }
+
+/* --- W3SCHOOLS-STYLE PAGINATION BUTTONS --- */
+.md-footer {
+  background-color: transparent !important;
+  color: var(--theme-text);
+  border-top: 1px solid var(--theme-border);
+}
+
+.md-footer-nav {
+  background-color: transparent !important;
+  padding: 2rem 0;
+}
+
+.md-footer-nav__link {
+  background-color: var(--odoo-teal) !important;
+  color: white !important;
+  padding: 1rem 2rem !important;
+  border-radius: 8px !important;
+  transition: opacity 0.2s, transform 0.2s;
+  max-width: 45%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex !important;
+  align-items: center;
+}
+
+.md-footer-nav__link:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  color: white !important;
+}
+
+.md-footer-nav__link--prev {
+  float: left;
+}
+
+.md-footer-nav__link--next {
+  float: right;
+  text-align: right;
+  flex-direction: row-reverse;
+}
+
+.md-footer-nav__direction {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.md-footer-nav__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Mobile stacking for buttons */
+@media screen and (max-width: 45em) {
+  .md-footer-nav__link {
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 1rem;
+    float: none;
+  }
+  
+  .md-footer-nav {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Hide the default copyright footer bar if it gets in the way of the style */
+.md-footer-meta {
+  background-color: var(--theme-bg) !important;
+  color: var(--theme-text-light) !important;
+}
+/* --- W3SCHOOLS-STYLE PAGINATION BUTTONS (v9+ Fix) --- */
+.md-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  gap: 1rem;
+}
+
+.md-footer__link {
+  background-color: var(--odoo-teal) !important;
+  color: white !important;
+  padding: 1.2rem 2rem !important;
+  border-radius: 8px !important;
+  transition: all 0.2s;
+  flex: 1;
+  max-width: 48%;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.md-footer__link:hover {
+  filter: brightness(1.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.md-footer__link--prev {
+  align-items: flex-start;
+}
+
+.md-footer__link--next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.md-footer__direction {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+.md-footer__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 45em) {
+  .md-footer-nav {
+    flex-direction: column;
+  }
+  .md-footer__link {
+    max-width: 100%;
+  }
+}
