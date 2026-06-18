@@ -41,6 +41,21 @@ class Stock(models.Model):
 
 ---
 
+## SQL Constraints vs. Python Constraints (@api.constrains)
+
+Odoo offers two ways to enforce data rules. Choosing the right one is a key "Senior" decision.
+
+| Feature | SQL Constraint (`models.Constraint`) | Python Constraint (`@api.constrains`) |
+| :--- | :--- | :--- |
+| **Enforcement** | **PostgreSQL Level** (Absolute) | **Odoo ORM Level** (Software) |
+| **Performance** | Extremely Fast | Slower (requires Python execution) |
+| **Scope** | Simple Logic (Unique, Check, etc.) | Complex Logic (relational lookups, multi-model) |
+| **Trigger** | SQL Insert/Update | Odoo `create()` / `write()` calls |
+
+**Architect Tip**: Use **SQL Constraints** whenever possible for simple rules (like uniqueness or positive numbers). Use **Python Constraints** only when your rule requires looking up data in other models or complex business logic that SQL cannot easily express.
+
+---
+
 ## Database Indexes (models.Index)
 Indexes are used to speed up database searches. While you can still use `index=True` on a field, Odoo 19 provides `models.Index` for more advanced scenarios like composite indexes.
 

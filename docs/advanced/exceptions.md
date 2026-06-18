@@ -1,4 +1,11 @@
+---
+title: Odoo 19 Error Handling: UserError vs ValidationError
+description: Master Odoo 19 exception handling. Learn when to use UserError, ValidationError, AccessError, and RedirectWarning for best UX.
+---
+
 # Exceptions & Error Handling
+
+... (Check [Security & ACLs](../business/security.md) for how permissions trigger errors.)
 
 In Odoo, exceptions are not just for debugging—they are a primary way to communicate with the user and enforce business rules. Using the wrong exception type can lead to confusing UI messages.
 
@@ -18,12 +25,12 @@ Odoo provides a specialized set of exceptions in `odoo.exceptions`.
 
 ---
 
-## 2. UserError vs. ValidationError
+## 2. UserError vs. ValidationError vs. AccessError
 
-This is the most common point of confusion for beginners.
+This is the most common point of confusion for beginners. Selecting the correct exception determines how Odoo stops the transaction and what message the user sees.
 
-### `UserError` (Business Logic)
-Use this for errors that are **not** related to field constraints, but rather to the **state** of the system.
+### `UserError` (Business Logic Violations)
+Use this for errors that are **not** related to field constraints, but rather to the **state** of the system. Odoo shows a friendly **Yellow Warning Box**.
 ```python
 from odoo.exceptions import UserError
 
@@ -32,8 +39,8 @@ def action_confirm(self):
         raise UserError("An auction must have at least one bid before it can be confirmed.")
 ```
 
-### `ValidationError` (Data Constraints)
-Use this inside `@api.constrains` or when a field value itself is invalid.
+### `ValidationError` (Data Integrity Constraints)
+Use this inside `@api.constrains` or when a field value itself is invalid. Odoo shows a strict **Red Error Box**.
 ```python
 from odoo.exceptions import ValidationError
 
@@ -41,6 +48,16 @@ from odoo.exceptions import ValidationError
 def _check_price(self):
     if self.start_price <= 0:
         raise ValidationError("The starting price must be strictly positive.")
+```
+
+### `AccessError` (Security & Permissions)
+Raised automatically by Odoo's ACL system, but can be manually triggered when a security rule is violated. Shows a **Red Access Denied Modal**.
+```python
+from odoo.exceptions import AccessError
+
+def action_delete_auction(self):
+    if self.seller_id != self.env.user:
+        raise AccessError("You can only delete your own auctions.")
 ```
 
 ---

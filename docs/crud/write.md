@@ -122,11 +122,27 @@ listing.write({
 
 ---
 
-## Senior: Master of Duplication
+## 4. Odoo Duplication: copy() vs. copy_data()
 
 When a user duplicates a record, Odoo's goal is to create a fresh copy while keeping the core data. As an architect, you must control this flow to prevent data corruption.
 
-### 1. Preventing Duplication (`copy=False`)
+### 1. The copy() Method (The Trigger)
+`copy()` is the high-level method called when you click the "Duplicate" button. It handles the creation of the new record.
+
+### 2. The copy_data() Method (The Values)
+This is the **preferred** way to modify values during duplication. It generates the dictionary of values that will be passed to `create()`.
+
+```python
+def copy_data(self, default=None):
+    vals_list = super().copy_data(default=default)
+    for vals in vals_list:
+        # Goldmine Pattern: Append " (copy)" to the name
+        if 'name' in vals:
+            vals['name'] = _("%s (copy)", vals['name'])
+    return vals_list
+```
+
+### 3. Preventing Duplication (copy=False)
 By default, all fields are copied. You can prevent this at the field level:
 ```python
 # The internal code should NEVER be duplicated

@@ -114,6 +114,7 @@ nav:
   - "📚 Part 1: Backend Developer":
       - "🚀 Phase 1: Foundations":
           - "Odoo 19 Architecture": foundation/architecture.md
+          - "AbstractModel Pattern": advanced/abstract_models.md
           - "Setup Environment": foundation/setup.md
           - "Addon Anatomy": foundation/structure.md
           - "Defining Models": foundation/models.md
@@ -121,7 +122,7 @@ nav:
           - "XML Data Engine": foundation/data_files.md
           - "Security & ACLs": business/security.md
           - "Views Syntax (List, Form, Kanban)": foundation/views.md
-          - "Search Views & Panels": foundation/search_view.md
+          - "Search View & Search Panel": foundation/search_view.md
       - "🧩 Phase 2: Inheritance":
           - "Inheritance Masterclass": business/inheritance.md
           - "Core Mixins (Chatter & Activities)": business/mixins.md
@@ -132,9 +133,12 @@ nav:
           - "Context & Flags": env/context.md
           - "ensure_one() Safety": env/ensure_one.md
           - "CRUD Operations Overview": crud/index.md
+          - "State Initialization (default_get)": crud/state_initialization.md
           - "create() Multi": crud/create.md
           - "read() & browse()": crud/read.md
-          - "write() & unlink()": crud/write.md
+          - "Lookups & name_search": crud/lookups_names.md
+          - "write() & copy()": crud/write.md
+          - "Relational Commands (Command)": crud/relational_commands.md
           - "Deleting Records (unlink)": crud/unlink.md
           - "Search & Domains": search/search.md
           - "search_fetch() [New v19]": crud/search_fetch.md

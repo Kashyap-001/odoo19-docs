@@ -81,7 +81,15 @@ Imagine you need to create a Sales Order for a customer with three different pro
 
 ---
 
-## 4. Best Practices for create()
+## 4. How to Initialize Data (default_get)
+Before `create()` is even called, Odoo uses the `default_get()` method to prepare the initial values shown in the UI. 
+
+- **Goldmine Insight**: If you want to pre-fill a form based on the user's last action, you override `default_get`.
+- **Learn More**: See the full guide on [State Initialization & default_get](state_initialization.md).
+
+---
+
+## 5. Best Practices for create()
 
 1.  **Prepare the List**: Always start by initializing an empty `vals_list = []` and appending your dictionaries.
 2.  **Use ID references**: For Many2one fields, use the integer ID (e.g., `'partner_id': 5`) rather than a recordset.

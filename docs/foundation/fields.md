@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Fields Master Reference
+description: Complete Odoo 19 fields reference: Basic, Relational, and Special fields. Learn compute, related, and advanced field logic.
+---
+
 # Odoo 19 Fields: Master Reference
 
 In Odoo, fields are used to define the data structure of a model. They determine how data is stored in the database and how it is presented in the user interface.
@@ -173,6 +178,18 @@ def _compute_total_price(self):
     for record in self:
         record.total_price = record.price + record.tax
 ```
+
+### onchange vs. compute (The Senior Choice)
+Developers often ask: *"Should I use @api.onchange or @api.depends (compute)?"*
+
+| Feature | `@api.onchange` | `@api.depends` (Compute) |
+| :--- | :--- | :--- |
+| **Persistence** | Only UI (not stored) | Can be stored in DB (`store=True`) |
+| **Trigger** | When user modifies a field in UI | When any dependent field changes (UI, API, or CSV) |
+| **Reliability** | Low (doesn't trigger for backend calls) | **High** (triggers for all data changes) |
+| **Use Case** | UI Warnings / Domain updates | **Business Logic / Calculations** |
+
+**Senior Rule**: Always prefer **Compute Fields** (`@api.depends`) over `onchange` for any logic that affects data integrity. `onchange` should only be used for UI-only enhancements.
 
 ### Related
 Used to mirror a field from a linked record. It "reaches through" a Many2one relation.

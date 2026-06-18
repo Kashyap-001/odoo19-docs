@@ -1,4 +1,9 @@
-# Search Views: Finding Data Efficiently
+---
+title: Odoo 19 Search View & Search Panel Guide
+description: Master Odoo 19 search views, filters, grouping, and the modern sidebar searchpanel for elite data navigation.
+---
+
+# Odoo 19 Search View & Search Panel Guide
 
 Every module in Odoo requires a **Search View**. While List and Kanban views show your data, the Search View determines how users filter, group, and navigate that data.
 
