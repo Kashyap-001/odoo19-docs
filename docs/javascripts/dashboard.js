@@ -6,6 +6,18 @@ function updateDashboardProgress() {
     const tables = document.querySelectorAll('.md-typeset table');
     if (tables.length === 0) return;
 
+    const getSlug = (path) => {
+        if (!path) return '';
+        // Handle relative paths like '../foundation/models.md'
+        return path.split(/[?#]/)[0]
+            .replace(/^\.\.\//, '')
+            .replace(/^\/|\/$/g, '')
+            .replace(/\.html$/, '')
+            .replace(/\.md$/, '')
+            .replace(/\/index$/, '')
+            .replace(/^index$/, '');
+    };
+
     let completedCount = 0;
     let totalLessons = 0;
 
@@ -18,16 +30,9 @@ function updateDashboardProgress() {
             if (link && statusCell) {
                 totalLessons++;
                 const href = link.getAttribute('href');
-                const slug = href.replace('../', '').replace('.md', '').replace('index', '');
-                let isComplete = false;
+                const slug = getSlug(href);
                 
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('completed_') && key.includes(slug)) {
-                        isComplete = true;
-                        break;
-                    }
-                }
+                const isComplete = localStorage.getItem('completed_' + slug) === 'true';
                 
                 if (isComplete) {
                     statusCell.innerHTML = '✅';

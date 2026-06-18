@@ -56,17 +56,36 @@ function checkPageCompletion() {
     const correctQuizzes = document.querySelectorAll('.quiz-result.success').length;
 
     if (totalQuizzes > 0 && totalQuizzes === correctQuizzes) {
-        const pagePath = window.location.pathname;
-        localStorage.setItem('completed_' + pagePath, 'true');
-        markSidebarAsComplete(pagePath);
+        const getSlug = (path) => {
+            if (!path) return '';
+            return path.split(/[?#]/)[0]
+                .replace(/^\/|\/$/g, '')
+                .replace(/\.html$/, '')
+                .replace(/\.md$/, '')
+                .replace(/\/index$/, '')
+                .replace(/^index$/, '');
+        };
+        const slug = getSlug(window.location.pathname);
+        localStorage.setItem('completed_' + slug, 'true');
+        markSidebarAsComplete(window.location.pathname);
     }
 }
 
 function markSidebarAsComplete(path) {
+    const getSlug = (p) => {
+        if (!p) return '';
+        return p.split(/[?#]/)[0]
+            .replace(/^\/|\/$/g, '')
+            .replace(/\.html$/, '')
+            .replace(/\.md$/, '')
+            .replace(/\/index$/, '')
+            .replace(/^index$/, '');
+    };
+    const currentSlug = getSlug(path);
     const links = document.querySelectorAll('.md-nav__link');
     links.forEach(link => {
         const href = link.getAttribute('href');
-        if (href && (href.includes(path) || path.includes(href))) {
+        if (href && getSlug(href) === currentSlug) {
             if (!link.querySelector('.completion-check')) {
                 const check = document.createElement('span');
                 check.className = 'completion-check';
@@ -79,10 +98,19 @@ function markSidebarAsComplete(path) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const getSlug = (p) => {
+        if (!p) return '';
+        return p.split(/[?#]/)[0]
+            .replace(/^\/|\/$/g, '')
+            .replace(/\.html$/, '')
+            .replace(/\.md$/, '')
+            .replace(/\/index$/, '')
+            .replace(/^index$/, '');
+    };
     const links = document.querySelectorAll('.md-nav__link');
     links.forEach(link => {
         const href = link.getAttribute('href');
-        if (href && localStorage.getItem('completed_' + href)) {
+        if (href && localStorage.getItem('completed_' + getSlug(href))) {
             if (!link.querySelector('.completion-check')) {
                 const check = document.createElement('span');
                 check.className = 'completion-check';
@@ -92,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
+...
     document.querySelectorAll('.quiz-input, .quiz-input-inline').forEach(input => {
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
