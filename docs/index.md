@@ -25,12 +25,12 @@ To make learning practical, this course uses a **Capstone Project**. Throughout 
 ---
 
 ## ⏱️ Course Duration & Time Investment
-This Masterclass is designed to take approximately **17 Hours** to complete. Here is the recommended time allocation to ensure you master the concepts without burning out:
+This Masterclass is designed to take approximately **28 Hours** to complete. Here is the recommended time allocation to ensure you master the concepts without burning out:
 
 <div class="card-grid">
-  <div class="duration-card"><strong>Part 1: Backend Developer</strong><br>Phase 1: Foundations (~2 hrs)<br>Phase 2: Inheritance (~1 hr)<br>Phase 3: ORM Engine (~2.5 hrs)<br>Phase 4: Business Logic (~2 hrs)</div>
-  <div class="duration-card"><strong>Part 2: Frontend & Integration</strong><br>Phase 5: OWL 2.0 (~3 hrs)<br>Phase 6: Multi-Company (~1 hr)<br>Phase 7: Web Controllers (~1 hr)</div>
-  <div class="duration-card"><strong>Part 3: Senior Architect</strong><br>Phase 8: Pro Quality (~1.5 hrs)<br>Phase 9: DevOps & Migrations (~2 hrs)<br>Phase 10: Standards (~1 hr)</div>
+  <div class="duration-card"><strong>Part 1: Backend Developer</strong><br>Phase 1: Foundations (~3 hrs)<br>Phase 2: Inheritance (~2 hr)<br>Phase 3: ORM Engine (~4 hrs)<br>Phase 4: Business Logic (~3 hrs)</div>
+  <div class="duration-card"><strong>Part 2: Frontend & Integration</strong><br>Phase 5: OWL 2.0 (~4 hrs)<br>Phase 6: Multi-Company (~1.5 hr)<br>Phase 7: Web Controllers (~1.5 hr)</div>
+  <div class="duration-card"><strong>Part 3: Senior Architect</strong><br>Phase 8: Pro Quality (~2.5 hrs)<br>Phase 9: DevOps & Architecture (~4 hrs)<br>Phase 10: Standards (~2.5 hrs)</div>
 </div>
 
 ---

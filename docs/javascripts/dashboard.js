@@ -3,38 +3,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateDashboardProgress() {
-    const table = document.querySelector('.md-typeset table');
-    if (!table) return;
+    const tables = document.querySelectorAll('.md-typeset table');
+    if (tables.length === 0) return;
 
-    const rows = table.querySelectorAll('tr');
     let completedCount = 0;
     let totalLessons = 0;
 
-    rows.forEach(row => {
-        const link = row.querySelector('a');
-        const statusCell = row.querySelector('td:last-child');
-        
-        if (link && statusCell) {
-            totalLessons++;
-            const href = link.getAttribute('href');
-            const slug = href.replace('../', '').replace('.md', '').replace('index', '');
-            let isComplete = false;
+    tables.forEach(table => {
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+            const link = row.querySelector('a');
+            const statusCell = row.querySelector('td:last-child');
             
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('completed_') && key.includes(slug)) {
-                    isComplete = true;
-                    break;
+            if (link && statusCell) {
+                totalLessons++;
+                const href = link.getAttribute('href');
+                const slug = href.replace('../', '').replace('.md', '').replace('index', '');
+                let isComplete = false;
+                
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('completed_') && key.includes(slug)) {
+                        isComplete = true;
+                        break;
+                    }
+                }
+                
+                if (isComplete) {
+                    statusCell.innerHTML = '✅';
+                    completedCount++;
+                } else {
+                    statusCell.innerHTML = '[ ]';
                 }
             }
-            
-            if (isComplete) {
-                statusCell.innerHTML = '✅';
-                completedCount++;
-            } else {
-                statusCell.innerHTML = '[ ]';
-            }
-        }
+        });
     });
 
     const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
