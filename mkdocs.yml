@@ -2,7 +2,9 @@ site_name: Odoo 19 Masterclass
 site_description: The ultimate Zero-to-Senior guide for Odoo 19 development.
 site_author: Kashyap Patel
 site_url: https://odoo19-docs.kashyap6334.workers.dev/
-copyright: "Copyright &copy; 2026 Kashyap Patel - Odoo 19 Masterclass"
+copyright: >
+  Copyright &copy; 2026 Kashyap Patel - Odoo 19 Masterclass. 
+  <br><small>Odoo is a registered trademark of Odoo S.A. This site is an independent educational resource and is not affiliated with, sponsored by, or endorsed by Odoo S.A.</small>
 
 theme:
   name: material

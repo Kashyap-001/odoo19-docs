@@ -26,3 +26,13 @@ This project was initiated by **Kashyap Patel** to document the evolving pattern
 
 ---
 *Thank you for being part of this journey!*
+
+---
+
+## ⚖️ Legal Disclaimer & Trademarks
+
+This platform, the **Odoo 19 Senior Masterclass**, is an independent educational initiative. 
+
+1. **Trademarks**: "Odoo" is a registered trademark of **Odoo S.A.** This site is not affiliated with, sponsored by, or endorsed by Odoo S.A. All Odoo-related materials are used for educational purposes under Fair Use.
+2. **AdSense & Monetization**: This site may contain advertisements (such as Google AdSense) or premium content to support the ongoing development of these free educational resources.
+3. **No Warranty**: While we strive for 100% accuracy, the technical insights and code samples are provided "as-is" without warranty. Always test architectural changes in a staging environment.
