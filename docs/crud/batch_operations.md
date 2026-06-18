@@ -26,19 +26,20 @@ listings.write({'state': 'confirmed'})
 
 ---
 
-## 2. When You CANNOT Batch
-Sometimes business logic *requires* a loop (e.g., if each record needs different values). In these cases, you should prepare a list of dictionaries and perform a single batch operation at the end.
+## 🏗️ Master Project Challenge: Batch Operations
+1.  **Task**: Your system has a process that updates the `price` for 1000 auction listings at once.
+2.  **Goal**: Refactor the current loop-based update into a single `listings.write()` call. Measure the difference in log time (if possible).
 
-```python
-vals_list = []
-for listing in listings:
-    # Logic to compute dynamic values
-    new_val = compute_val(listing)
-    vals_list.append({'id': listing.id, 'vals': {'price': new_val}})
+---
 
-# Still one single operation
-listings.write(vals_list) 
-```
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Why is calling write() inside a loop considered a "Junior Trap"?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It triggers an ORM call for every single record, causing high database overhead (an 'ORM storm')." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
 
 ---
 
