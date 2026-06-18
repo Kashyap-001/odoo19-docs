@@ -623,16 +623,19 @@ pre {
 }
 
 .md-footer-meta,
-.md-footer-meta .md-copyright,
-.md-footer-meta .md-social__link {
-  color: var(--theme-text-light) !important;
-  fill: var(--theme-text-light) !important; /* For SVGs/Icons */
+.md-footer-meta * {
+  color: var(--theme-text) !important;
+  fill: var(--theme-text) !important;
 }
 
-.md-footer-meta a {
+.md-footer-meta a, 
+.md-footer-meta a * {
   color: var(--odoo-purple) !important;
+  fill: var(--odoo-purple) !important;
 }
 
-[data-md-color-scheme="slate"] .md-footer-meta a {
+[data-md-color-scheme="slate"] .md-footer-meta a,
+[data-md-color-scheme="slate"] .md-footer-meta a * {
   color: var(--odoo-teal) !important;
+  fill: var(--odoo-teal) !important;
 }
