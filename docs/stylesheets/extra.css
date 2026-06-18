@@ -73,12 +73,17 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Precise Scroll-Spy & Anchor Offset for Dual Headers */
-.md-typeset h1,
+/* Advanced Scroll-Spy Fix: Negative Margin Trick */
+/* Tricks JS scroll-spy into activating sections correctly during manual scrolling */
 .md-typeset h2,
 .md-typeset h3,
 .md-typeset h4 {
-  scroll-margin-top: 200px !important;
+  padding-top: 180px !important;
+  margin-top: -140px !important;
+}
+
+.md-typeset h1 {
+  scroll-margin-top: 180px !important;
 }
 
 body {
