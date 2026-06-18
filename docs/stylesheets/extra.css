@@ -571,14 +571,14 @@ pre {
 .md-footer-nav {
   display: flex;
   justify-content: space-between;
-  padding: 2rem 0;
+  padding: 1rem 0;
   gap: 1rem;
 }
 
 .md-footer__link {
   background-color: var(--odoo-teal) !important;
   color: white !important;
-  padding: 1.2rem 2rem !important;
+  padding: 0.8rem 1.2rem !important;
   border-radius: 8px !important;
   transition: all 0.2s;
   flex: 1;
@@ -615,7 +615,7 @@ pre {
 }
 
 .md-footer__title {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
@@ -630,6 +630,5 @@ pre {
 
 /* Hide the default copyright footer bar if it gets in the way of the style */
 .md-footer-meta {
-  background-color: var(--theme-bg) !important;
-  color: var(--theme-text-light) !important;
+  display: none !important;
 }
