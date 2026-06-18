@@ -69,9 +69,12 @@ def action_view_bids(self):
 
 ---
 
-## 2. Menuitems
+## 2. Menuitems (`ir.ui.menu`)
 
 Menuitems are the hierarchical navigation links. They connect the user's click to an Action.
+
+!!! info "Technical Note"
+    The `<menuitem>` XML tag is a convenient shortcut. Under the hood, Odoo creates and manages records in the **`ir.ui.menu`** model (the `ir_ui_menu` table in PostgreSQL).
 
 ```xml
 <!-- Top-level App Menu -->

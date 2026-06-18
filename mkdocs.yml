@@ -138,7 +138,7 @@ nav:
           - "mapped() Method": search/mapped.md
           - "filtered() Method": search/filtered.md
           - "sorted() Method": search/sorted.md
-          - "Actions & AI Automation": business/actions.md
+          - "Actions, Menus & Automation": business/actions.md
           - "Constraints & Indexes": advanced/constraints_indexes.md
           - "Cache Management": advanced/cache_management.md
   - "🎨 Part 2: Frontend & Integration":
