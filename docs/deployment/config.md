@@ -66,6 +66,27 @@ server {
 
 ---
 
+## Odoo.sh vs. Self-Hosted (Docker)
+
+Choosing the right hosting platform is a critical architectural decision.
+
+| Feature | Odoo.sh (PaaS) | Self-Hosted (IaaS/Docker) |
+| :--- | :--- | :--- |
+| **Ease of Setup** | 1-Click Deployment | Manual Configuration |
+| **Maintenance** | Managed by Odoo | Managed by You |
+| **Customization** | Standard Modules + Addons | Full OS-level Control |
+| **CI/CD** | Built-in (Automatic) | Custom (GitHub Actions/Jenkins) |
+| **Cost** | Per Worker/User | Variable (Server Cost) |
+| **Best For** | SME Projects / Rapid Dev | Enterprise / High Performance |
+
+### When to choose Odoo.sh?
+Use Odoo.sh if you want a "batteries-included" experience. It handles the database, backups, and staging environments for you. It is the gold standard for most Odoo implementations.
+
+### When to choose Self-Hosted Docker?
+Use Docker if you need specific OS-level dependencies (e.g., custom Python libs not on Odoo.sh), complex horizontal scaling, or if you must keep data on your own private infrastructure for compliance.
+
+---
+
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** `odoo.conf` is the source of truth for server performance and networking.
 *   **Architect Insight:** `proxy_mode = True` is the most important production setting; without it, Nginx headers are ignored, breaking SSL and user IP tracking.

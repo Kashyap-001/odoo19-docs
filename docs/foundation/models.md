@@ -58,11 +58,14 @@ In Odoo 19, the `_name` attribute is now **optional**. If omitted, Odoo derives 
 
 Odoo provides three main types of models, each serving a distinct purpose in the ecosystem.
 
-| Model Type | Base Class | Use Case | Persistence |
+### Comparison Matrix: Model Types
+| Feature | `models.Model` | `models.TransientModel` | `models.AbstractModel` |
 | :--- | :--- | :--- | :--- |
-| **Standard Model** | `models.Model` | Main business data (Products, Partners). | Permanent (DB Table) |
-| **Transient Model** | `models.TransientModel` | Wizards, temporary UI state. | Temporary (Vacuumed) |
-| **Abstract Model** | `models.AbstractModel` | Mixins, base classes for other models. | None (No DB Table) |
+| **Persistence** | Permanent (PostgreSQL Table) | Temporary (Vacuumed) | None (Shared Logic) |
+| **Primary Use** | Core Business Data | Wizards / Temp UI State | Mixins / Base Classes |
+| **Access Rights** | Restricted (CRUD) | Broad (for Wizards) | N/A (Inherited) |
+| **Performance** | DB-Heavy | DB-Light | High (No DB Table) |
+| **Inherits From** | `models.BaseModel` | `models.BaseModel` | `models.BaseModel` |
 
 ### Standard Model (`models.Model`)
 The most common type. Data is stored permanently in the database. Use this for anything that needs to persist (e.g., `auction.listing`).

@@ -36,6 +36,16 @@ Updating relational fields (`One2many` or `Many2many`) is different from updatin
 | `(5, 0, 0)` | `Command.clear()` | Remove ALL links (doesn't delete). |
 | `(6, 0, [ids])` | `Command.set([ids])` | **Replace All** existing links with these IDs. |
 
+### Beginner: Why "Command Tuples"?
+Beginners often ask: *"Why can't I just pass a list of IDs like `write({'tags': [1,2,3]})`?"*
+
+**The Problem:** Odoo needs to know *exactly* what you want to do with the existing relationship. 
+- If you pass `[1, 2, 3]`, are you **adding** those IDs to the existing ones? 
+- Are you **replacing** the existing ones? 
+- Are you **removing** 1, 2, and 3 but keeping 4 and 5?
+
+The Command Tuples (or `odoo.Command` helpers) remove this ambiguity. For example, `Command.set([1,2,3])` explicitly tells Odoo: "Clear all existing links and make these the only ones."
+
 ### Most Common Patterns
 
 **1. Adding a Single Tag (M2M)**
@@ -136,6 +146,18 @@ class AuctionListing(models.Model):
 - **Many2one:** Copied by default (The new record points to the same parent).
 - **One2many:** **NOT** copied by default unless you explicitly allow it. This is to prevent "shared lines" where editing a line in the copy also changes the original.
 - **Many2many:** Copied by default (The new record gets the same set of tags).
+
+!!! danger "Senior Pitfall: The O2M Duplicate Trap"
+    If you want to copy a record *and* its lines (e.g., duplicating an Invoice with its Invoice Lines), simply calling `copy()` will leave the lines empty. You have two options:
+    1.  Add `copy=True` to the One2many field (Use with caution).
+    2.  Override `copy()` and pass the lines explicitly:
+    ```python
+    def copy(self, default=None):
+        default = default or {}
+        # Manually prepare copies of the lines
+        default['line_ids'] = [Command.create(line.copy_data()[0]) for line in self.line_ids]
+        return super().copy(default=default)
+    ```
 
 ### 4. Overriding `copy_data()`
 This is the **preferred** way to modify values during duplication.
