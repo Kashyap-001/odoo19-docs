@@ -9,17 +9,42 @@ Odoo's security model (ACLs and Record Rules) is applied by default to every ope
 
 ---
 
-## 1. `self.sudo()` (The "SuperUser" Mode)
+## 1. `self.sudo()` (ACL & Record Rules Bypass)
 
-`sudo()` returns a new recordset that bypasses all security rules and access rights. Think of it as **logging in as the Administrator** just for this one operation.
+The `sudo()` helper returns a new instance of the recordset bound to a superuser environment. It is Odoo's mechanism for administrative override.
+
+### How it Works
+*   **Bypasses ACLs**: Users who normally do not have read/write/create/unlink access to a model can execute actions on it.
+*   **Bypasses Record Rules**: Bypasses row-level constraints (such as `company_id` rules or user-ownership rules).
+*   **Executes as System**: SQL queries are executed with the user ID `__system__` (or UID 1/admin).
 
 ```python
-# Dangerous: This bypasses all record rules!
-# Only use when you truly need to access data the user cannot.
-listings = self.env['auction.listing'].sudo().search([])
+# Fetches all listings, completely ignoring the user's ACLs or multi-company rules
+all_listings = self.env['auction.listing'].sudo().search([])
 ```
 
-**⚠️ Architect Tip:** Always use `sudo()` with extreme caution. If you are reading data, consider if there is a more secure way (e.g., using a specific access group). **Never** use `sudo()` when writing data unless absolutely necessary, as it can allow unauthorized users to modify sensitive records.
+### ⚠️ Dangers of `sudo()`
+
+As an architect, misuse of `sudo()` is the most common source of security vulnerabilities and bugs:
+
+1.  **Privilege Escalation**: If you call `sudo()` on a recordset and then perform writes based on user-provided parameters (e.g. `self.sudo().write(vals)`), a malicious user can pass fields they aren't allowed to edit (like `state='won'` or `price=0.01`).
+2.  **Multi-Company Data Leaks**: Because `sudo()` bypasses record rules, it also bypasses company isolation rules. If a user in Company A triggers an action that uses `sudo().search([])`, they might inadvertently read or modify confidential data belonging to Company B.
+3.  **Raw SQL Injection**: Chaining `.sudo()` with raw database cursor operations (like `self.env.cr.execute(...)`) is extremely risky because raw SQL ignores Odoo ORM protections. If user input is concatenated into the SQL statement, it is executed with full database superuser privileges.
+
+### 🛡️ Architectural Best Practices
+
+*   **Minimize the Scope**: Do not pass a sudoed recordset down long call chains. Keep the `sudo()` call as close to the target read/write operation as possible.
+    ```python
+    # Bad: Passing a sudoed recordset into other business methods
+    records = self.sudo()
+    self._process_records(records)
+    
+    # Good: Sudoing only the exact write operation
+    self.write({'price': new_price})
+    self.sudo()._log_audit_trail()
+    ```
+*   **Sanitize Fields**: When writing data with `sudo()`, explicitly whitelist the fields allowed to be updated. Never pass a raw `vals` dictionary from a controller.
+*   **Reset Environment**: If you have a sudoed recordset and need to perform subsequent checks under the user's real permissions, use `with_user()` or `with_env()` to return to a standard context.
 
 ---
 

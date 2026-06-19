@@ -64,6 +64,25 @@ this.action.doAction({
 });
 ```
 
+### Calling the ORM Service
+The `orm` service allows you to call Python model methods directly from Javascript.
+
+```javascript
+// 1. Fetch record data using searchRead
+const listings = await this.orm.searchRead(
+    "auction.listing",
+    [["state", "=", "open"]],
+    ["name", "current_price"]
+);
+
+// 2. Call a custom Python method (similar to api.model or api.multi)
+const success = await this.orm.call(
+    "auction.listing",
+    "action_confirm_bid",
+    [listingId, bidAmount]
+);
+```
+
 ---
 
 ## 4. Senior: Building a Custom Service

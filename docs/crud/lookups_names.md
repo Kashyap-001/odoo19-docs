@@ -38,29 +38,47 @@ class AuctionListing(models.Model):
 
 ---
 
-## 2. Searching by Name: _name_search()
+## 2. Autocomplete dropdown: `name_search()` vs. `_name_search()`
 
-When a user types "Rolex" in a Many2one field for `auction.listing`, Odoo calls **`_name_search()`**.
+When a user types a search string into a **Many2one** field in the web client, Odoo triggers an autocomplete lookup. 
 
-By default, Odoo only searches the `name` field. Senior developers override this to allow searching by multiple fields (like `reference` or `internal_code`).
-
-```python
-@api.model
-def _name_search(self, name, domain=None, operator='ilike', limit=100, order=None):
-    # 1. Start with the provided domain
-    domain = domain or []
-    
-    # 2. If the user typed something, search both 'name' and 'reference'
-    if name:
-        name_domain = ['|', ('name', operator, name), ('reference', operator, name)]
-        domain = expression.AND([domain, name_domain])
-        
-    # 3. Use search_fetch() for performance in Odoo 19
-    return self.search_fetch(domain, ['id'], limit=limit, order=order).ids
+```mermaid
+graph TD
+    Client[Browser autocomplete] -->|RPC name_search| ModelNS[name_search()]
+    ModelNS -->|internal delegate| Model_NS[_name_search()]
+    Model_NS -->|fetch| DB[(PostgreSQL)]
 ```
 
-!!! tip "Performance: ilike vs =ilike"
-    Using `ilike` with a leading `%` (e.g., `%rolex%`) prevents the database from using indexes. If you only want to search by the start of the string, use `operator='=ilike'`.
+*   **`name_search()` (RPC Entry Point)**: The standard API endpoint called by the JS client. You should **rarely** override `name_search` directly.
+*   **`_name_search()` (Internal Hook)**: The internal method called by `name_search`. Overriding `_name_search()` is the standard, future-proof way to customize autocomplete results.
+
+### Example: Overriding `_name_search()`
+Suppose we want users to be able to find listings by typing their **Name** OR their internal **Reference Code** (e.g. `REF-001`).
+
+```python
+from odoo import api, models
+from odoo.osv import expression
+
+class AuctionListing(models.Model):
+    _inherit = 'auction.listing'
+
+    @api.model
+    def _name_search(self, name, domain=None, operator='ilike', limit=100, order=None):
+        # 1. Initialize the base domain
+        domain = domain or []
+        
+        # 2. If the user typed a query, search BOTH name AND reference
+        if name:
+            name_domain = ['|', ('name', operator, name), ('reference', operator, name)]
+            domain = expression.AND([domain, name_domain])
+            
+        # 3. Fetch IDs (using Odoo 19 search_fetch for speed)
+        # _name_search must return a list of record IDs
+        return self.search_fetch(domain, ['id'], limit=limit, order=order).ids
+```
+
+> [!TIP]
+> **Performance Tip**: When writing `_name_search`, always use `search_fetch` with only `['id']` loaded in `field_names`. This avoids the database reading full records, keeping autocomplete responses sub-50 milliseconds.
 
 ---
 

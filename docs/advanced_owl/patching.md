@@ -112,16 +112,28 @@ When you patch a method, you are effectively wrapping the original function. To 
 
 ---
 
-## 6. Best Practices & Pitfalls
+## 6. When to Patch, Dangers, and Alternatives
 
-### Do:
-*   **Use Unique Names**: Always prefix your patch name with your module name (e.g., `my_module.patch_name`).
-*   **Keep it Surgical**: Only patch what you absolutely must.
-*   **Call Super**: Unless you are intentionally replacing the entire logic.
+Patching is a double-edged sword. As a Senior Architect, you must evaluate if patching is truly necessary or if a cleaner alternative exists.
 
-### Don't:
-*   **Patch for Local Changes**: If you only need a custom behavior in one specific view, use inheritance or create a new component.
-*   **Heavy Logic in Setup**: Patching `setup()` adds overhead to every instantiation of that component. Keep it lean.
+### When to Patch
+Use patching **only** when:
+1.  **Global Behavior Modifications**: You need to alter the behavior of a core component globally across all views (e.g. adding confirmation boxes to all delete actions).
+2.  **Extending Third-Party Modules**: You are adding features to standard components or community modules where editing the source code directly is impossible.
+3.  **Global UI Shell Enhancements**: Intercepting hooks in `WebClient` or view controllers to register global keyboard shortcuts or activity listeners.
+
+### ⚠️ Dangers of Patching
+1.  **Patch Collisions**: If two installed modules patch the exact same method and one developer forgets to call `super()`, the other module's patch will be silently discarded.
+2.  **Upgrade Vulnerability**: During Odoo version upgrades, core classes and method signatures are often refactored. Since patches depend on exact prototype names, upgrading a heavily patched web client is prone to runtime crashes.
+3.  **Hard-to-Trace Tracebacks**: When errors occur in patched methods, JavaScript stack trace tracebacks can become nested and confusing, making debugging difficult.
+4.  **Performance Inflation**: Patching `setup()` or high-frequency hooks (like `render()`) adds runtime overhead to every single instance of the target component, slowing down client-side rendering.
+
+### 🛡️ Alternatives to Patching
+Before writing a patch, check if one of these clean alternatives is applicable:
+*   **Class Inheritance (`extends`)**: If you only need a custom version of a component under a specific context, create a new sub-class and load it.
+*   **Registry Category Injection**: Instead of patching a widget class to add a feature, register a new widget name under `registry.category("fields")` and reference it in specific XML views.
+*   **Event Bus Subscriptions**: Use OWL's `EventBus` to listen to state shifts globally without intercepting component functions.
+*   **XML View Inheritance**: Often, dynamic visibility can be handled using XML inheritance (using standard `invisible` or `readonly` domain attributes) rather than JS logic.
 
 ---
 

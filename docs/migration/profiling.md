@@ -6,8 +6,17 @@ Odoo 19 includes sophisticated tools to identify slow queries, heavy methods, an
 
 The built-in profiler can be triggered via the UI or the CLI.
 
-### CLI Profiling
-Run Odoo with the `--profile` flag to generate a speedscope-compatible JSON file.
+### Dev Mode Profiling (`--dev=profile`)
+Starting Odoo with the `--dev=profile` flag enables automatic request profiling globally.
+
+```bash
+python odoo-bin -c odoo.conf -d my_database --dev=profile
+```
+*   **Behavior**: When active, Odoo profiles every HTTP request. When the request finishes, it saves the execution statistics file under a `speedscope` folder inside your Odoo data directory (e.g., `~/.local/share/Odoo/speedscope/`).
+*   **UI Trigger**: It also injects a profiling icon (the "speedometer") in the developer top-bar in the web interface, letting you easily start/stop tracing.
+
+### CLI JSON Profiling (`--profile`)
+Run Odoo with the `--profile` flag to save speedscope JSON performance files for the entire boot and run session:
 ```bash
 python odoo-bin --profile -c odoo.conf -d my_db
 ```

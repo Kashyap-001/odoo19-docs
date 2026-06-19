@@ -18,13 +18,17 @@ Think of these as your basic toolset for understanding the current session:
 | `self.env.user` | Returns the current user recordset. | Checking user-specific rules or preferences. |
 | `self.env.company` | The user's active company. | Multi-company data separation. |
 | `self.env.companies` | All allowed companies for this user. | Multi-company queries. |
+| `self.env.context` | The immutable context dictionary (language, timezone, flags). | Passing parameters down the execution flow. |
 | `self.env.cr` | The database cursor. | **Warning**: Avoid raw SQL! Use only for high-performance edge cases. |
 
-### Example: Using User & Company
+### Example: Using Environment Properties
 ```python
 def check_access(self):
-    # Log the current user and their active company
-    _logger.info(f"User {self.env.user.name} performing action in {self.env.company.name}")
+    # Access user, company, and context
+    _logger.info(
+        f"User {self.env.user.name} performing action in "
+        f"company {self.env.company.name} with lang {self.env.context.get('lang')}"
+    )
 ```
 
 ---

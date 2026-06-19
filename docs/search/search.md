@@ -22,6 +22,50 @@ auctions = self.env['auction.listing'].search([('state', '=', 'active')])
 
 ---
 
+## Other Search Helpers
+
+Apart from the standard `search()` method, Odoo provides several optimized methods for counting, reading raw fields, or high-performance prefetching.
+
+### 1. `search_count()`
+If you only need to check if records exist or calculate a count, **never** do `len(self.search(domain))`. This fetches all record IDs into Python memory and instantiates them. Instead, use `search_count()`, which translates to an efficient SQL `SELECT COUNT(*)` query.
+```python
+# Fast count check
+active_bids_count = self.env['auction.bid'].search_count([('state', '=', 'active')])
+```
+
+### 2. `search_read()`
+Fetches matching records and directly returns their field values as a list of Python dictionaries instead of instantiating a recordset. This is the standard method for API controllers and Javascript RPC calls because it avoids ORM instantiation overhead and returns JSON-serializable structures.
+```python
+# Returns: [{'id': 1, 'name': 'Item A', 'price': 100.0}, ...]
+listings_data = self.env['auction.listing'].search_read(
+    domain=[('state', '=', 'active')],
+    fields=['name', 'price'],
+    limit=10
+)
+```
+
+### 3. `search_fetch()` (Odoo 19)
+A modern, high-performance alternative to `search()`. It executes the query and preloads only the requested field values into the environment cache in a single SQL operation. This eliminates the "N+1" query problem when looping over the returned records.
+```python
+# Returns preloaded recordset
+listings = self.env['auction.listing'].search_fetch(
+    domain=[('state', '=', 'active')],
+    field_names=['name', 'price']
+)
+```
+*(For a deeper comparison of performance metrics, see the [search_fetch() Deep Dive](../crud/search_fetch.md).)*
+
+### 4. Search Panels & `search_panel_select_range`
+When using `<searchpanel>` sidebar views in XML, Odoo's web client triggers background calls to `search_panel_select_range` or `search_panel_select_multi_range` on the model to fetch values for filters. You can override these methods in your Python code to dynamically alter the list of categories or filters shown based on user groups or record states.
+```python
+@api.model
+def search_panel_select_range(self, field_name, **kwargs):
+    # Dynamically inject domains or limits for the search panel categories
+    return super().search_panel_select_range(field_name, **kwargs)
+```
+
+---
+
 ## Understanding Domains
 
 A domain is a list of conditions. Each condition is a tuple: `('field_name', 'operator', value)`.

@@ -36,6 +36,40 @@ class SaleOrder(models.Model):
 
 ---
 
+## @api.depends_context
+
+The `@api.depends_context` decorator is used for **context-dependent computed fields**. 
+
+Odoo caches computed field values globally to optimize performance. However, if your computation depends on values inside the user's context (e.g. active language, timezone, company, or custom view flags), Odoo needs to partition the cache. Using `@api.depends_context` ensures that the cache is split per context key.
+
+### Example
+Suppose we want to format an auction's price string dynamically based on the active language (`lang`) and active company (`company`).
+
+```python
+class AuctionListing(models.Model):
+    _inherit = 'auction.listing'
+
+    price = fields.Float()
+    price_formatted = fields.Char(compute='_compute_price_formatted')
+
+    @api.depends('price')
+    @api.depends_context('lang', 'company')
+    def _compute_price_formatted(self):
+        for record in self:
+            # Language and company settings influence how the amount displays
+            record.price_formatted = record.env['res.currency'].format_amount(
+                record.price, record.currency_id
+            )
+```
+
+### Common Context Dependencies
+*   `'lang'`: Split cache by language.
+*   `'company'`: Split cache by active company ID.
+*   `'uid'`: Split cache by current user ID.
+*   `'allowed_company_ids'`: Split cache by selected companies list.
+
+---
+
 ## @api.constrains
 The `@api.constrains` decorator is used for **Python Validation**. It ensures that the data entered by the user meets specific business rules before it is saved to the database.
 

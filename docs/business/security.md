@@ -126,6 +126,21 @@ If a user receives an "Access Error" when trying to perform an action:
 
 ---
 
+## 6. Odoo Security Error Hierarchy
+
+When Odoo's security layers are violated, or when custom Python rules check data sanity, Odoo raises specific exceptions. As a developer, raising the correct exception is critical to triggering the appropriate user-facing warning box.
+
+The main security-related exception classes located in `odoo.exceptions` are:
+
+*   **`AccessError`**: Raised automatically by Odoo when a user fails an ACL (`ir.model.access`) or record rule (`ir.rule`) check. It triggers a strict **Red Access Denied modal** and aborts the database transaction.
+*   **`MissingError`**: Raised when trying to perform operations on a recordset containing records that have been deleted from the database by another transaction.
+*   **`UserError`**: Raised programmatically in Python code to block business logic flows when states are invalid (e.g. trying to cancel an invoice that is already paid). Triggers a **Yellow Warning popup box**.
+*   **`ValidationError`**: Raised inside `@api.constrains` or write methods when field data values violate semantic constraints (e.g. setting price below zero). Triggers a **Red Error modal**.
+
+*(For detailed usage and code patterns of these exceptions, refer to the [Exceptions & Error Handling Masterclass](../advanced/exceptions.md).)*
+
+---
+
 ## Senior: Advanced Security Concepts
 
 ### 1. The "User ID 1" Exception

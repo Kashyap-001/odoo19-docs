@@ -69,14 +69,55 @@ class AuctionListing(models.Model):
 
 ---
 
-## 4. Common Patterns: default_get + Context
+## 4. Prefilling with Context Defaults
 
-The most powerful way to use `default_get` is in combination with the **Context**.
+The most powerful way to use `default_get` is in combination with the **Context**. 
 
-If you open a window action with:
-`context="{'default_auction_type': 'luxury'}"`
+Odoo has a built-in convention: any key in the context starting with the prefix `default_` is automatically extracted by the standard `default_get()` method and assigned as the default value for the matching field.
 
-Odoo's standard `default_get` will automatically pick up any key starting with `default_` and add it to the initialization dictionary. You only need to override `default_get` if you need to transform that data or perform additional lookups.
+For example, if you define a Window Action or open a form passing this context:
+`context="{'default_state': 'draft', 'default_price': 100.0}"`
+
+Odoo's `default_get()` will automatically return `{'state': 'draft', 'price': 100.0}` to the form view, without you writing a single line of Python code!
+
+---
+
+## 5. Wizard State Initialization (Active Record Linking)
+
+Wizards (TransientModels) heavily rely on `default_get` to link themselves to the records from which they were opened. When a user clicks a button to open a wizard, Odoo populates the context with:
+*   `active_id`: The ID of the record currently active in the form view.
+*   `active_ids`: A list of selected record IDs (e.g. from a list view checklist).
+*   `active_model`: The model name of the calling view (e.g. `auction.listing`).
+
+You can override `default_get` on the wizard class to pull these values and pre-fill details.
+
+### Example: Bid confirmation wizard
+```python
+class BidConfirmWizard(models.TransientModel):
+    _name = 'auction.bid.confirm.wizard'
+    _description = 'Confirm Bid Wizard'
+
+    listing_id = fields.Many2one('auction.listing', string="Listing", required=True)
+    amount = fields.Float("Bid Amount")
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(BidConfirmWizard, self).default_get(fields_list)
+        
+        # Check if the wizard is opened from an auction listing form
+        active_model = self.env.context.get('active_model')
+        active_id = self.env.context.get('active_id')
+        
+        if active_model == 'auction.listing' and active_id:
+            listing = self.env['auction.listing'].browse(active_id)
+            if 'listing_id' in fields_list:
+                res['listing_id'] = listing.id
+            if 'amount' in fields_list:
+                # Pre-fill with the next valid bid amount (current price + increment)
+                res['amount'] = listing.current_price + 10.0
+                
+        return res
+```
 
 ---
 

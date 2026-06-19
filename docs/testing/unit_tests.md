@@ -58,29 +58,36 @@ class TestAuctionListing(TransactionCase):
 
 ---
 
-## 2. Specialized Test Classes
+## 2. Specialized Test Classes: Choosing Your Base
 
-While `TransactionCase` handles 90% of your needs, Odoo provides other classes for specific scenarios.
+Selecting the correct test base class determines how Odoo isolates transactions and what resources (like a headless Chrome browser) are allocated for the tests:
 
-### `HttpCase` (Web & Integration)
-Inherit from `HttpCase` when you need to test controllers, website routes, or run **JavaScript Tours**.
-- **Features:** Provides a built-in browser (`Chrome`), session management, and `self.url_open()`.
-- **Transaction:** Unlike `TransactionCase`, it does **not** automatically rollback by default (it uses its own transaction management).
+### A. `TransactionCase` (The Industry Standard)
+*   **Best For**: 90% of business logic tests (actions, computes, constraints).
+*   **Transaction Isolation**: Executes the `setUpClass()` data creation in a global class transaction, then wraps every single test method in a savepoint transaction that is automatically **rolled back** at completion.
+*   **Database Impact**: Guarantees a clean database state for subsequent tests.
+
+### B. `SavepointCase` (Legacy)
+*   **History**: In legacy Odoo versions (v12-v14), `SavepointCase` was used to optimize test speeds by creating data once in `setUpClass()` under a single database savepoint, while `TransactionCase` recreated data for every test method.
+*   **Odoo 19 Shift**: `TransactionCase` has been refactored to perform the exact same class-level savepoint optimizations. As a result, `SavepointCase` is deprecated in Odoo 19, and you should always inherit from `TransactionCase` for standard unit tests.
+
+### C. `HttpCase` (Web Clients & Tours)
+*   **Best For**: Web controllers, XML-RPC APIs, website routes, and headless browser tests (OWL Javascript tours).
+*   **Headless Browser**: Allocates a Chrome browser instance (`self.browser`) to load pages, simulate clicks, and test Javascript behaviors.
+*   **Security & Sessions**: Provides helpers like `self.authenticate(login, password)` to simulate user sessions.
+*   **Transaction Isolation**: Because it triggers requests over HTTP, it runs in a separate database transaction thread and **does not rollback** by default unless explicitly configured.
 
 ```python
 from odoo.tests import HttpCase
 
 class TestAuctionWeb(HttpCase):
     def test_listing_page(self):
-        # Open the public listing page and check for 200 OK
+        # Authenticate as user
+        self.authenticate('admin', 'admin')
+        # Open public endpoint
         response = self.url_open('/auction/listings')
         self.assertEqual(response.status_code, 200)
 ```
-
-### `SavepointCase` (Legacy/Internal)
-You may see `SavepointCase` in older Odoo code. 
-- **The Shift:** In modern Odoo 19, `TransactionCase` has been optimized to handle the heavy lifting that `SavepointCase` used to do.
-- **Architect Note:** For new modules, always prefer `TransactionCase` unless you are maintaining legacy v12/v13 code.
 
 ---
 
@@ -136,22 +143,41 @@ To run tests, you must tell Odoo to update the module (`-u`) and enable the test
 ```
 
 ### Tag Filtering (`--test-tags`)
-Running the entire test suite can take hours. As a developer, you usually only want to run the specific test you are working on.
 
-**1. Run a specific module:**
-```bash
-./odoo-bin ... --test-tags /pways_auction
+Running the entire Odoo test suite can take hours. Odoo provides the `--test-tags` parameter to filter and execute specific tests.
+
+#### 1. Path-based Filtering
+You can filter tests by module, class, or method:
+*   **Run all tests in a module**: `--test-tags /pways_auction`
+*   **Run a specific test class**: `--test-tags /pways_auction:TestAuctionBidding`
+*   **Run a specific test method**: `--test-tags /pways_auction:TestAuctionBidding.test_invalid_low_bid`
+
+#### 2. Phase-based Filtering (`at_install` & `post_install`)
+Odoo tags tests based on *when* they should run during the module installation lifecycle:
+*   **`at_install` (Default)**: Runs immediately after the module is installed. Good for self-contained unit tests.
+*   **`post_install`**: Runs after **all** modules in the dependency chain have been fully installed. Crucial for integration tests that rely on other modules' demo data or configuration.
+
+You can explicitly assign tags using the `@tagged` decorator:
+```python
+from odoo.tests.common import tagged, TransactionCase
+
+@tagged('post_install', '-at_install')  # Run ONLY post-install
+class TestAuctionIntegration(TransactionCase):
+    ...
 ```
 
-**2. Run a specific class:**
+#### 3. Standard vs. Non-Standard Tags
+*   **`standard`**: Tag applied to all standard tests automatically.
+*   **`-standard`**: Prefixing a tag with a minus sign (like `-standard` or `-slow`) excludes it from the default test runner run. Use this for slow integration tests or external API calls you only want to run in specific pipelines.
+
+#### 4. Combining Filters
+You can run multiple test suites by separating tags with commas:
 ```bash
-./odoo-bin ... --test-tags /pways_auction:TestAuctionBidding
+# Run pways_auction tests and res.partner tests, but exclude slow browser tests
+./odoo-bin ... --test-tags /pways_auction,/base:TestPartner,-slow
 ```
 
-**3. Run a specific method:**
-```bash
-./odoo-bin ... --test-tags /pways_auction:TestAuctionBidding.test_invalid_low_bid
-```
+---
 
 ### Interpreting the Output
 When tests run, you should look for the `odoo.tests` logger in the console output.

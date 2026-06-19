@@ -44,8 +44,21 @@ A search view is defined with the `<search>` tag. It is always linked to a speci
 
 ### Common Filter Patterns
 Filters use Odoo **Domains** to slice data.
-- **My Records:** `<filter string="My Auctions" name="my_auctions" domain="[('seller_id', '=', uid)]"/>`
-- **Date Filtering:** `<filter string="Created Today" name="today" domain="[('create_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>`
+*   **My Records:** `<filter string="My Auctions" name="my_auctions" domain="[('seller_id', '=', uid)]"/>`
+*   **Logical OR vs AND (Separators)**: Filters defined consecutively without a separator are combined in the UI with a logical **OR** (`|`). Placing a `<separator/>` between filters forces them to be combined with a logical **AND** (`&`).
+    ```xml
+    <!-- Toggling both Active and Draft will show Active OR Draft records -->
+    <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+    <separator/>
+    <!-- But they are ANDed with the following filters -->
+    <filter string="High Price" name="high_price" domain="[('price', '>', 5000)]"/>
+    ```
+*   **Declarative Date Filters**: Odoo provides a special `date` attribute for filter fields. When defined, Odoo automatically generates a nested dropdown containing date periods (Today, This Week, This Month, This Year, etc.) in the UI search panel.
+    ```xml
+    <!-- Automatically generates date range selectors for creation date -->
+    <filter string="Creation Date" name="create_date" date="create_date"/>
+    ```
 
 ### Default Filters via Action
 You can force a filter to be active by default when a menu is clicked by setting the `context` in the **Window Action**:

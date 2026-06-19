@@ -208,27 +208,64 @@ price = fields.Float("Price", tracking=True)
 
 ## Senior: Advanced Field Logic
 
-### 1. `compute_sudo=True` (Odoo 19)
-By default, computed fields are calculated using the permissions of the current user. In Odoo 19, if a field requires access to data the user normally cannot see (e.g., total sales for a manager), use `compute_sudo=True`.
+To build professional, secure, and performant Odoo apps, you must master these advanced field properties that govern calculation security, database tracking, and company dependency.
 
+### 1. `company_dependent=True`
+In multi-company Odoo databases, you often need a field to hold different values depending on which company is currently active. Setting `company_dependent=True` instructs Odoo to store these values in the `ir.property` table (or via company-dependent fields under the hood in newer Odoo versions) per company, instead of in the model's main table column.
 ```python
-total_revenue = fields.Monetary(
-    compute="_compute_revenue", 
-    compute_sudo=True, # Runs calculation as Superuser
-    store=True
-)
+# The cost of the product can vary between Company A and Company B
+cost_price = fields.Float("Cost Price", company_dependent=True)
 ```
 
-### 2. Declarative Security
-Instead of writing complex record rules, you can sometimes use field attributes like `groups` to hide sensitive data at the ORM level.
-
+### 2. `tracking=True` (and Tracking Priorities)
+Enables logging changes to this field in the Chatter (requires the model to inherit from `mail.thread`).
+*   **Priority Ordering**: If you pass an integer instead of `True` (e.g. `tracking=10`, `tracking=20`), Odoo uses this integer to order the logs in the Chatter when multiple fields are modified in a single transaction (lowest numbers are displayed first).
 ```python
+state = fields.Selection(..., tracking=10)
+price = fields.Monetary(..., tracking=20)
+```
+
+### 3. `groups` (Field-Level Permissions)
+Restricts access to specific fields directly at the ORM level. If a user does not belong to the specified XML group, they cannot see or write to this field. The field is physically omitted from the recordset returned to the browser client.
+```python
+# Only the ERP Manager can view or edit the financial margin field
 margin = fields.Float("Margin", groups="base.group_erp_manager")
 ```
-*The field `margin` will be physically removed from the recordset for any user not in the ERP Manager group.*
 
-!!! danger "Performance of compute_sudo"
-    While `compute_sudo=True` is convenient, it can bypass multi-company record rules. Use it carefully and only when the computation logic is safe to run in a global context.
+### 4. `copy=False` (Duplicate Exclusion)
+Specifies whether the field value should be copied when duplicating a record.
+*   **Use Cases**: Unique numbers, reference codes, state variables, or timestamps should always set `copy=False` to prevent data pollution during duplication.
+```python
+invoice_number = fields.Char("Invoice Number", copy=False)
+```
+
+### 5. `compute_sudo=True`
+By default, Odoo computes fields using the current user's security permissions. If the computation needs to read fields that the user has no access to (e.g. calculating a user's total sales history by reading invoices they don't own), setting `compute_sudo=True` forces Odoo to run the compute method as the Superuser.
+```python
+sales_total = fields.Monetary(compute="_compute_sales", compute_sudo=True, store=True)
+```
+
+### 6. `recursive=True` (Hierarchical Computations)
+If a computed field's calculation relies on the value of the same computed field in a parent or child record (creating a recursive tree evaluation), you **must** specify `recursive=True` to prevent Odoo from hitting recursion depth limit errors or cache lookup errors.
+```python
+# Computing the full path of a category (e.g. "Electronics > Computers > Laptops")
+complete_name = fields.Char(compute="_compute_complete_name", recursive=True, store=True)
+
+@api.depends('name', 'parent_id.complete_name')
+def _compute_complete_name(self):
+    for category in self:
+        if category.parent_id:
+            category.complete_name = f"{category.parent_id.complete_name} > {category.name}"
+        else:
+            category.complete_name = category.name
+```
+
+### 7. `related_sudo=True`
+By default, `related` fields are fetched using the current user's privileges. If the current user does not have permission to read the related model, a security exception is raised. Setting `related_sudo=True` bypasses this, fetching the related value using superuser permissions.
+```python
+# Fetch the partner's credit limit even if the current portal user cannot access res.partner records
+seller_credit = fields.Float(related="seller_id.credit_limit", related_sudo=True, readonly=True)
+```
 
 ---
 

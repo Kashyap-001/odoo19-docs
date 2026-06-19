@@ -134,13 +134,15 @@ nav:
           - "Environment Deep Dive": env/env_deep_dive.md
           - "Security Modifiers (sudo)": env/security_modifiers.md
           - "Context & Flags": env/context.md
+          - "Recordset Helpers": env/recordset_helpers.md
           - "ensure_one() Safety": env/ensure_one.md
           - "CRUD Operations Overview": crud/index.md
           - "State Initialization (default_get)": crud/state_initialization.md
           - "create() Multi": crud/create.md
           - "read() & browse()": crud/read.md
           - "Lookups & name_search": crud/lookups_names.md
-          - "write() & copy()": crud/write.md
+          - "write() method": crud/write.md
+          - "copy() & copy_data()": crud/copy.md
           - "Relational Commands (Command)": crud/relational_commands.md
           - "Batch Operations": crud/batch_operations.md
           - "Prefetching Mechanism": advanced/prefetching.md
@@ -166,7 +168,7 @@ nav:
           - "OWL Basics": frontend/owl.md
           - "Services & Registry": frontend/owl_services_registry.md
           - "OWL Services Catalogue": frontend/owl_services.md
-          - "Hooks & Patching": frontend/owl_hooks_patching.md
+          - "OWL Hooks": frontend/owl_hooks_patching.md
           - "Reactive State (Store)": advanced_owl/store.md
           - "Component Patching": advanced_owl/patching.md
           - "Real-time (Bus)": frontend/bus_websocket.md
@@ -190,11 +192,13 @@ nav:
       - "⚙️ Phase 9: Senior Ops & Architecture":
           - "Architecture Patterns": advanced/architecture_patterns.md
           - "Deployment Config": deployment/config.md
-          - "Docker Mastery": deployment/docker.md
-          - "Horizontal Scaling": deployment/scaling.md
+          - "Docker Production Deployment": deployment/docker.md
+          - "Workers and Scaling": deployment/scaling.md
           - "Migration Scripts": migration/scripts.md
           - "Performance Profiling": migration/profiling.md
           - "SQL & Performance": advanced/performance_profiling.md
+          - "PostgreSQL and Indexes": advanced/postgresql_indexes.md
+          - "OCA queue_job": advanced/queue_job.md
       - "🛠️ Phase 10: Career & Standards":
           - "Senior Toolkit": advanced/senior_toolkit.md
           - "The Debugging Vault": advanced/debugging_vault.md

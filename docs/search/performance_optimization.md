@@ -7,6 +7,9 @@ description: Master ORM performance methods: mapped(), filtered(), sorted(), and
 
 As your application scales, you must avoid loading entire datasets into Python memory. Instead, use the ORM's powerful recordset manipulation methods to perform computations at the database level.
 
+!!! info "SQL-Level Performance First"
+    In-memory filtering and mapping are only effective once the database retrieval is optimized. Always ensure you are utilizing proper [PostgreSQL Indexes](../advanced/postgresql_indexes.md) and high-performance search methods like [search_fetch()](../crud/search_fetch.md) to query data efficiently.
+
 ---
 
 ## 1. Core Recordset Methods

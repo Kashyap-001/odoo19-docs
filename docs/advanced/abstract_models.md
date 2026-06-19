@@ -14,14 +14,15 @@ In Odoo, not every model needs a database table. When you want to share logic ac
 ## 1. Definition & Purpose
 
 An **AbstractModel** is a model that:
-1.  **Does NOT create a database table.**
-2.  Can define fields and methods.
+1.  **Does NOT create a database table.** Under the hood, this is governed by the class attribute `_abstract = True`, which is set automatically when you inherit from `models.AbstractModel`.
+2.  Can define fields, compute methods, and standard Python methods.
 3.  Is designed to be inherited by other models using `_inherit`.
 
 ### Use Cases:
-- **Service Layers**: Handling logic for Stripe, DHL, or Twilio.
+- **Service Layers**: Handling logic for Stripe, DHL, or Twilio APIs.
 - **Mixins**: Adding "Follower" or "Archiving" logic to multiple custom models.
-- **Reporting**: Acting as a data provider for complex QWeb PDF reports.
+- **Reporting**: Acting as a custom data provider for QWeb PDF reports by inheriting from `report.abstract.model` and defining `_get_report_values()`.
+- **Base APIs**: Defining base endpoints and parameters for custom JSON/XML endpoints.
 
 ---
 
@@ -77,6 +78,31 @@ For high-end Odoo architecture, we use AbstractModels to decouple "Technical Log
 - **Testability**: You can easily "mock" the AbstractModel in unit tests.
 - **Reusability**: You can now use the same Stripe service for `account.move` or `website.sale` without duplicating code.
 - **Upgradability**: If you switch to a different payment provider, you only change the Service Layer, not your core business models.
+
+---
+
+## 5. Reporting Use Case (QWeb PDF Data Provider)
+
+A common use of AbstractModel is providing data to QWeb PDF templates. When you request a PDF report, Odoo looks for an abstract model named `report.module_name.report_template_name`. If found, it calls its `_get_report_values` method to fetch data.
+
+```python
+class SpecialAuctionReport(models.AbstractModel):
+    _name = 'report.pways_auction.report_bid_history'
+    _description = 'Bid History PDF Data Source'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        # 1. Fetch matching listings
+        docs = self.env['auction.listing'].browse(docids)
+        
+        # 2. Return a dictionary of variables accessible inside the HTML/QWeb template
+        return {
+            'doc_ids': docids,
+            'doc_model': 'auction.listing',
+            'docs': docs,
+            'company': self.env.company,
+        }
+```
 
 ---
 

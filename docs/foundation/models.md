@@ -54,6 +54,78 @@ In Odoo 19, the `_name` attribute is now **optional**. If omitted, Odoo derives 
         name = fields.Char(string="Title")
     ```
 
+### Advanced Model Configuration Attributes
+
+To build high-quality Odoo apps, you must configure how models display, sort, validate, and structure their data using these specialized attributes:
+
+#### 1. `_rec_name` (Display Field Selection)
+By default, when a model is referenced in a `Many2one` field, Odoo looks for a field named `name` to display in the autocomplete dropdown and tags. If your model doesn't have a `name` field, or if you want to display a different field (like a reference code), specify it using `_rec_name`.
+```python
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+    _rec_name = 'reference_code'  # Displays the reference code instead of the name
+
+    name = fields.Char("Title")
+    reference_code = fields.Char("Reference Code")
+```
+
+#### 2. `_order` (Default Record Sorting)
+Defines the default order in which records are returned when searched, or sorted in list views. It is mapped to SQL's `ORDER BY` clause.
+*   **Format**: A comma-separated string of field names, optionally followed by `asc` (ascending) or `desc` (descending).
+*   **Performance Warning**: Avoid sorting on unindexed fields or computed/relational fields, as this forces PostgreSQL to perform expensive scans or sorting operations in memory.
+```python
+class AuctionBid(models.Model):
+    _name = 'auction.bid'
+    _order = 'amount desc, create_date asc'  # Highest bids first, oldest first if equal
+```
+
+#### 3. `_sql_constraints` (Database-level Validation Rules)
+A list of tuples defining constraints to be enforced by the PostgreSQL database.
+*   **Format**: `[('constraint_name', 'SQL_definition', 'error_message')]`
+*   **PostgreSQL Enforcement**: These rules (like `UNIQUE` or `CHECK`) are checked by the database itself, ensuring absolute data integrity.
+```python
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+
+    code = fields.Char("Unique Code")
+    price = fields.Float("Starting Price")
+
+    _sql_constraints = [
+        ('code_unique', 'UNIQUE(code)', 'The listing code must be unique!'),
+        ('price_positive', 'CHECK(price > 0)', 'Starting price must be positive!')
+    ]
+```
+*(Note: Odoo 19 introduces `models.Constraint` as a declarative alternative, but `_sql_constraints` remains fully supported and widely used in the ecosystem.)*
+
+#### 4. `_check_company_auto` (Auto-Company Relational Checking)
+In multi-company environments, you want to prevent users from linking records of different companies. Setting `_check_company_auto = True` activates automatic verification on Many2one fields that have `check_company=True` specified.
+```python
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+    _check_company_auto = True
+
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    # Odoo will automatically validate that the selected seller belongs to company_id
+    seller_id = fields.Many2one('res.partner', check_company=True)
+```
+
+#### 5. `_parent_store` (Hierarchical Fast Queries)
+When building hierarchical models (e.g. categories, charts of accounts, department structures), calculating parent/child relationships can require expensive recursive SQL queries. Setting `_parent_store = True` tells the ORM to store a pre-calculated index tree (`parent_path` column) to make lookup queries like `child_of` or `parent_of` extremely fast.
+```python
+class AuctionCategory(models.Model):
+    _name = 'auction.category'
+    _parent_store = True
+    _parent_name = 'parent_id'  # Field linking parent category (Default: parent_id)
+    _order = 'parent_path'
+
+    name = fields.Char("Name")
+    parent_id = fields.Many2one('auction.category', ondelete='cascade')
+    # Required helper field to store the pre-calculated path
+    parent_path = fields.Char(index=True)
+```
+
+---
+
 ## 2. Model Types
 
 Odoo provides three main types of models, each serving a distinct purpose in the ecosystem.

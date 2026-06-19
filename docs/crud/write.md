@@ -120,83 +120,18 @@ listing.write({
 2. **Computed Fields**: Writing to a field that triggers a `@api.depends` will automatically cause the computed fields to recalculate.
 3. **No Batch write()**: Unlike `create()`, there is no `write_multi`. `write()` is already "multi" because it acts on the entire recordset it is called on.
 
----
+----
 
-## 4. Odoo Duplication: copy() vs. copy_data()
+## 4. Record Duplication (copy)
 
-When a user duplicates a record, Odoo's goal is to create a fresh copy while keeping the core data. As an architect, you must control this flow to prevent data corruption.
-
-### 1. The copy() Method (The Trigger)
-`copy()` is the high-level method called when you click the "Duplicate" button. It handles the creation of the new record.
-
-### 2. The copy_data() Method (The Values)
-This is the **preferred** way to modify values during duplication. It generates the dictionary of values that will be passed to `create()`.
-
-```python
-def copy_data(self, default=None):
-    vals_list = super().copy_data(default=default)
-    for vals in vals_list:
-        # Goldmine Pattern: Append " (copy)" to the name
-        if 'name' in vals:
-            vals['name'] = _("%s (copy)", vals['name'])
-    return vals_list
-```
-
-### 3. Preventing Duplication (copy=False)
-By default, all fields are copied. You can prevent this at the field level:
-```python
-# The internal code should NEVER be duplicated
-code = fields.Char("Reference", copy=False)
-```
-
-### 2. Odoo 19: `_copy_skip_fields`
-Instead of adding `copy=False` to every field, you can define a list of fields to ignore during duplication at the model level. This is cleaner for models with many technical fields.
-
-```python
-class AuctionListing(models.Model):
-    _name = 'auction.listing'
-    _copy_skip_fields = ['state', 'bid_ids', 'winner_id']
-```
-
-### 3. Deep vs. Shallow Copying
-- **Many2one:** Copied by default (The new record points to the same parent).
-- **One2many:** **NOT** copied by default unless you explicitly allow it. This is to prevent "shared lines" where editing a line in the copy also changes the original.
-- **Many2many:** Copied by default (The new record gets the same set of tags).
-
-!!! danger "Senior Pitfall: The O2M Duplicate Trap"
-    If you want to copy a record *and* its lines (e.g., duplicating an Invoice with its Invoice Lines), simply calling `copy()` will leave the lines empty. You have two options:
-    1.  Add `copy=True` to the One2many field (Use with caution).
-    2.  Override `copy()` and pass the lines explicitly:
-    ```python
-    def copy(self, default=None):
-        default = default or {}
-        # Manually prepare copies of the lines
-        default['line_ids'] = [Command.create(line.copy_data()[0]) for line in self.line_ids]
-        return super().copy(default=default)
-    ```
-
-### 4. Overriding `copy_data()`
-This is the **preferred** way to modify values during duplication.
-
-```python
-def copy_data(self, default=None):
-    vals_list = super().copy_data(default=default)
-    for vals in vals_list:
-        # Append " (copy)" to the name
-        if 'name' in vals:
-            vals['name'] = _("%s (copy)", vals['name'])
-    return vals_list
-```
-
-!!! tip "Architect Tip: Batch Performance"
-    Odoo 19 uses `copy_data()` to generate values for *all* records being duplicated in a batch. Overriding `copy()` instead would trigger a loop of individual `create()` calls, which is significantly slower for large recordsets.
+For instructions and architectural details on how to duplicate records, override `copy()` and `copy_data()`, and use `copy=False` or `_copy_skip_fields`, please refer to the dedicated [copy() & copy_data() Guide](copy.md) page.
 
 ---
 
 ## 🏁 Senior Checkpoint
-*   **Key Concept:** `write()` updates recordsets; `copy()` clones them.
-*   **Architect Insight:** `copy=False` and `_copy_skip_fields` are your primary tools for ensuring data integrity during duplication.
-*   **Verify Your Knowledge:** What happens to a One2many field during duplication by default? (Answer: It is cleared/not copied to avoid data corruption between the original and the clone).
+*   **Key Concept:** `write()` updates all records in the active recordset in a single SQL operation.
+*   **Architect Insight:** Always use the `Command` utility helper methods rather than legacy raw tuples when writing values to One2many or Many2many relational fields.
+*   **Verify Your Knowledge:** Does `write()` support batch operations across multiple records? (Answer: Yes, it is batch-by-default; calling write on a recordset with N records executes an update across all N records simultaneously).
 
 !!! success "Next Step"
     You can write. Now learn to find what you need with [Search & Domains](../search/search.md).
