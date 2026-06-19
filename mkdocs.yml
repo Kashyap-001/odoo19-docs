@@ -8,6 +8,7 @@ copyright: >
 
 theme:
   name: material
+  custom_dir: overrides
   logo: images/logo.svg
   favicon: images/logo.svg
   language: en
@@ -164,7 +165,10 @@ nav:
       - "🌐 Phase 5: Modern Frontend (OWL)":
           - "OWL Basics": frontend/owl.md
           - "Services & Registry": frontend/owl_services_registry.md
+          - "OWL Services Catalogue": frontend/owl_services.md
           - "Hooks & Patching": frontend/owl_hooks_patching.md
+          - "Reactive State (Store)": advanced_owl/store.md
+          - "Component Patching": advanced_owl/patching.md
           - "Real-time (Bus)": frontend/bus_websocket.md
           - "JS to Python (orm.call)": frontend/orm_call.md
           - "Assets & Bundles": frontend/assets.md
