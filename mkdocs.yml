@@ -146,7 +146,7 @@ nav:
           - "Relational Commands (Command)": crud/relational_commands.md
           - "Batch Operations": crud/batch_operations.md
           - "Prefetching Mechanism": advanced/prefetching.md
-          - "Performance Optimization": search/performance_optimization.md
+          - "Performance & Set Operations": search/performance_optimization.md
           - "Deleting Records (unlink)": crud/unlink.md
           - "Search & Domains": search/search.md
           - "search_fetch() [New v19]": crud/search_fetch.md
@@ -171,7 +171,7 @@ nav:
           - "OWL Hooks": frontend/owl_hooks_patching.md
           - "Reactive State (Store)": advanced_owl/store.md
           - "Component Patching": advanced_owl/patching.md
-          - "Real-time (Bus)": frontend/bus_websocket.md
+          - "Real-time (Bus & WebSockets)": frontend/bus_websocket.md
           - "JS to Python (orm.call)": frontend/orm_call.md
           - "Assets & Bundles": frontend/assets.md
           - "QWeb Template Reference": frontend/qweb_reference.md
