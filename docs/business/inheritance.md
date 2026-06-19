@@ -3,148 +3,107 @@ title: Odoo 19 Inheritance Tutorial — Classic, Prototype, and Delegation Inher
 description: Master Odoo 19 model inheritance techniques. Learn the key differences between classic in-place overrides, prototype creation, and delegation.
 ---
 
-# Odoo 19 Inheritance
+# Odoo 19 Inheritance: Extension, Cloning & Composition
 
-In Odoo, inheritance is the mechanism used to extend or modify existing models without altering the original source code. This is fundamental for building modular and maintainable applications.
-
----
-
-## Inheritance Overview
-
-```mermaid
-graph TD
-    subgraph "Classical / Prototype Inheritance"
-        ModelA[Model A] -->|_inherit = 'model.a'<br>_name = 'model.b'| ModelB[Model B - creates new database table]
-    end
-    subgraph "Extension Inheritance (In-Place)"
-        Partner[res.partner] -->|_inherit = 'res.partner'<br>no new _name| PartnerExt[res.partner - modifies same database table]
-    end
-    subgraph "Delegation Inheritance"
-        Parent[Parent Model - e.g. res.partner] <.. _inherits .. Child[Child Model - e.g. res.users<br>linked via Many2one]
-    end
-```
+In Odoo, inheritance allows developers to extend or modify existing database tables and model business logic without altering the original source code. This is fundamental for building modular and maintainable apps.
 
 ---
 
-## 1. Classic Inheritance (`_inherit`)
+## 1. What is it
+Odoo provides three primary inheritance patterns:
+*   **Classic Inheritance (`_inherit`)**: Modifies an existing model class and its database table in-place.
+*   **Prototype Inheritance (`_inherit` + `_name`)**: Copies all fields and methods of a parent model to create a new model and database table.
+*   **Delegation Inheritance (`_inherits`)**: Connects a child model to a parent model via a Foreign Key, exposing the parent's fields directly as if they belonged to the child.
 
-Classic inheritance allows you to add fields, override methods, or change attributes of an existing model.
+---
 
-### How it Works
-When you use `_inherit`, Odoo takes the original model and "mixes in" your changes.
+## 2. Why
+Modern ERP applications are built dynamically. To add custom fields or change default behaviors in a core Odoo module (such as Sales or Inventory), you must inherit from it. This ensures core updates from Odoo S.A. can be installed without overwriting custom code.
+
+---
+
+## 3. When
+*   Use **Classic Inheritance** to add custom columns or alter method flows in existing core tables (e.g. adding a customer loyalty rating to `res.partner`).
+*   Use **Prototype Inheritance** when you need a separate model that replicates all calculations and database columns of a parent model but has isolated data (e.g., creating an archival copy of active listings).
+*   Use **Delegation Inheritance** when a record in a new model has an "is-a" relationship with a parent model but requires distinct identity (e.g., `res.users` delegates to `res.partner` because every user is a partner, but not every partner is a user).
+
+---
+
+## 4. When Not
+*   **Do not** use `_inherits` (Delegation) if a simple `Many2one` field is enough to reference the parent without needing direct access to all its columns in search filters.
+*   **Do not** use prototype inheritance when your goal is to customize a core view or business flow; modifying the model in-place (classic inheritance) is required for those overrides.
+
+---
+
+## 5. Syntax
+Here is the core Python syntax for declaring all three inheritance patterns in Odoo 19:
 
 ```python
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+from odoo import models, fields
 
-    auction_listing_count = fields.Integer(string="Auction Listings", compute='_compute_auction_count')
-```
+# 1. Classic Inheritance (In-Place modification)
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
 
-### When to use:
-* To add new fields to an existing Odoo model (e.g., adding `is_verified` to `res.partner`).
-* To change the behavior of an existing method (e.g., overriding `create()` or `write()`).
-* To modify field attributes (e.g., making a field `required`).
+    loyalty_points = fields.Integer("Loyalty Points", default=0)
 
-!!! info "Note"
-    If you do not provide a `_name` attribute, Odoo modifies the original model in place. If you provide a new `_name`, Odoo creates a new model that inherits all fields and methods from the parent (Prototype Inheritance).
+# 2. Prototype Inheritance (Cloned copy, new table)
+class PartnerArchive(models.Model):
+    _name = 'partner.archive'
+    _inherit = 'res.partner'  # Copies columns/logic to new partner_archive table
 
----
-
-## 2. Delegation Inheritance (`_inherits`)
-
-Delegation inheritance (often called "polymorphism" in Odoo) is used when you want to link a new model to an existing one via a Foreign Key, making the parent's fields available as if they belonged to the child.
-
-### How it Works
-It uses the `_inherits` dictionary where the key is the parent model and the value is the name of the field linking to it.
-
-```python
+# 3. Delegation Inheritance (Composition, separate tables linked via Many2one)
 class AuctionListing(models.Model):
     _name = 'auction.listing'
-    # Inherits from product.template via the product_tmpl_id field
     _inherits = {'product.template': 'product_tmpl_id'}
 
-    # The physical link to the parent table
     product_tmpl_id = fields.Many2one(
         'product.template', 
         required=True, 
         ondelete='cascade'
     )
-    
-    # Child-specific fields
     start_price = fields.Float("Starting Price")
-    bid_count = fields.Integer("Total Bids")
 ```
-
-### Senior Deep Dive: The Database Reality
-When you use `_inherits`, Odoo does **not** copy the parent's fields into the child's database table.
-- **Accessing Fields**: When you do `listing.name` (a field from `product.template`), Odoo's ORM intercepts the call, follows the `product_tmpl_id` link, and transparently reads the value from the parent table.
-- **Creation**: When you do `env['auction.listing'].create({'name': 'Watch', 'start_price': 100})`, Odoo first creates a `product.template` with the name "Watch", gets its ID, and then creates the `auction.listing` with that ID in `product_tmpl_id`.
-- **Deletion**: Because we set `ondelete='cascade'`, deleting the listing deletes the underlying product.
-
-### When to use:
-* When you want to "be" another object but keep your own identity. 
-* Example: `res.users` inherits from `res.partner`. Every user is a partner, but not every partner is a user.
-* When you need to avoid "polluting" the parent table with too many specific fields.
-
-!!! tip "Key Difference"
-    * **`_inherit`**: Modifies the existing table or copies it.
-    * **`_inherits`**: Creates a separate table and links them via a Many2one field, providing seamless "transparent" access to parent fields.
 
 ---
 
-## Inheritance Priority
+## 6. Examples
 
-!!! tip "Pro-Tip: Inheritance Priority"
-    When multiple modules inherit from the same model, the order is determined by the **module dependencies** in the `__manifest__.py`. 
+### A. Classic Method Overriding (Calling super())
+```python
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Override write creation: inject custom logging or modifications
+        for vals in vals_list:
+            vals['note'] = "Created via Custom Sales extension."
+        # Invoke parent to perform database inserts
+        return super().create(vals_list)
+```
+
+### B. Delegation Inheritance in Action
+```python
+from odoo import models, fields
+
+class VehicleListing(models.Model):
+    _name = 'vehicle.listing'
+    _description = 'Vehicle Catalog'
     
-    If Module B depends on Module A, and both inherit `res.partner`, Module B's changes will be applied **after** Module A's, allowing B to override A. Use the `_sequence` attribute or ensure your dependencies are correctly defined to avoid unpredictable behavior.
+    # Connects Vehicle to Product Template
+    _inherits = {'product.template': 'product_id'}
 
----
-
-## Comparison Table
-
-| Feature | Classic (`_inherit`) | Delegation (`_inherits`) |
-| :--- | :--- | :--- |
-| **Database** | Same table (usually) | Two separate tables |
-| **Relationship** | "Extension" | "Composition" |
-| **Use Case** | Adding features to a model | Creating a specific "type" of object |
-
----
-
-## Senior: Inheritance Hooks
-
-### 1. Prototype Inheritance
-When you use `_inherit` **and** `_name`, Odoo creates a new table that is a "clone" of the parent but stores data separately.
-
-```python
-class AuctionArchive(models.Model):
-    _name = 'auction.archive'
-    _inherit = 'auction.listing' # Copies all fields/logic to a NEW table
+    product_id = fields.Many2one(
+        'product.template', 
+        required=True, 
+        ondelete='cascade'
+    )
+    mileage = fields.Integer("Mileage")
 ```
+*Note: Because vehicle listing delegates to product template, writing `vehicle.name = 'Sedan'` works transparently, writing 'Sedan' directly to the parent template table.*
 
-### 2. Method Hooks: `_get_xxx`
-Senior developers design their models with "hooks"—small methods that return a list or dict—to make inheritance easier for others.
-
-**In Parent Module:**
-```python
-def _get_supported_currencies(self):
-    return ['USD', 'EUR']
-```
-
-**In Your Inheriting Module:**
-```python
-def _get_supported_currencies(self):
-    res = super()._get_supported_currencies()
-    res.append('GBP')
-    return res
-```
-
-!!! tip "Architect Tip: Avoid Overwriting"
-    Never overwrite a method entirely unless absolutely necessary. Always call `super()` to ensure you don't break logic introduced by other installed modules (like `account` or `stock`).
-
----
-
-## 📝 Knowledge Check
+### 📝 Knowledge Check
 
 <div class="quiz-container">
   <div class="quiz-question">1. What is the difference between `_inherit` and `_inherits`?</div>
@@ -176,20 +135,62 @@ def _get_supported_currencies(self):
 
 ---
 
-## 🏁 Senior Checkpoint
-*   **Key Concept:** `_inherit` modifies existing tables, while `_inherits` (Delegation) links two separate tables.
-*   **Architect Insight:** Designing with "Method Hooks" (small overridable functions) is the hallmark of a Senior Developer, making your module "Inheritance Friendly."
-*   **Verify Your Knowledge:** When would you use Prototype Inheritance (`_inherit` + `_name`)? (Answer: When you want a complete clone of a model's logic but in a separate table).
-
-!!! success "Next Step"
-    Model inheritance is half the story. Now learn how to [Override Views](../foundation/xpath.md) using XPath.
+## 7. Common Mistakes
+1.  **Missing module dependencies in `__manifest__.py`**: Inheriting from `sale.order` without adding `'sale'` to your module's dependency list. Odoo will load your module before `sale`, resulting in `KeyError: 'sale.order'` at server boot.
+2.  **Overwriting methods without calling `super()`**: Discarding parent logic by omitting `super().method_name()`, which breaks functionality introduced by Odoo or other third-party modules.
+3.  **Forgetting `required=True` on Delegation foreign keys**: Omitting `required=True` on the `Many2one` relational field linked inside the `_inherits` dictionary, leading to database schema mismatches.
 
 ---
 
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 8. Performance
+*   **Classical Inheritance**: Modifies the parent table directly. If you add columns, they are appended to the existing PostgreSQL table, meaning zero database join overhead.
+*   **Delegation Inheritance**: Keeps tables normalized. To read parent values, Odoo performs SQL `LEFT JOIN` structures or transparently fires separate queries. Use only when parent-child separation is necessary to prevent table size bloating.
+
+---
+
+## 9. Senior
+In Odoo 19:
+*   **Method Hooks (`_get_xxx`)**: Senior developers write overridable method hooks returning lists or dictionaries so that other developers can extend behaviors without rewriting logic:
+    ```python
+    # In Parent Module:
+    def _get_supported_types(self):
+        return ['draft', 'open']
+
+    # In Your Inheriting Module:
+    def _get_supported_types(self):
+        res = super()._get_supported_types()
+        res.append('custom')
+        return res
+    ```
+*   Inheritance sequence: If multiple modules extend the same class, Odoo applies them dynamically in sequence based on their installation tree order.
+
+---
+
+## 10. Diagrams
+
+This diagram illustrates how Odoo maps each of the three inheritance patterns at the PostgreSQL database table layer:
+
+```mermaid
+graph TD
+    subgraph "1. Classic Extension Inheritance (_inherit)"
+        C1[Table: res_partner] -->|Appends new column| C2[res_partner: loyalty_points]
+    end
+
+    subgraph "2. Prototype Cloning Inheritance (_inherit + _name)"
+        P1[Table: res_partner] -->|Clones columns & definitions| P2[New Table: partner_archive]
+    end
+
+    subgraph "3. Delegation Composition Inheritance (_inherits)"
+        D1[Table: product_template]
+        D2[New Table: auction_listing] -->|FK product_tmpl_id| D1
+        D2 -->|start_price column| D2
+    end
+```
+
+---
+
+## 11. Related
+*   [XPath & View Overrides](../foundation/xpath.md)
+*   [AbstractModel Pattern](../advanced/abstract_models.md)
+*   [Core Mixins (Chatter & Activities)](mixins.md)
+*   [Defining Models](../foundation/models.md)
