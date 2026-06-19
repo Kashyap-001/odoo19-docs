@@ -9,31 +9,31 @@ Relational fields link models together, mapping relationships from database tabl
 
 ---
 
-## 1. What is it
+## Relational Fields (Many2one, One2many, Many2many)
 Relational fields represent SQL relationships (Many-to-One, One-to-Many, Many-to-Many) at the Odoo ORM layer. They map foreign keys, inverse collections, and junction tables into recordset references.
 
 ---
 
-## 2. Why
+## Building Database Relationships & Constraints
 Modern database design requires normalization. Relational fields ensure referential integrity, support database constraints (like cascade deletion), and provide a clean API to retrieve and manipulate associated records.
 
 ---
 
-## 3. When
+## Choosing between Odoo Relational Types
 *   Use **Many2one** when the current record belongs to exactly one record in another model (e.g., an Invoice belongs to a Customer).
 *   Use **One2many** to represent a collection of child records that belong to the current record (e.g., an Invoice contains many Invoice Lines).
 *   Use **Many2many** when multiple records in one model relate to multiple records in another (e.g., an Item can have multiple Tags, and a Tag can apply to multiple Items).
 
 ---
 
-## 4. When Not
+## When to Use Selection Fields (Instead of Relations)
 *   **Do not** use `One2many` without a corresponding `Many2one` field in the child model.
 *   **Do not** use `Many2many` if the link requires additional metadata (like a quantity or price on the connection). In that case, create a middle transactional model with two `Many2one` fields.
 *   **Do not** use relational fields for simple, self-contained data. For instance, do not create a model for simple status strings when a `Selection` field works better.
 
 ---
 
-## 5. Syntax
+## Declaring Relational Fields in Python
 Here is the syntax for defining relational fields in Odoo 19:
 
 ```python
@@ -66,7 +66,7 @@ tag_ids = fields.Many2many(
 
 ---
 
-## 6. Examples
+## Defining Invoices, Bids, and Tags Relationships
 The following example defines an Auction Listing system demonstrating all three relationships with bidirectional traversal:
 
 ```python
@@ -124,21 +124,21 @@ class AuctionTag(models.Model):
 
 ---
 
-## 7. Common Mistakes
+## Missing Co-model Names & Circular Dependencies
 1.  **Forgetting `ondelete` Strategy on Mandatory Fields**: Not setting `ondelete='cascade'` when parent deletion should clean up children. For instance, leaving bids orphaned when listing is deleted will trigger PostgreSQL constraint errors.
 2.  **Omitting `inverse_name` in One2many**: Leaving out the target model column name or pointing it to a non-existent `Many2one` field, causing MkDocs strict checks or Odoo boot errors.
 3.  **Writing raw ID values instead of Command Namespace helper objects**: In Odoo 19, trying to update a relational field using raw integers `record.write({'tag_ids': [1, 2]})` is bad practice. Always use `Command` objects: `record.write({'tag_ids': [Command.set([1, 2])]})`.
 
 ---
 
-## 8. Performance
+## SQL Joins, Inverse Fields, and Relational Indexes
 *   **Foreign Key Indexes**: Odoo automatically indexes all `Many2one` fields (`index=True` is the default).
 *   **Junction Table Indexing**: For `Many2many`, Odoo creates composite primary keys on the junction table (`(move_id, tag_id)`). This accelerates joins in either direction.
 *   **Prefetching & Lazy Loading**: Odoo uses a batch prefetch mechanism to avoid N+1 query loops. Ensure records are processed in recordsets to allow Odoo to batch fetch relations.
 
 ---
 
-## 9. Senior
+## Senior Architect: Many2many Relational Table Overrides
 In Odoo 19:
 *   Dynamic filtering using `domain` parameter:
     ```python
@@ -152,7 +152,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Relational Database Join Topology
 
 This diagram shows how `Many2one` and `One2many` map to a single database schema, and how `Many2many` uses a junction table in PostgreSQL:
 
@@ -185,7 +185,7 @@ classDiagram
 
 ---
 
-## 11. Related
+## Related Database Guides
 *   [Basic Fields](fields_basic.md)
 *   [Advanced Field Logic](fields_advanced.md)
 *   [Relational Commands (Command)](../crud/relational_commands.md)

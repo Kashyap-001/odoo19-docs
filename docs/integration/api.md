@@ -9,32 +9,32 @@ Odoo provides a secure, language-agnostic interface that allows external scripts
 
 ---
 
-## 1. What is it
+## External Integration (XML-RPC & JSON-RPC)
 Odoo exposes a robust **XML-RPC** (and JSON-RPC) endpoint interface. These protocol services allow developers to execute Odoo object methods remotely using standard HTTP/S procedures. Odoo segments API routing into two endpoints:
 *   `/xmlrpc/2/common`: For user session authentication.
 *   `/xmlrpc/2/object`: For record querying and transaction operations.
 
 ---
 
-## 2. Why
+## Connecting Odoo to E-Commerce & Third-Party Apps
 Modern business software runs in environments with multiple applications (e.g. external e-commerce sites, BI reporting, or warehousing legacy databases). Exposing Odoo’s ORM dynamically through standard APIs enables integration with any language (Python, Node.js, PHP, Java, or C#).
 
 ---
 
-## 3. When
+## Implementing External Remote RPC Lookups
 *   Use to feed sales orders from external shopping carts directly into Odoo.
 *   Use to sync customer records with external marketing lists.
 *   Use to extract warehouse quantities for shipping managers.
 
 ---
 
-## 4. When Not
+## When to Build Web Controllers (Webhooks & Custom REST)
 *   **Do not** call External APIs inside local custom Odoo modules to communicate with the same database (use Odoo’s native `env` model calls).
 *   **Do not** use plain HTTP (`http://`) to send XML-RPC payloads in production as credential arguments are passed in clear text. Always encrypt queries using HTTPS (`https://`).
 
 ---
 
-## 5. Syntax
+## External Client Authentication and Model Querying
 The API uses Python’s built-in `xmlrpc.client` library (or similar XML-RPC clients in other languages). 
 
 ```python
@@ -59,7 +59,7 @@ result = models.execute_kw(
 
 ---
 
-## 6. Examples
+## Querying, Creating, and Updating Records Remotely
 
 ### A. Step 1: Authentication Connection Script
 ```python
@@ -115,26 +115,26 @@ print(f"Created Bid ID: {new_bid_id}")
 
 ---
 
-## 7. Common Mistakes
+## Exposing Admin Credentials & Unbatched Queries
 1.  **Chaining single API writes in loops**: Running loop structures in external scripts to call `create` or `write` sequentially. This is highly inefficient due to web server latency. Always batch records and write them in a single call.
 2.  **Hardcoding Raw User Passwords**: Hardcoding a user's active login password inside external scripts. If a password is changed, the script crashes. Always generate and configure **API Keys** via *Settings > Users > Account Security*.
 
 ---
 
-## 8. Performance
+## Batch Operations, Network Latency, and Field Limits
 *   **search_read Efficiency**: Never query using `search` to get IDs, and then call `read` in a separate API loop. This doubles network latency. Always use `search_read` to combine the steps in a single execution round-trip.
 *   **Web Worker Threads**: API requests occupy HTTP worker threads. High-frequency external polling can saturate system workers, blocking standard browser users.
 
 ---
 
-## 9. Senior
+## Senior Architect: Token-Based Authentication & Scope Limits
 In Odoo 19:
 *   **Security Best Practices**: Create dedicated, restricted user accounts (e.g. "API Sync User") with minimal access groups (ACLs) to ensure external scripts cannot view confidential accounting or employee fields.
 *   **Python wrappers**: Use library engines like [OdooRPC](https://pythonhosted.org/OdooRPC/) or [ERPEek](https://github.com/nantic/erpeek) which wrap the raw xmlrpc methods into standard Pythonic model classes.
 
 ---
 
-## 10. Diagrams
+## Remote Client API Gateway
 
 This sequence diagram illustrates the external authentication handshake and subsequent data fetching query pipeline:
 
@@ -158,7 +158,7 @@ sequenceDiagram
 
 ---
 
-## 11. Related
+## Related API Guides
 *   [Controllers & Web](controllers.md)
 *   [SQL Performance](performance.md)
 *   [Recordset Helpers](../env/recordset_helpers.md)

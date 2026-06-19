@@ -9,17 +9,17 @@ The **Context** is a python dictionary containing shared metadata such as the ac
 
 ---
 
-## 1. What is it
+## Odoo Environment Context Mechanics
 The Odoo Context is a key-value dictionary attached to the environment (`self.env.context`). It carries localization settings and system flags down the execution callstack. Importantly, the context dictionary is **immutable**; changes are applied by cloning the environment using the `with_context()` method.
 
 ---
 
-## 2. Why
+## Dynamic Execution Metadata Passing
 Modern ERP applications execute deep callstacks. Passing metadata (like language or active timezone) through every intermediate method signature is impractical. The Context acts as a "backpack" that is automatically carried by Odoo’s ORM throughout the transaction.
 
 ---
 
-## 3. When
+## When to Use and Modify Context
 *   Use to set default values for record creation (`default_<field_name>`).
 *   Use to bypass standard active filters (`active_test=False`) to retrieve archived records.
 *   Use to override language codes (`lang='fr_FR'`) to force translations on invoices or emails.
@@ -27,13 +27,13 @@ Modern ERP applications execute deep callstacks. Passing metadata (like language
 
 ---
 
-## 4. When Not
+## When to Avoid Context Customizations
 *   **Do not** attempt to mutate the context dictionary directly (e.g. `self.env.context['key'] = value`). It will raise a TypeError.
 *   **Do not** use the context to pass mandatory business parameters that should be explicit method arguments. Doing so obscures the API design and makes debugging difficult.
 
 ---
 
-## 5. Syntax
+## Inspecting & Changing Context (with_context)
 Here is the core Python syntax for interacting with the Context:
 
 ```python
@@ -55,7 +55,7 @@ custom_env = self.with_context(
 
 ---
 
-## 6. Examples
+## Real-World Context-Driven Logic
 
 ### A. Context Key overrides & Bypasses
 ```python
@@ -112,14 +112,14 @@ class AuctionListing(models.Model):
 
 ---
 
-## 7. Common Mistakes
+## Context Leakage & Evaluation Pitfalls
 1.  **Direct Mutation Attempts**: Writing code like `self.env.context['my_key'] = True`. The dictionary is a read-only mapping and will raise a runtime exception.
 2.  **Discarding the Returned Recordset**: Calling `self.with_context(key=val)` as a standalone line without capturing the result. Always capture it: `self = self.with_context(...)` or `records = records.with_context(...)`.
 3.  **Default Value Overrides Colliding**: Setting `default_partner_id` in the context, forgetting that it will propagate and populate fields in any sub-records or line items created during that execution block.
 
 ---
 
-## 8. Performance
+## Context-Driven Cache Partitioning & Keys
 During bulk imports of thousands of records, Odoo will trigger Chatter tracking logs (`tracking=True`) for every modified field. This results in heavy SQL insert operations and slows down imports.
 *   **The `tracking_disable` Pattern**: Use `with_context(tracking_disable=True)` to temporarily disable chatter tracking and dramatically increase import speed.
 
@@ -133,7 +133,7 @@ def import_bids(self, vals_list):
 
 ---
 
-## 9. Senior
+## Senior Architect: Passing Flags to Avoid SQL Computation
 In Odoo 19:
 *   **Cache Splitting**: If a computed field depends on context keys, you must declare it using the `@api.depends_context` decorator. This ensures Odoo partitions the recordset cache per context value, preventing a user in French (`lang='fr_FR'`) from reading translated fields cached by an English user (`lang='en_US'`).
 ```python
@@ -145,7 +145,7 @@ def _compute_display_name(self):
 
 ---
 
-## 10. Diagrams
+## Immutable Environment Cloning Map
 
 This diagram shows how `with_context()` clones the environment context, establishing a separate, immutable metadata execution branch while leaving the original recordset environment intact:
 
@@ -165,7 +165,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Environment Guides
 *   [Environment Deep Dive](env_deep_dive.md)
 *   [Recordset Helpers](recordset_helpers.md)
 *   [Decorators (@api)](../advanced/decorators.md)

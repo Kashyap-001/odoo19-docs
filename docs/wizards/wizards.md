@@ -9,30 +9,30 @@ Wizards are used in Odoo to perform multi-step actions or to gather user input b
 
 ---
 
-## 1. What is it
+## Wizards & TransientModels (Transient Records)
 An Odoo Wizard is a temporary, modal window backend model created using `models.TransientModel` instead of `models.Model`. It provides a short-lived view where users input variables, which are then processed by a Python function to update persistent database records.
 
 ---
 
-## 2. Why
+## Multi-step Forms & User Confirmation Modals
 Standard model records write permanent data. Creating a regular database record just to ask a user a single confirmation question would bloat tables. TransientModels store records temporarily, which Odoo automatically cleans up periodically.
 
 ---
 
-## 3. When
+## Designing Dialog Modals & Interactive Steps
 *   Use to prompt confirmation inputs (e.g. entering a reason before canceling an auction).
 *   Use to guide users through multi-step installation or configuration wizards.
 *   Use to configure report filters (date ranges, target accounts) before rendering PDFs.
 
 ---
 
-## 4. When Not
+## When to Edit Model Records Directly (Forms)
 *   **Do not** use `TransientModel` to store core business documents (like Invoices or Customers) because their records are periodically deleted by Odoo's vacuum cron.
 *   **Do not** use a wizard for simple, single-field updates where inline list edits or form view modifications are faster.
 
 ---
 
-## 5. Syntax
+## Declaring TransientModels and XML Wizard Views
 Here is the Odoo 19 syntax for declaring a wizard model, its XML form view, and the triggering action:
 
 ```python
@@ -58,7 +58,7 @@ class MyWizard(models.TransientModel):
 
 ---
 
-## 6. Examples
+## Creating Cancel Auction & Bid Status Dialog Wizards
 
 ### A. The "Cancel Auction" Wizard
 This wizard requires users to input a cancellation reason before changing an auction status:
@@ -118,13 +118,13 @@ class AuctionCancelWizard(models.TransientModel):
 
 ---
 
-## 7. Common Mistakes
+## Saving Persistent References & Storage Leaks
 1.  **Forgetting `target="new"` in Action definition**: Omitting this parameter causes Odoo to load the wizard form in full-screen mode, replacing the current page context rather than launching it as a popup.
 2.  **Referencing Transient records in persistent fields**: Linking a standard `models.Model` record to a `TransientModel` record via a `Many2one` field. When the transient record is vacuumed, the field will hold a broken, dangling database foreign key.
 
 ---
 
-## 8. Performance
+## PostgreSQL Vacuuming & Automated Transient Deletion
 *   **The Vacuum Cron Job**: Odoo runs a scheduled action every hour (`database_cleanup`) that executes SQL deletion queries on TransientModel tables, purging records older than 1 hour. This ensures database tables remain small and fast.
 
 | Feature | Regular Model (`models.Model`) | Wizard (`models.TransientModel`) |
@@ -136,14 +136,14 @@ class AuctionCancelWizard(models.TransientModel):
 
 ---
 
-## 9. Senior
+## Senior Architect: Bypassing Cleanup for Multi-Step Wizards
 In Odoo 19:
 *   Pass active recordset IDs automatically using the context dictionary: `context="{'default_auction_id': active_id}"`. This pre-populates the wizard link before it is rendered to the user.
 *   Wizards require security entries inside `ir.model.access.csv` like any other model. Grant read/write permissions to standard user groups to allow dialog initialization.
 
 ---
 
-## 10. Diagrams
+## Transient Wizard Form Pipeline
 
 This sequence diagram illustrates the lifecycle of a wizard popup and how it updates a persistent record before self-terminating:
 
@@ -165,7 +165,7 @@ sequenceDiagram
 
 ---
 
-## 11. Related
+## Related Model Guides
 *   [Form Views](../foundation/views_form.md)
 *   [Context & Flags](../env/context.md)
 *   [Performance & Set Operations](../search/performance_optimization.md)

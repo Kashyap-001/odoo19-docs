@@ -5,7 +5,7 @@ description: Master Odoo 19 PDF printing and QWeb templates. Learn how to write 
 
 # QWeb & Reports (v19)
 
-## 1. What is it?
+## QWeb PDF Report Engine
 In Odoo 19, printable documents (such as Invoices, Purchase Orders, and Custom Certificates) are designed using **QWeb HTML/XML Templates**. 
 
 When a user clicks "Print," Odoo renders these templates into high-quality HTML, which is then parsed and compiled into a PDF file using the **`wkhtmltopdf`** command-line utility.
@@ -25,14 +25,14 @@ graph TD
 
 ---
 
-## 2. Why does it exist?
+## Standardized Document Generation (Invoices, Bids)
 Traditional PDF generation libraries (like ReportLab or raw PDF code) require developers to specify coordinates and layout parameters manually, which is extremely tedious. 
 
 Odoo's QWeb Report Engine solves this by allowing developers to write printable layouts using standard web standards: HTML5, CSS3, and Bootstrap grid styling. This decouples visual layout styling from backend database records.
 
 ---
 
-## 3. When should I use it?
+## Generating Custom PDF Printouts
 Use QWeb Reports whenever you need to produce standardized, printable business documents:
 *   Official invoices and tax reports.
 *   Product barcodes and shipping labels.
@@ -41,13 +41,13 @@ Use QWeb Reports whenever you need to produce standardized, printable business d
 
 ---
 
-## 4. When should I NOT use it?
+## When to Use OWL Views (Interactive Dashboards)
 *   Do not use QWeb Reports to output raw data grids (e.g. exporting 10,000 sales lines to Excel). Generating giant PDF layouts consumes massive server memory and triggers connection timeouts. Use **CSV/XLSX export controllers** instead.
 *   Do not use QWeb HTML templates for emails; emails require a simpler in-line CSS structure (compiled via mail templates).
 
 ---
 
-## 5. Syntax
+## Declaring Report Actions & QWeb PDF Templates
 
 To create a PDF report, you must define:
 1.  An **`ir.actions.report`** record to define the report properties.
@@ -86,7 +86,7 @@ QWeb utilizes structural Odoo wrappers (like `web.html_container` and `web.exter
 
 ---
 
-## 6. Multiple Examples
+## Designing Invoices and Auction Receipt Layouts
 
 ### Beginner: Simple Certificate Template
 Create a basic certificate sheet displaying a listing name and starting price using the new `t-out` directive.
@@ -194,7 +194,7 @@ For complex reports requiring raw SQL queries, aggregates, or calculations that 
 
 ---
 
-## 7. Common Mistakes
+## WKHTMLTOPDF CSS Bugs & Page Break Overlaps
 
 ### ❌ Using Deprecated `t-esc` Directive
 In legacy Odoo, fields were printed using `t-esc`. In Odoo 19, this is deprecated and can trigger security warnings or fail to escape raw values.
@@ -214,19 +214,19 @@ Evaluating computed values or un-prefetched attributes inside template tables fo
 
 ---
 
-## 8. Performance Notes
+## Batch Rendering PDF generation and Cache Optimizations
 *   **Batch Prefetching**: Always pre-load relational fields by calling `browse()` on all IDs at the start of your print method.
 *   **Avoid complex Python methods inside the QWeb XML template**: Instead of executing `t-out="o.calculate_totals()"` inside a loop, pre-calculate the values in your Python report data provider class and pass them to the rendering context.
 
 ---
 
-## 9. Senior Notes
+## Senior Architect: Dynamic PDF Generation with Custom Parsers
 *   **Paper Format Rules**: Define custom margins, layouts, and page dimension records (`report.paperformat`) to print label or envelope formats accurately.
 *   **Multi-language Support**: Use `t-lang` inside the html container wrapper to translate PDF reports according to each recipient partner's preferred language code (`o.partner_id.lang`).
 
 ---
 
-## 10. Related Topics
+## Report Generation & Compilation Flow
 *   **Previous Lesson**: [Assets & Bundles](assets.md)
 *   **Next Lesson**: [Unit Testing](../testing/unit_tests.md)
 *   **See Also**: [AbstractModel Pattern](../advanced/abstract_models.md), [Prefetching Mechanism](../advanced/prefetching.md)

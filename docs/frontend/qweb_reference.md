@@ -9,30 +9,30 @@ QWeb is Odoo's primary rendering engine. Unlike typical HTML engines (like Jinja
 
 ---
 
-## 1. What is it
+## QWeb XML Templating Basics
 QWeb is an XML-based templating engine used in Odoo to generate dynamic output, including PDF report layouts, email bodies, web pages, and OWL component templates. It uses specific `t-` prefixed attributes (directives) to execute conditional logic, loops, and variable bindings.
 
 ---
 
-## 2. Why
+## Dynamic HTML Page & Report Generation
 Modern business software requires dynamic templates that can translate content, display currency formatting, and allow other modules to inherit and customize layouts. QWeb compiles XML templates directly, translating directives into optimized JavaScript or Python functions.
 
 ---
 
-## 3. When
+## Rendering Views, Forms, and Report PDF Outputs
 *   Use to define structures for PDF print documents (like invoices or quotes).
 *   Use to write templates for OWL components in Odoo's web client.
 *   Use to format dynamic emails.
 
 ---
 
-## 4. When Not
+## When to Use OWL Components (Interactive Web Pages)
 *   **Do not** use `t-raw` (raw HTML outputting) unless you are completely sure the input is sanitized. Using raw HTML exposes the application to Cross-Site Scripting (XSS) security vulnerabilities. Use `t-out` instead.
 *   **Do not** perform heavy ORM search operations directly inside QWeb template code. Query and structure your data inside backend Python models or controllers first, and pass clean objects to the template.
 
 ---
 
-## 5. Syntax
+## QWeb Logic Directives (t-if, t-foreach, t-out)
 Here is the core XML syntax for QWeb directives:
 
 ```xml
@@ -57,7 +57,7 @@ Here is the core XML syntax for QWeb directives:
 
 ---
 
-## 6. Examples
+## Listing Records & Rendering Conditional Fields
 
 ### A. Dynamic Class formatting (`t-attf-class`)
 Formatting classes dynamically based on conditional states:
@@ -98,13 +98,13 @@ Formatting classes dynamically based on conditional states:
 
 ---
 
-## 7. Common Mistakes
+## XML Parsing Errors & Undefined Variable Scope
 1.  **Using legacy `t-esc` and `t-raw` directives**: Writing template nodes using deprecated modifiers. Odoo 19 uses `t-out` to perform safe HTML escaping and rendering.
 2.  **Omitting `t-key` in loops inside OWL components**: Forgetting to add `t-key` attributes when writing QWeb templates for reactive OWL interfaces. OWL requires unique loop keys to track changes inside the Virtual DOM.
 
 ---
 
-## 8. Performance
+## Page Compilation Cache & Heavy Loop Rendering
 Generating thousands of PDF lines during massive print operations (like printing invoice packs) can become a bottleneck.
 *   **The `t-cache` Directive**: In Odoo 19, cache HTML fragments based on record write dates to prevent redundant compilations:
     ```xml
@@ -116,7 +116,7 @@ Generating thousands of PDF lines during massive print operations (like printing
 
 ---
 
-## 9. Senior
+## Senior Architect: Extending Core QWeb Templates with t-inherit
 In Odoo 19:
 *   Always prefer `t-out` over `t-esc`. `t-out` handles modern OWL components and specialized HTML objects more safely.
 *   To inherit and extend report layouts dynamically, declare standard templates pointing to the base layout `id` using `<template>` records and xpath operations:
@@ -130,7 +130,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## QWeb Compilation & Execution Pipeline
 
 This diagram illustrates Odoo's QWeb compilation cycle, showing how raw template structures compile into dynamic browser interfaces or PDF report documents:
 
@@ -151,7 +151,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Frontend Guides
 *   [QWeb & Reports (v19)](reports.md)
 *   [OWL Basics](owl.md)
 *   [Assets & Bundles](assets.md)

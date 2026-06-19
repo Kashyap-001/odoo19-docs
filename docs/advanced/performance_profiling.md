@@ -9,29 +9,29 @@ At scale, database query execution, memory inflation, and CPU blockages are the 
 
 ---
 
-## 1. What is it
+## Performance Profiling Concepts
 Performance profiling in Odoo is the practice of capturing execution statistics (CPU cycles, query count, and method call durations) and visualizing execution stack traces to identify resource bottlenecks.
 
 ---
 
-## 2. Why
+## The Need for Profiling & Query Optimization
 As databases grow, previously unnoticeable N+1 query bugs, loops, and unindexed lookups turn into major performance issues. Profiling allows architects to pinpoint the exact line of Python code or database query causing bottlenecks.
 
 ---
 
-## 3. When
+## When to Profile & Analyze Odoo Executions
 *   Use when optimizing long-running cron jobs or scheduled actions.
 *   Use when a user view or client action takes more than 1 second to render.
 *   Use during local test development to verify that SQL query counts remain flat as record numbers grow.
 
 ---
 
-## 4. When Not
+## When to Avoid Profiling in Production
 *   **Do not** enable active profiling on live production servers during peak traffic. Profiling records file states to disk, adding overhead that can degrade performance further. Perform tests on staging replicas instead.
 
 ---
 
-## 5. Syntax
+## Odoo Profiler API & Profiling Commands
 Here is the Odoo 19 syntax for profiling decorators, context managers, cache flushes, and SQL wrappers:
 
 ```python
@@ -57,7 +57,7 @@ self.invalidate_recordset(['field_name'])
 
 ---
 
-## 6. Examples
+## Real-world Profiling Cases & Output
 
 ### A. Surgical Context Manager & Query Counter
 ```python
@@ -122,13 +122,13 @@ self.<input type="text" class="quiz-input-inline w-200" data-answer="invalidate_
 
 ---
 
-## 7. Common Mistakes
+## Profiling Pitfalls & Optimization Traps
 1.  **Direct SQL Queries without Cache Synchronization**: Running raw SQL commands directly via `cr.execute` without flushing the cache beforehand or invalidating it afterwards, which leads Odoo to read stale memory cache data.
 2.  **SQL Injection via String Formatting**: Formatting raw queries like `cr.execute(f"SELECT * FROM table WHERE id = {user_input}")`. Always wrap query parameters inside the `SQL()` class to sanitize inputs.
 
 ---
 
-## 8. Performance
+## CPU Dwell vs Database Query Latency
 To profile requests from the browser, activate **Developer Mode**, click the bug icon, select **Enable Profiling**, and download the generated execution stats file. You can also start Odoo with `--dev=profile` to capture all request files inside `~/.local/share/Odoo/speedscope/`.
 *   **Flamegraph (Time Grid)**: Displays call stacks where each box is a function. The box width corresponds to the execution time.
 *   **Heavy (Bottom-Up)**: Lists individual functions sorted by the time spent directly inside them (excluding call chains).
@@ -136,14 +136,14 @@ To profile requests from the browser, activate **Developer Mode**, click the bug
 
 ---
 
-## 9. Senior
+## Senior Architect: Speedscope & Flamegraph Analysis
 In Odoo 19:
 *   Use the new `SQL()` wrapper class to make raw queries composable and parameterizable without security vulnerabilities.
 *   Ensure `@api.depends_context` is added to computed fields depending on contextual cache flags to partition cached states correctly.
 
 ---
 
-## 10. Diagrams
+## Execution Flow & Call Stack Topology
 
 This diagram shows the structural stack trace width and depth hierarchy inside a Speedscope Flamegraph analysis of a slow method:
 
@@ -162,7 +162,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Tuning Guides
 *   [PostgreSQL and Indexes](postgresql_indexes.md)
 *   [Workers and Scaling](../deployment/scaling.md)
 *   [Batch Operations](../crud/batch_operations.md)

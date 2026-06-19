@@ -14,17 +14,17 @@ In enterprise applications, tasks often need to run automatically in the backgro
 
 ---
 
-## 1. What is it
+## Odoo Scheduled Actions (Crons) Fundamentals
 A Scheduled Action in Odoo is a database record in the `ir.cron` model that describes a periodic task. Odoo's registry manager daemon monitors this table and executes the associated Python methods when the scheduled run time has passed.
 
 ---
 
-## 2. Why
+## The Purpose of Automated Background Processing
 Running heavy computations (like bulk invoice generation or database cleaning) inside a user's web request blocks the thread, causing user interfaces to freeze and triggering timeout errors. Scheduled Actions move this processing into background worker threads.
 
 ---
 
-## 3. When
+## When to Use Scheduled Actions
 *   Use to execute recurring reports (e.g. daily sales summaries).
 *   Use to auto-close records that have expired (e.g., closing ended auctions).
 *   Use to trigger bulk external API synchronizations.
@@ -32,13 +32,13 @@ Running heavy computations (like bulk invoice generation or database cleaning) i
 
 ---
 
-## 4. When Not
+## When to Avoid Crons (Asynchronous Real-Time Tasks)
 *   **Do not** use Scheduled Actions for operations that require immediate, real-time user feedback (use active buttons calling Python objects).
 *   **Do not** run crons at high frequencies (e.g. every few seconds) in multi-process worker environments as they create continuous database read/write locks, degrading performance.
 
 ---
 
-## 5. Syntax
+## Cron Configuration Syntax (XML & Python)
 Scheduled Actions are defined in XML files wrapped inside `<data noupdate="1">` blocks to prevent future module updates from overwriting user schedule custom changes:
 
 ```xml
@@ -76,7 +76,7 @@ class AuctionListing(models.Model):
 
 ---
 
-## 6. Examples
+## Real-World Scheduled Action Scenarios
 
 ### A. Batch Expiration Processor
 ```python
@@ -146,14 +146,14 @@ Auctions must close automatically when their time is up.
 
 ---
 
-## 7. Common Mistakes
+## Common Scheduled Actions Pitfalls
 1.  **Omitting `noupdate="1"`**: Bypassing the noupdate block. If a system administrator customizes the cron frequency in the database UI, upgrading the module will overwrite their changes with the default XML fields.
 2.  **Using `@api.depends` or `@api.onchange` in Crons**: Writing cron methods assuming they execute on active recordsets. Always write your cron methods to execute `self.search` explicitly.
 3.  **Monopolizing Transactions**: Executing massive, long loops without committing chunked progress. If Odoo hits a timeout, the entire transaction is rolled back, meaning zero progress is saved.
 
 ---
 
-## 8. Performance
+## Concurrency, Timeouts, and Database Transaction Locks
 Odoo schedules tasks using database polling. In production setups:
 *   Configure dedicated cron workers in `odoo.conf` by setting the `workers` parameter and disabling cron runs on frontend HTTP workers:
     ```ini
@@ -164,14 +164,14 @@ Odoo schedules tasks using database polling. In production setups:
 
 ---
 
-## 9. Senior
+## Senior Architect: Scaling Crons and Multi-Worker Dedicated Runners
 In Odoo 19:
 *   **Self-Triggering Crons**: Use `self.env.ref('module.cron_xml_id')._trigger()` to dynamically chain execution cycles, bypassing interval wait times when data volume is high.
 *   Crons execute under the superuser context (`base.user_root`). If you need to evaluate records under specific company limits, use `with_company(company)` or `sudo()` to ensure data isolation.
 
 ---
 
-## 10. Diagrams
+## Cron Runner Lifecycle Topology
 
 This diagram illustrates Odoo's background Cron Runner daemon checking and executing scheduled jobs:
 
@@ -192,7 +192,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Business Logic Guides
 *   [Batch Operations](../crud/batch_operations.md)
 *   [Wizards & TransientModels](../wizards/wizards.md)
 *   [Performance & Set Operations](../search/performance_optimization.md)

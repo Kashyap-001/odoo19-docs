@@ -9,17 +9,17 @@ At scale, database query performance is the primary bottleneck for Odoo installa
 
 ---
 
-## 1. What is it
+## PostgreSQL Indexing Foundations
 An index is a database schema structure that PostgreSQL uses to locate records without scanning the entire table. In Odoo 19, indexes are declared on field definitions (`index=True`) or at the model class level using the `models.Index` class wrapper.
 
 ---
 
-## 2. Why
+## The Need for Page-Seek Index Searches
 Without indexes, PostgreSQL must perform sequential table scans (page-by-page reads from disk). B-Tree indexes structure column values into balanced search trees, reducing key lookups from $O(N)$ sequential operations to $O(\log N)$ tree path traversals.
 
 ---
 
-## 3. When
+## When to Build DB Indexes
 *   Use on fields frequently used in search domains (e.g. `[('reference', '=', val)]`).
 *   Use on fields declared in sorting rules (`_order = 'create_date DESC'`).
 *   Use composite indexes when queries routinely filter using combinations of multiple fields.
@@ -27,13 +27,13 @@ Without indexes, PostgreSQL must perform sequential table scans (page-by-page re
 
 ---
 
-## 4. When Not
+## When to Avoid Table Indexes
 *   **Do not** index fields with low selectivity (e.g. Booleans or status flags with only two options) as PostgreSQL will bypass the index and perform sequential scans anyway, unless you wrap it in a partial index filter.
 *   **Do not** add indexes to models with heavy write frequency (`INSERT`/`UPDATE`/`DELETE`) on columns that change continuously (like counter fields) as index table rebuilding slows down database write execution.
 
 ---
 
-## 5. Syntax
+## Declaring Database Indexes in SQL & Python
 Here is the Odoo 19 syntax for defining indexes:
 
 ```python
@@ -57,7 +57,7 @@ class ResPartner(models.Model):
 
 ---
 
-## 6. Examples
+## Composite & Partial Indexing Scenarios
 
 ### A. Composite and Sorting Indexes
 ```python
@@ -112,13 +112,13 @@ class AuctionListing(models.Model):
 
 ---
 
-## 7. Common Mistakes
+## Database Indexing Anti-patterns
 1.  **Over-Indexing**: Adding indexes to every single model column. Every active index slows down PostgreSQL `write` performance because index tables must be updated dynamically with each insert or delete.
 2.  **Indexing Unstored Computed Fields**: Setting `index=True` on a computed field without `store=True`. Unstored computed fields do not exist inside PostgreSQL tables, making indexing impossible.
 
 ---
 
-## 8. Performance
+## Scan Costs: Index Scan vs Seq Scan
 To locate database bottlenecks, prepend queries using `EXPLAIN (ANALYZE, BUFFERS)` to inspect database scan strategies:
 *   **Seq Scan (Sequential Scan) ❌**: Postgres reads the entire table from disk page-by-page. High cost.
     ```text
@@ -132,7 +132,7 @@ To locate database bottlenecks, prepend queries using `EXPLAIN (ANALYZE, BUFFERS
 
 ---
 
-## 9. Senior
+## Senior Architect: Index Cardinality & EXPLAIN ANALYZE
 In Odoo 19:
 *   **Index Only Scan**: If your SQL query only selects columns that are defined within the active index key, PostgreSQL reads value structures directly from the index tree without loading table data pages, achieving maximum performance.
 *   **Rollback Safety Caution**: Since `EXPLAIN ANALYZE` actually executes the query to collect timing metrics, running it on an `UPDATE` or `DELETE` statement will modify records. Always wrap diagnostic writes in rollback blocks:
@@ -144,7 +144,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Scan Access Mechanics
 
 This diagram illustrates the data access difference between a Sequential Table Scan and a B-Tree Index Scan:
 
@@ -170,7 +170,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Database Guides
 *   [Performance & Set Operations](../search/performance_optimization.md)
 *   [Performance Profiling & SQL](performance_profiling.md)
 *   [SQL Performance](../integration/performance.md)

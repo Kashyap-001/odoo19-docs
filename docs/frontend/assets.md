@@ -5,7 +5,7 @@ description: Master the Odoo 19 Assets Bundle system. Learn how to register CSS,
 
 # Assets & Static Files
 
-## 1. What is it?
+## Odoo Asset Bundle System
 In Odoo 19, static files such as JavaScript (ES6 modules), stylesheets (CSS, SCSS), and XML templates are compiled, minified, and delivered to the browser client through a centralized **Assets Bundle System**. You register these files inside the module's `__manifest__.py` file under the `assets` dictionary key.
 
 ```mermaid
@@ -19,7 +19,7 @@ graph TD
 
 ---
 
-## 2. Why does it exist?
+## Efficient Loading & Delivery of JS, CSS, and Templates
 Modern web applications require hundreds of separate JavaScript modules and stylesheets. If a browser loaded every file individually, it would trigger hundreds of HTTP requests, blocking rendering pipelines and slowing page loads. 
 
 Odoo's assets bundle compiler resolves this by:
@@ -30,7 +30,7 @@ Odoo's assets bundle compiler resolves this by:
 
 ---
 
-## 3. When should I use it?
+## Adding Custom Code to Standard Bundles
 Use the `assets` key inside the manifest whenever you add:
 *   **Custom styles** (CSS/SCSS) to Odoo's backend apps or public portal website.
 *   **OWL Javascript components** (`static/src/**/*.js`).
@@ -39,13 +39,13 @@ Use the `assets` key inside the manifest whenever you add:
 
 ---
 
-## 4. When should I NOT use it?
+## When to Load Files Inline (Avoiding Bundle Pollution)
 *   Do not register **standard backend XML views** (like lists, forms, or actions) in the `assets` key; register them under the `'data'` key in `__manifest__.py`.
 *   Do not place raw binary assets like images, logos, fonts, or PDFs in the `assets` bundle list. Simply save them inside your module's `/static/` folder (e.g. `/static/description/icon.png`) and reference them directly via URL.
 
 ---
 
-## 5. Syntax
+## Declaring Assets in the Manifest File
 
 Asset files are declared in your `__manifest__.py` under the `'assets'` dictionary, categorized by **Asset Bundle Target Names**:
 
@@ -79,7 +79,7 @@ You can manipulate existing Odoo assets bundles (such as injecting a script befo
 
 ---
 
-## 6. Multiple Examples
+## Injecting Custom OWL Components & CSS Assets
 
 ### Beginner: Injecting Custom CSS/SCSS Styles
 Apply a global orange color layout to the headers in the Odoo backend.
@@ -151,7 +151,7 @@ Ensure a custom JavaScript utility loads immediately after Odoo's primary WebCli
 
 ---
 
-## 7. Common Mistakes
+## Incorrect Asset Paths & Missing OWL Registries
 
 ### ❌ Omitting the `/** @odoo-module **/` Header
 If you do not include this comment as the first line of your JavaScript files, Odoo's module compiler treats the file as a legacy global script, causing import statements (`import { Component } ...`) to raise syntax errors in the browser.
@@ -169,19 +169,19 @@ import { Component } from "@odoo/owl";
 
 ---
 
-## 8. Performance Notes
+## Minification, Compression, and Browser Caching
 *   **Regenerate Asset Bundles**: While in standard developer mode, Odoo aggressively caches compiled assets. If your CSS or JS updates do not show up, append `?debug=assets` to your browser URL, or click **Regenerate Assets Bundles** in the Developer Debug menu to clear database attachment caches.
 *   **Wildcard Performance**: Glob patterns like `static/src/**/*` compile all files in a folder. While clean, this can slow down developer startup speeds in massive projects. For production stability, declare files explicitly or limit recursive search depths.
 
 ---
 
-## 9. Senior Notes
+## Senior Architect: Conditional Assets & Lazy Loading
 *   **Module Naming Rules**: Odoo ES modules translate file paths into identifiers. If a file is at `pways_auction/static/src/components/bid.js`, its module path is `@pways_auction/components/bid`. Keep paths predictable.
 *   **Manifest Dependencies**: If you inherit or modify files inside another module's bundle (e.g. `web.assets_backend`), your module manifest **must** list that module inside the `'depends'` key to ensure proper loading order.
 
 ---
 
-## 10. Related Topics
+## Asset Build & Browser Delivery Pipeline
 *   **Previous Lesson**: [JS to Python (orm.call)](orm_call.md)
 *   **Next Lesson**: [Reactive State (Store)](../advanced_owl/store.md)
 *   **See Also**: [Services & Registry](owl_services_registry.md), [Component Patching](../advanced_owl/patching.md)

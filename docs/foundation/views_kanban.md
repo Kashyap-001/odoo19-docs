@@ -9,29 +9,29 @@ Kanban views display records as visual cards, organized in columns by stage or s
 
 ---
 
-## 1. What is it
+## Odoo Kanban Board Views
 An Odoo Kanban view is an XML configuration compiled by OWL into a card board interface. In Odoo 19, the legacy `<kanban-box>` has been replaced by the structured `<card>` element, simplifying styling and improving rendering speeds.
 
 ---
 
-## 2. Why
+## Visualizing Workflow Pipelines & Columns
 Kanban views provide visual pipeline management (e.g., CRM opportunities, project tasks, or item statuses). They offer a clear summary of record states, priority markers, deadlines, and ownership avatars.
 
 ---
 
-## 3. When
+## Implementing Custom Kanban Column Dashboards
 *   Use to track stages in business processes (e.g., Draft -> In Progress -> Validated).
 *   Use as visual grids for image-heavy records (e.g., Employees, Contacts, Products).
 
 ---
 
-## 4. When Not
+## When to Avoid Kanban (Using Structured Lists)
 *   **Do not** use Kanban views for rapid inline numerical data editing (use List views).
 *   **Do not** use Kanban when you need to inspect extensive columns of values simultaneously.
 
 ---
 
-## 5. Syntax
+## Kanban XML Layout & QWeb Templating
 Here is the core XML syntax for Odoo 19's new `<card>` based Kanban view:
 
 ```xml
@@ -68,7 +68,7 @@ Here is the core XML syntax for Odoo 19's new `<card>` based Kanban view:
 
 ---
 
-## 6. Examples
+## Examples: Project Stages & Custom Cards
 Below is a complete Odoo 19 Kanban view for Auction Listings grouped by state, featuring currency formatting, seller avatars, and bid counts:
 
 ```xml
@@ -112,21 +112,21 @@ Below is a complete Odoo 19 Kanban view for Auction Listings grouped by state, f
 
 ---
 
-## 7. Common Mistakes
+## Invalid Card Loops & Broken XML Elements
 1.  **Using Legacy `<kanban-box>` Syntax**: Developing new views with `t-name="kanban-box"` or classes like `oe_kanban_global_click` instead of using the new `<card>` pattern.
 2.  **Referencing Unloaded Fields**: Trying to display fields inside the card template without declaring them under the main `<kanban>` tag first. Undeclared fields will not be loaded into the template environment.
 3.  **Complex QWeb Logic in Cards**: Writing massive javascript templates within card tags, which degrades rendering performance. Keep card logic thin.
 
 ---
 
-## 8. Performance
+## Pagination, Column Fetching, and Card Load Times
 *   **OWL-Powered `<card>` Engine**: The new card tag allows OWL to compile and render records faster, avoiding old virtual DOM translation steps.
 *   **Column Column-Count Limits**: Grouping by high-cardinality fields (like `partner_id`) results in too many columns and slows down SQL fetches. Group by Status or Stages instead.
 *   **Wizards/Limit settings**: Set limits (`limit="40"`) to prevent loading too many records per column at once.
 
 ---
 
-## 9. Senior
+## Senior Architect: Custom JS Kanban Controller Patches
 In Odoo 19:
 *   **Dynamic Column Progress**: Add column summaries directly inside Kanban headers using progressbar configurations:
     ```xml
@@ -138,7 +138,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Kanban Columns to Database Mapping
 
 This diagram shows how Kanban board columns represent database groups, containing templated cards built via QWeb:
 
@@ -164,7 +164,7 @@ graph LR
 
 ---
 
-## 11. Related
+## Related View Guides
 *   [List Views](views_list.md)
 *   [Form Views](views_form.md)
 *   [OWL Basics](../frontend/owl.md)

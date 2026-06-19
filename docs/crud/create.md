@@ -5,7 +5,7 @@ description: Master Odoo 19 records creation. Learn how to write batch creation 
 
 # CRUD Operations: The create() Method
 
-## 1. What is it?
+## The Record Creation Lifecycle (create)
 The `create()` method is Odoo's ORM gateway for inserting new rows of data into the PostgreSQL database. In Odoo 19, the method is designed for batch processing, allowing developers to create multiple records across a single database transaction.
 
 ```mermaid
@@ -23,25 +23,25 @@ graph TD
 
 ---
 
-## 2. Why does it exist?
+## Batch Creation Validation & Lifecycle Hooking
 In a relational enterprise database, inserting data row-by-row creates massive TCP network latency overhead, locks database tables sequentially, and invalidates registry caches repeatedly. 
 
 The Odoo `create()` engine enforces batching via the `@api.model_create_multi` decorator, which bundles multiple data structures into a single compiled database `INSERT` operation, optimizing transaction speeds and memory footprint.
 
 ---
 
-## 3. When should I use it?
+## When to Override create()
 Use `create()` whenever you need to programmatically insert records into Odoo database tables (e.g. converting a confirmed auction bid into an invoice line, duplicating listings, or bulk importing datasets).
 
 ---
 
-## 4. When should I NOT use it?
+## When to Use Default Getters or Action Buttons
 *   Do not call `create()` inside loops. Collecting dicts into lists and calling `create()` once is the benchmark standard.
 *   Do not invoke `create()` to update values of already existing records; use `write()` instead.
 
 ---
 
-## 5. Syntax
+## Overriding create() for Batch Processing
 The modern `create()` method always takes a list of dictionaries (`vals_list`) and returns a recordset of the newly created records.
 
 ```python
@@ -59,7 +59,7 @@ def create(self, vals_list):
 
 ---
 
-## 6. Multiple Examples
+## Sequence Insertion & Related Creation Examples
 
 ### Beginner: Standard Record Creation
 Creating a single auction listing with default values.
@@ -111,7 +111,7 @@ def import_external_listings(self, payload_list):
 
 ---
 
-## 7. Common Mistakes
+## create() Override Pitfalls
 
 ### ❌ Looping Creates (The N+1 Loop Trap)
 Calling create in a loop triggers separate database connection requests, cache clearing, and slow insertion rates.
@@ -131,19 +131,19 @@ self.env['auction.listing'].create(vals_list)
 
 ---
 
-## 8. Performance Notes
+## Batch Insert Costs & Recomputation Checks
 *   **Single Transaction Isolation**: Odoo wraps the entire `create(vals_list)` execution inside a single PostgreSQL database savepoint. If one dictionary within the `vals_list` fails validation (such as a database unique constraint check), the entire batch is rolled back, preserving database sanity.
 *   **Cache Feeding**: During execution, the ORM seeds `self.env.cache` with the newly assigned IDs and column values, ensuring subsequent calls to read fields on the returned recordset hit RAM rather than Postgres disk storage.
 
 ---
 
-## 9. Senior Notes
+## Senior Architect: Bypassing Creation Hooks Safely
 *   **Super Overrides**: When overriding the `create()` method in custom models, always preserve the `vals_list` integrity. Do not split the list inside the override to run `super().create()` individually for each element, as this breaks the `@api.model_create_multi` optimization.
 *   **XML Data Prefill**: If fields have defaults defined (`default=lambda self: ...`), Odoo applies them dynamically during `create()` only if the key is missing from the dictionary. If you need to override fields to write `False`, explicitly pass the key as `False` in your `vals_list`.
 
 ---
 
-## 10. Related Topics
+## Record Creation Step Pipeline
 *   **Previous Lesson**: [State Initialization (default_get)](state_initialization.md)
 *   **Next Lesson**: [read() & browse()](read.md)
 *   **See Also**: [The write() Method](write.md), [Relational Commands (Command)](relational_commands.md)

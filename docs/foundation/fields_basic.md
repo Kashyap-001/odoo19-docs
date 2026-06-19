@@ -9,17 +9,17 @@ Odoo models represent database tables, and fields represent the columns in those
 
 ---
 
-## 1. What is it
+## Basic Column Data Types (Char, Integer, Float)
 Basic fields are static, non-relational data types that store single values (text, numbers, booleans, dates, or selection options). They form the core schema of any model in the Odoo ORM.
 
 ---
 
-## 2. Why
+## Storing Primitive Values in Odoo
 Using the correct basic field ensures that data is validated correctly at the Python layer, stored efficiently in the PostgreSQL database, and rendered automatically with appropriate UI widgets in the web client.
 
 ---
 
-## 3. When
+## Choosing the Correct Basic Field Type
 *   Use **Char** for short strings like names, codes, or URLs.
 *   Use **Text** for multi-line details, descriptions, or logs.
 *   Use **Integer** for counts, sequences, or order values.
@@ -31,14 +31,14 @@ Using the correct basic field ensures that data is validated correctly at the Py
 
 ---
 
-## 4. When Not
+## When to Avoid Char (Using Relational or Selection)
 *   **Do not** use `Float` for money; always use `Monetary` to avoid rounding errors and handle multi-currency formatting automatically.
 *   **Do not** use `Char` for long descriptions; use `Text` to avoid database size limits (usually 255 characters).
 *   **Do not** use `Selection` if the options need to be edited dynamically by users; use a `Many2one` relation instead.
 
 ---
 
-## 5. Syntax
+## Defining Basic Fields & Field Attributes
 Here is the core Python syntax for defining basic fields in Odoo 19:
 
 ```python
@@ -75,7 +75,7 @@ class AuctionItem(models.Model):
 
 ---
 
-## 6. Examples
+## Text, Numeric, and Binary Configuration
 Below is a complete Odoo 19 Python model demonstrating basic fields configuration options like default values, translated strings, and read-only attributes:
 
 ```python
@@ -133,21 +133,21 @@ class ProductWarranty(models.Model):
 
 ---
 
-## 7. Common Mistakes
+## Precision Errors & Binary File Bloat
 1.  **Direct Function Call in Default Arguments**: Forgetting that `default=fields.Datetime.now()` sets the default to the server start time. Always pass the callable `default=fields.Datetime.now` or `default=fields.Date.context_today`.
 2.  **Missing `currency_id` for Monetary Fields**: Using `fields.Monetary` without defining a companion `Many2one('res.currency')` field named `currency_id` (or specifying `currency_field` explicitly).
 3.  **Unindexed Search Fields**: Leaving fields like `serial_number` unindexed (`index=True`) when they are frequently queried in search bars, leading to sequential table scans.
 
 ---
 
-## 8. Performance
+## PostgreSQL Column Size & Write Speeds
 *   **Indexing (`index=True`)**: Adds a database-level B-tree index. Do this for code, reference, or name columns. Never index high-write columns with low cardinality (like Booleans).
 *   **Char Size Limit (`size=100`)**: Forces database validation and matches field lengths.
 *   **Text Field Storage**: PostgreSQL stores short text in-line, but long text (>2KB) is compressed and stored in the toast table, which requires extra disk seeks when read. Avoid reading description fields in list views.
 
 ---
 
-## 9. Senior
+## Senior Architect: Monitored Changes & Field Groups
 In Odoo 19:
 *   `translate=True` uses the new translation JSONB fields in PostgreSQL where available. This makes searching translations extremely fast without joining separate tables.
 *   `Date.context_today` and `Datetime.context_timestamp` are preferred for defaults because they automatically handle the user's timezone from the environment context, preventing offset issues.
@@ -158,7 +158,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Field Architecture: UI to Database Mapping
 
 This diagram shows how Odoo Python basic fields map to PostgreSQL column types and user interface inputs:
 
@@ -195,7 +195,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Fields Guides
 *   [Relational Fields](fields_relational.md)
 *   [Advanced Field Logic](fields_advanced.md)
 *   [Defining Models](models.md)

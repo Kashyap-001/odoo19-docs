@@ -5,7 +5,7 @@ description: Master Odoo 19 model-level security. Learn how to configure securit
 
 # Security & Access Control Lists (ACL)
 
-## 1. What is it?
+## Odoo Model Access Control Lists (ACL)
 Security in Odoo is a multi-layered gatekeeper system that controls access to data models and specific database rows. The outermost layer is the **Access Control List (ACL)**, which governs model-level access permissions (Create, Read, Update, Delete) for different user groups.
 
 ```mermaid
@@ -19,25 +19,25 @@ graph TD
 
 ---
 
-## 2. Why does it exist?
+## The Role of Model-Level Security Access
 Enterprise Resource Planning (ERP) systems store highly sensitive company data (e.g. financials, contracts, employee profiles). 
 
 ACLs ensure that users can only access models relevant to their roles, preventing unauthorized data modification, security breaches, and user interface clutter by hiding inaccessible actions and views.
 
 ---
 
-## 3. When should I use it?
+## When to Define Access Rights (ACLs)
 Define security groups and ACLs for **every new custom model** you create. In Odoo, if a model does not have explicit ACL rules, it is inaccessible to all non-admin users by default.
 
 ---
 
-## 4. When should I NOT use it?
+## When to Use Other Security Layers (Record Rules)
 *   Do not use ACLs to filter records belonging to the *same* model dynamically (e.g. allowing users to only see their own sales leads). ACLs are boolean model-level rules. For row-level filtering, use **Record Rules** (`ir.rule`).
 *   Do not use ACLs to hide fields from a view for certain roles; use field-level security (`groups="..."` attribute on fields) instead.
 
 ---
 
-## 5. Syntax
+## Defining ACL Permissions (CSV Schema)
 
 ### A. Security Group XML Definition
 Groups are defined in XML files (typically inside `security/security.xml`) under the `res.groups` model:
@@ -58,7 +58,7 @@ access_auction_manager,auction.manager,model_auction_listing,pways_auction.group
 
 ---
 
-## 6. Multiple Examples
+## Custom Group Access Right Implementations
 
 ### Beginner: Standard ACL CSV Definition
 Create a simple CSV mapping full read, write, and create rights to internal users, but denying delete permissions.
@@ -105,7 +105,7 @@ access_catalog_public,catalog.public,model_auction_listing,,1,0,0,0
 
 ---
 
-## 7. Common Mistakes
+## Security Access Mapping Mistakes
 
 ### ❌ Forgetting `model_` Prefix in CSV
 Beginners often reference the python `_name` directly in the CSV `model_id:id` column.
@@ -123,19 +123,19 @@ access_listing,auction.listing,model_auction_listing,base.group_user,1,1,1,0
 
 ---
 
-## 8. Performance Notes
+## How ACL Checks Impact the Registry Cache
 *   **Cache Invalidation**: Modifying ACL groups at runtime causes Odoo to clear the security cache for all active sessions. Group modifications should be handled during module updates to prevent performance drops.
 *   **Superuser Loophole**: The system user (ID `1` or `__system__`) and users running methods under `sudo()` completely bypass all ACL checks, saving CPU cycles but ignoring security barriers.
 
 ---
 
-## 9. Senior Notes
+## Senior Architect: Overriding check_access_rights
 *   **Impersonation Trap**: Never test access configurations using the primary administrative account. Odoo’s Superuser (ID 1) bypasses ACL validations, which can mask missing CSV configurations until production deployment.
 *   **Noupdate Management**: Wrap your group XML records in `<data noupdate="1">` blocks to prevent database changes made by server administrators in the UI from being overwritten during system updates.
 
 ---
 
-## 10. Related Topics
+## Security Verification Gateway
 *   **Previous Lesson**: [XML Data Engine](../foundation/data_files.md)
 *   **Next Lesson**: [List Views](../foundation/views_list.md)
 *   **See Also**: [Record Rules (Row-level Security)](rules.md), [Security Modifiers (sudo)](../env/security_modifiers.md)

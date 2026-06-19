@@ -9,12 +9,12 @@ A hallmark of a Senior Odoo developer is minimizing database hits. Every time yo
 
 ---
 
-## 1. What is it
+## Set-Based Batch Operations
 Batch operations in Odoo refer to calling ORM methods (`write()`, `create()`, `unlink()`) on a multi-recordset or passing list structures to create methods rather than executing individual actions on a record-by-record basis inside loops.
 
 ---
 
-## 2. Why
+## Minimizing Network Roundtrips & SQL Overhead
 Executing ORM writes in loops triggers an "ORM Storm":
 *   **Database Hits**: Every loop execution generates a database round-trip (TCP overhead).
 *   **Cache Invalidation**: The environment cache is repeatedly cleared and rebuilt.
@@ -22,19 +22,19 @@ Executing ORM writes in loops triggers an "ORM Storm":
 
 ---
 
-## 3. When
+## When to Perform Batch Mutations
 *   Use set-based writes to update field values across multiple records matching a search filter (e.g., closing all completed auctions).
 *   Use batch creates (`@api.model_create_multi`) when writing bulk data migration scripts or integration APIs.
 *   Use `Command` helper lists to link or unlink relational fields in a single step.
 
 ---
 
-## 4. When Not
+## When to Process Records Individually
 *   **Do not** batch if calculations require immediate, sequential database locks where subsequent record inputs depend on the exact database state of the previous record (though this is extremely rare and can usually be handled via memory buffers).
 
 ---
 
-## 5. Syntax
+## Writing Batch-Safe Python Code
 Here is the python syntax for batch operations in Odoo 19:
 
 ```python
@@ -60,7 +60,7 @@ recordset.write({
 
 ---
 
-## 6. Examples
+## Multi-Record Creation & Write Scenarios
 
 ### A. Batch Writes vs Loops
 ```python
@@ -124,13 +124,13 @@ listing.write({'tag_ids': commands})
 
 ---
 
-## 7. Common Mistakes
+## Batch Execution & Loop Traps
 1.  **Iterating recordsets prior to calling `write()`**: Writing loops like `for rec in records: rec.write({'flag': True})` instead of `records.write({'flag': True})`.
 2.  **Writing single creates inside dynamic loops**: Building scripts that call `self.env['model'].create(vals)` inside loop iterators, completely bypassing Odoo 19's multi-create performance optimizations.
 
 ---
 
-## 8. Performance
+## O(N) Loops vs O(1) Bulk SQL Operations
 
 This table compares PostgreSQL metrics and execution costs between record loops and batch set-based operations:
 
@@ -143,14 +143,14 @@ This table compares PostgreSQL metrics and execution costs between record loops 
 
 ---
 
-## 9. Senior
+## Senior Architect: Prefetching & Cache Batching
 In Odoo 19:
 *   The `@api.model_create_multi` decorator is strictly enforced. Creating single records via `create(vals)` wraps the dictionary in a list behind the scenes, meaning there is zero performance benefit to single-record calls. Always write your API endpoints to compile lists of dictionaries and invoke `create(vals_list)` as a single operation.
 *   Batching writes prevents PostgreSQL deadlock situations under heavy concurrent load (such as multiple parallel orders updating product inventory counts).
 
 ---
 
-## 10. Diagrams
+## Loop vs Batch Query Cost Topology
 
 This diagram contrasts the database interactions between looping operations and set-based batch operations:
 
@@ -177,7 +177,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related Performance Guides
 *   [The write() Method](write.md)
 *   [create() Multi](create.md)
 *   [Relational Commands (Command)](relational_commands.md)

@@ -9,17 +9,17 @@ Every transactional model in Odoo requires a **Search View**. While list and kan
 
 ---
 
-## 1. What is it
+## Search Views & Search Panels UI
 An Odoo Search View is an XML record containing directives that define the search parameters in the top-right search box, the available toggle filters, standard group-by configurations, and the left-side hierarchical selection panel (Search Panel).
 
 ---
 
-## 2. Why
+## Facilitating Record Filtering & Navigation
 Enterprise databases contain thousands of records. Search views allow users to locate specific entries using keyword lookups, pre-defined domain filters, and dynamic grouping pipelines, rendering queries instantly.
 
 ---
 
-## 3. When
+## Designing Custom Search and Panel Filters
 *   Use to define searchable fields on all main menu list and kanban layouts.
 *   Use to create logical group-by categories (e.g. group sales by representative).
 *   Use to configure date range selection inputs (e.g. filter entries by month).
@@ -27,12 +27,12 @@ Enterprise databases contain thousands of records. Search views allow users to l
 
 ---
 
-## 4. When Not
+## When to Rely on Default Search Definitions
 *   **Do not** add a `<searchpanel>` sidebar for high-cardinality fields (like `res.partner` or numeric ID fields) because Odoo will attempt to fetch and render all unique options in the sidebar, causing serious view load latency.
 
 ---
 
-## 5. Syntax
+## Declaring Search Views in XML
 Here is the Odoo 19 XML structure for declaring a Search View:
 
 ```xml
@@ -66,7 +66,7 @@ Here is the Odoo 19 XML structure for declaring a Search View:
 
 ---
 
-## 6. Examples
+## Defining Filters, Group-bys, and Search Panels
 
 ### A. Advanced Date and Multi-field Filter Domains
 ```xml
@@ -135,19 +135,19 @@ To activate specific filters automatically when a user opens a view menu, set co
 
 ---
 
-## 7. Common Mistakes
+## Broken Fields & Invalid Domain Mappings
 1.  **Missing Separators in Filters**: Defining toggle filters next to each other without placing a `<separator/>` tag between them. By default, Odoo combines adjacent filters using a logical **OR** (`|`) statement. Adding a `<separator/>` forces a logical **AND** (`&`) operation.
 2.  **Referencing fields omitted from models**: Specifying search fields in the XML layout that are not defined in the model’s Python class. This triggers database loading warnings at server boot.
 
 ---
 
-## 8. Performance
+## Indexes, Context Filtering, and Database Search Cost
 *   **Logical ANDs / ORs**: Keep filter domains simple. Complex OR queries require index scans on multiple keys, increasing database query latency.
 *   **Search Panel Select Options**: Setting `select="multi"` on search panels accelerates filtering but queries count groups in background queries. Ensure the groupby field in the search panel is indexed.
 
 ---
 
-## 9. Senior
+## Senior Architect: Overriding default_search_for
 In Odoo 19:
 *   Use `filter_domain` to implement dynamic "Global Search" inputs where a single search box queries across multiple model fields:
     ```xml
@@ -158,7 +158,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Search Panel & Database Filter Pipeline
 
 This diagram shows how search inputs and panels inside Odoo's Web Client UI map to ORM domains and compile into SQL select queries:
 
@@ -177,7 +177,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related View Guides
 *   [List Views](views_list.md)
 *   [Form Views](views_form.md)
 *   [Kanban Views](views_kanban.md)

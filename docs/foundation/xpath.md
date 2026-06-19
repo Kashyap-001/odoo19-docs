@@ -9,17 +9,17 @@ Odoo allows developers to extend or modify existing user interface views without
 
 ---
 
-## 1. What is it
+## XPath XML Extension Mechanics
 XPath (XML Path Language) is a query language used to select nodes inside an XML document. In Odoo, inheritance uses XPath expressions to locate elements in base UI records (like forms, lists, or kanbans) and surgically inject modifications.
 
 ---
 
-## 2. Why
+## Modifying Views Without Altering Base Code
 Modern modules must be highly customizable. By writing XPath rules, a custom module can add tabs, relocate buttons, or hide fields on core Odoo views. This keeps modifications modular and prevents system upgrade conflicts.
 
 ---
 
-## 3. When
+## Extending Core Odoo Forms & Lists
 *   Use to append custom fields after or before core fields.
 *   Use to make fields read-only or invisible dynamically under specific user roles.
 *   Use to add new tabs (`<page>`) inside tab notebooks.
@@ -27,13 +27,13 @@ Modern modules must be highly customizable. By writing XPath rules, a custom mod
 
 ---
 
-## 4. When Not
+## When to Build Independent Custom Views
 *   **Do not** use `position="replace"` to delete elements you only want to hide. Replacing nodes breaks any other installed modules that reference those nodes, causing database loading crashes. Use `position="attributes"` to set `invisible="1"` instead.
 *   **Do not** write massive, long XPath paths matching layout containers (like `//div/div/div/group/field`) as they easily break with minor updates to the base template.
 
 ---
 
-## 5. Syntax
+## Defining View Extensions and XPath Position Elements
 Here is the core XML layout for inheriting views and executing XPath actions in Odoo 19:
 
 ```xml
@@ -60,7 +60,7 @@ Here is the core XML layout for inheriting views and executing XPath actions in 
 
 ---
 
-## 6. Examples
+## Adding Fields, Buttons, and Modifiers to Core Views
 
 ### A. Surgical Attribute Modification
 ```xml
@@ -135,26 +135,26 @@ This example injects a starting bid field directly after the list price inside t
 
 ---
 
-## 7. Common Mistakes
+## Brittle Selectors & Missing Field Dependencies
 1.  **Using Numeric Child Index Elements**: Locating columns using positional indexes (e.g. `//group[1]/field[3]`). If other modules insert columns prior to yours, index positions shift, causing your XPath to apply to the wrong field or fail entirely. Always match fields using naming attributes: `//field[@name='target_name']`.
 2.  **Using Deprecated Modifier Attributes in attributes overrides**: Writing overrides like `<attribute name="attrs">{'invisible': [('state', '=', 'draft')]}</attribute>`. Odoo 19 has completely removed `attrs` styling logic. Use direct modifier names instead: `<attribute name="invisible">state == 'draft'</attribute>`.
 
 ---
 
-## 8. Performance
+## View Parsing Costs & Overridden Inheritance Chains
 *   **Deep Search Cost (`//`)**: Using double slashes forces Odoo's view XML parser to scan the entire tree layout recursively. In large files (like complex sales order templates), this adds loading latency at registry boot.
 *   **Direct Pathing Acceleration**: Using direct paths (e.g. `/form/sheet/group/field[@name='x']`) allows immediate element matching, speeding up server compilation times.
 
 ---
 
-## 9. Senior
+## Senior Architect: Dynamic XPath Selection with Mode Attributes
 In Odoo 19:
 *   **`mode="inner"` Overrides**: You can specify `mode="inner"` inside your inherited view record block. This creates a local override scope, applying modifications only to specific view references rather than altering the parent view layout globally across the entire database.
 *   **Anchor Matches**: Avoid matching HTML divisions directly. Anchor your selectors on persistent backend XML elements (like notebook tabs page names, form sheet groups, or fields).
 
 ---
 
-## 10. Diagrams
+## XPath Positioning & Extensible Elements
 
 This diagram shows how XPath position parameters insert new code blocks relative to a targeted base node inside Odoo's XML parser tree:
 
@@ -170,7 +170,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related View Guides
 *   [Form Views](views_form.md)
 *   [List Views](views_list.md)
 *   [Record Rules (Row-level Security)](../business/rules.md)

@@ -9,30 +9,30 @@ Form views provide a rich, structured interface for creating, editing, and displ
 
 ---
 
-## 1. What is it
+## Odoo Form View Architecture
 An Odoo Form View is an XML template that organizes individual fields into structural elements like buttons, state progress statusbars, side-by-side columns (groups), tabbed sections (notebooks), and chatter feeds.
 
 ---
 
-## 2. Why
+## Creating Intuitive Data Management Pages
 Form views contain the business logic interface. They orchestrate work processes, display lifecycle statuses, enable record modifications, and house sub-records (like order lines or comments) in a single consolidated workspace.
 
 ---
 
-## 3. When
+## When to Standard & Custom Form View Implementations
 *   Use to create or edit records.
 *   Use to execute complex processes (e.g., validating an invoice, running a wizard).
 *   Use when displaying comprehensive details, notes, activities, and communication logs.
 
 ---
 
-## 4. When Not
+## When to Use List, Kanban, or Wizard Modals
 *   **Do not** use complex form views for simple key-value parameters or settings; use simple setting views.
 *   **Do not** use form views for bulk record actions; use list views.
 
 ---
 
-## 5. Syntax
+## Declaring XML Form View Elements
 Here is the core XML layout structure of an Odoo 19 form view:
 
 ```xml
@@ -93,7 +93,7 @@ Here is the core XML layout structure of an Odoo 19 form view:
 
 ---
 
-## 6. Examples
+## Standard Columns, Tabs, and Chatter Laying Out
 Below is a complete, real-world example of an Auction Listing form view including conditional visibility modifiers, smart buttons, and embedded list views:
 
 ```xml
@@ -170,20 +170,20 @@ Below is a complete, real-world example of an Auction Listing form view includin
 
 ---
 
-## 7. Common Mistakes
+## Invalid XML Nesting & Missing Field Modifiers
 1.  **Placing Fields Outside `<group>` tags**: Putting input fields directly under `<sheet>` without nesting them inside `<group>`. This breaks the grid layout, leaving the label and field unaligned.
 2.  **Using Deprecated `attrs` attributes**: Odoo 19 has completely removed the legacy `attrs` attribute (e.g., `attrs="{'invisible': [('state', '=', 'draft')]}"`). Always use direct boolean logic attributes: `invisible="state == 'draft'"` or `readonly="state in ('done', 'cancel')"`.
 3.  **Missing companion fields**: Using monetary fields without including the `currency_id` field in the form view (even as `invisible="1"`), which breaks currency rendering.
 
 ---
 
-## 8. Performance
+## Lazy Rendering, Groups, and OWL Form Views
 *   **Notebook Lazy Loading**: Odoo only fetches and renders data for active notebooks tabs. If a form has massive sub-lists, place them in secondary tabs to avoid loading them during initial page loads.
 *   **Invisible Fields Processing**: Fields marked `invisible="1"` are still loaded in the recordset cache. Limit the number of hidden fields to keep request payloads lightweight.
 
 ---
 
-## 9. Senior
+## Senior Architect: Overriding get_views() for Dynamic Forms
 In Odoo 19:
 *   **The `get_views()` Hook (v16+)**: The primary way to dynamically modify a view's XML before it is sent to the browser is by overriding the `get_views()` method. This is much more powerful than static XML inheritance because it allows you to change the UI based on real-time Python logic.
     ```python
@@ -201,7 +201,7 @@ In Odoo 19:
 
 ---
 
-## 10. Diagrams
+## Form Structure & XML Element Tree
 
 This diagram shows the structural elements layout of a standard Odoo Form view:
 
@@ -227,7 +227,7 @@ graph TD
 
 ---
 
-## 11. Related
+## Related View Guides
 *   [List Views](views_list.md)
 *   [Kanban Views](views_kanban.md)
 *   [XPath & View Overrides](xpath.md)
