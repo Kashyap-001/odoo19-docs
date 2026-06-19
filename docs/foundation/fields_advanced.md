@@ -128,6 +128,22 @@ class CatalogCategory(models.Model):
             ])
 ```
 
+### 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the purpose of the `compute` attribute on a field?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It is used to define a field whose value is calculated by a Python method rather than being directly stored in the database." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. What is the difference between `related` and `compute` fields?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Related fields mirror data from another record, while compute fields execute Python logic." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 ---
 
 ## 7. Common Mistakes
@@ -152,9 +168,11 @@ class CatalogCategory(models.Model):
 
 ## 9. Senior
 In Odoo 19:
-*   The legacy `@api.returns` decorator is officially deprecated and removed. Ensure custom action methods return the clean recordset structure.
-*   `compute_sudo=True` is particularly critical for computing metrics in portal views (such as customer dashboard summaries) where the public user lacks ACL access to underlying system tables.
-*   Use `related_sudo=True` to fetch fields from related records (like billing settings) that the logged-in portal or base user does not have permission to view.
+*   **Removal of `@api.returns`**: In previous versions, this decorator was used to ensure a method returned a recordset of a specific model. In Odoo 19, this is **deprecated/removed**. Simply return the recordset directly; the ORM now handles type-safety internally.
+*   **HTML Builder Refactor**: The `web_editor` module has been renamed to `html_builder`. If you are inheriting from or using assets from the old editor, you must update your references.
+*   **Removal of `odoo.osv`**: The legacy `osv` (OpenObject Service) module has been officially removed. All code must now use the modern `odoo.models` API.
+*   **`compute_sudo=True`**: Particularly critical for computing metrics in portal views (such as customer dashboard summaries) where the public user lacks ACL access to underlying system tables.
+*   **`related_sudo=True`**: Bypasses security restrictions to fetch fields from related records (like billing settings) that the logged-in portal or base user does not have permission to view.
 
 ---
 

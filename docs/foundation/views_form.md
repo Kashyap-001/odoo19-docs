@@ -152,6 +152,22 @@ Below is a complete, real-world example of an Auction Listing form view includin
 </record>
 ```
 
+### 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Which Python method should you override to dynamically modify a view's XML before it is rendered?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="The `get_views()` method." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. What widget should you use to display a User Many2one field as an avatar and name?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="`widget=&quot;many2one_avatar_user&quot;`." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 ---
 
 ## 7. Common Mistakes
@@ -169,8 +185,19 @@ Below is a complete, real-world example of an Auction Listing form view includin
 
 ## 9. Senior
 In Odoo 19:
-*   The `get_views()` method hook can be overridden in Python to dynamically modify the form's structure based on groups or companies before loading the page.
-*   Modifiers logic: Direct expressions like `readonly="state == 'done'"` are processed on-the-fly inside OWL views, reducing rendering delays compared to legacy client engines.
+*   **The `get_views()` Hook (v16+)**: The primary way to dynamically modify a view's XML before it is sent to the browser is by overriding the `get_views()` method. This is much more powerful than static XML inheritance because it allows you to change the UI based on real-time Python logic.
+    ```python
+    @api.model
+    def get_views(self, views, options=None):
+        res = super().get_views(views, options)
+        if 'form' in res['views']:
+            # res['views']['form']['arch'] contains the XML string
+            # You can use lxml to surgically insert or remove elements
+            pass
+        return res
+    ```
+*   **Legacy Hooks (`view_init` & `view_get`)**: While mostly deprecated in favor of `get_views()`, these older hooks are sometimes still found in legacy modules. Always prefer `get_views()` for Odoo 19 projects.
+*   **Modifiers logic**: Direct expressions like `readonly="state == 'done'"` are processed on-the-fly inside OWL views, reducing rendering delays compared to legacy client engines.
 
 ---
 

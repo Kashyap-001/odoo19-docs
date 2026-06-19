@@ -102,6 +102,26 @@ class AuctionTag(models.Model):
     listing_ids = fields.Many2many('auction.listing', string="Listings")
 ```
 
+### 💻 Code Challenge
+
+**Define a Many2one field that links to the 'res.partner' model and deletes the record if the partner is removed.**
+
+<div class="code-challenge">
+<pre><code>partner_id = fields.<input type="text" class="quiz-input-inline w-80" data-answer="Many2one">('<input type="text" class="quiz-input-inline w-100" data-answer="res.partner">', string="Partner", ondelete='<input type="text" class="quiz-input-inline w-70" data-answer="cascade">')
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
+### 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What are the three types of relational fields in Odoo?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="`Many2one`, `One2many`, and `Many2many`." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 ---
 
 ## 7. Common Mistakes
