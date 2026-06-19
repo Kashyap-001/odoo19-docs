@@ -2,4 +2,50 @@
 
 {% block extrahead %}
   <meta name="google-site-verification" content="gX2Rra1-KtV6zrH-4SbnpJJJ0xncsAzUSYCcG8D8J4g" />
+  
+  {% if page %}
+    {% if page.is_homepage %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "@id": "{{ config.site_url }}#course",
+      "name": "{{ config.site_name }}",
+      "description": "{{ config.site_description }}",
+      "provider": {
+        "@type": "Person",
+        "name": "{{ config.site_author }}",
+        "sameAs": "https://github.com/Kashyap-001"
+      }
+    }
+    </script>
+    {% else %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "{{ page.title | replace('\"', '\\\"') }}",
+      "description": "{{ (page.meta.description or config.site_description) | replace('\"', '\\\"') }}",
+      "url": "{{ config.site_url }}{{ page.url }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ config.site_author }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ config.site_name }}",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{ config.site_url }}images/logo.svg"
+        }
+      },
+      "inLanguage": "en-US",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ config.site_url }}{{ page.url }}"
+      }
+    }
+    </script>
+    {% endif %}
+  {% endif %}
 {% endblock %}
