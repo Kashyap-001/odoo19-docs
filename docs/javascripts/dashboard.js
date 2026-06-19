@@ -28,42 +28,8 @@ function updateDashboardProgress() {
     const tables = document.querySelectorAll('.md-typeset table');
     if (tables.length === 0) return;
 
-    const recalculateProgress = () => {
-        let completedCount = 0;
-        let totalLessons = 0;
-        
-        tables.forEach(table => {
-            const rows = table.querySelectorAll('tr');
-            rows.forEach(row => {
-                const link = row.querySelector('a');
-                const checkbox = row.querySelector('.progress-checkbox');
-                if (link && checkbox) {
-                    totalLessons++;
-                    if (checkbox.checked) {
-                        completedCount++;
-                    }
-                }
-            });
-        });
-        
-        const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-        
-        const progressBar = document.getElementById('global-progress-fill');
-        const progressText = document.getElementById('global-progress-text');
-        if (progressBar) progressBar.style.width = progressPercent + '%';
-        if (progressText) progressText.innerText = 'Mastery: ' + progressPercent + '% (' + completedCount + '/' + totalLessons + ' Lessons)';
-
-        const certBtn = document.getElementById('claim-certificate-btn');
-        if (certBtn) {
-            if (progressPercent === 100) {
-                certBtn.disabled = false;
-                certBtn.classList.add('active');
-            } else {
-                certBtn.disabled = true;
-                certBtn.classList.remove('active');
-            }
-        }
-    };
+    let completedCount = 0;
+    let totalLessons = 0;
 
     tables.forEach(table => {
         const rows = table.querySelectorAll('tr');
@@ -72,37 +38,49 @@ function updateDashboardProgress() {
             const statusCell = row.querySelector('td:last-child');
             
             if (link && statusCell) {
-                if (statusCell.querySelector('.progress-checkbox')) return;
-                
+                totalLessons++;
                 const href = link.getAttribute('href');
                 const slug = getSlug(href);
                 const isComplete = localStorage.getItem('completed_' + slug) === 'true';
                 
+                // Create a read-only checkbox to represent automatic progress state
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.className = 'progress-checkbox';
                 checkbox.checked = isComplete;
-                checkbox.style.cursor = 'pointer';
+                checkbox.disabled = true; // Make it read-only/automatic
+                checkbox.style.cursor = 'default';
                 checkbox.style.transform = 'scale(1.2)';
                 checkbox.style.accentColor = 'var(--odoo-purple)';
-                
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        localStorage.setItem('completed_' + slug, 'true');
-                    } else {
-                        localStorage.removeItem('completed_' + slug);
-                    }
-                    recalculateProgress();
-                });
                 
                 statusCell.innerHTML = '';
                 statusCell.style.textAlign = 'center';
                 statusCell.appendChild(checkbox);
+                
+                if (isComplete) {
+                    completedCount++;
+                }
             }
         });
     });
 
-    recalculateProgress();
+    const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+    
+    const progressBar = document.getElementById('global-progress-fill');
+    const progressText = document.getElementById('global-progress-text');
+    if (progressBar) progressBar.style.width = progressPercent + '%';
+    if (progressText) progressText.innerText = 'Mastery: ' + progressPercent + '% (' + completedCount + '/' + totalLessons + ' Lessons)';
+
+    const certBtn = document.getElementById('claim-certificate-btn');
+    if (certBtn) {
+        if (progressPercent === 100) {
+            certBtn.disabled = false;
+            certBtn.classList.add('active');
+        } else {
+            certBtn.disabled = true;
+            certBtn.classList.remove('active');
+        }
+    }
 }
 
 function initResumeButton() {
