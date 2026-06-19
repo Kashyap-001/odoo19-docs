@@ -157,15 +157,15 @@ graph TD
         PN --> MatchS{Matches Filter?}
         MatchS -- Yes --> OutputS[Return Row Data]
     end
+```
 
+```mermaid
+graph TD
     subgraph "B-Tree Index Scan (Key node lookup)"
         BTree[B-Tree Index Key Lookup] -->|Navigate Nodes| Pointer[Find Row Pointer]
         Pointer -->|Direct Page Seek| DirectRow[Target Row in Table]
         DirectRow --> OutputI[Return Row Data]
     end
-
-    %% Force vertical stacking of subgraphs
-    OutputS ~~~ BTree
 ```
 
 ---

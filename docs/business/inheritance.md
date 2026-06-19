@@ -115,20 +115,22 @@ graph TD
     subgraph "Classic Extension Inheritance (_inherit)"
         C1[Table: res_partner] -->|Appends new column| C2[res_partner: loyalty_points]
     end
+```
 
+```mermaid
+graph TD
     subgraph "Prototype Cloning Inheritance (_inherit + _name)"
         P1[Table: res_partner] -->|Clones columns & definitions| P2[New Table: partner_archive]
     end
+```
 
+```mermaid
+graph TD
     subgraph "Delegation Composition Inheritance (_inherits)"
         D1[Table: product_template]
         D2[New Table: auction_listing] -->|FK product_tmpl_id| D1
         D2 -->|start_price column| D2
     end
-
-    %% Force vertical stacking of subgraphs
-    C2 ~~~ P1
-    P2 ~~~ D1
 ```
 
 ---

@@ -165,14 +165,14 @@ graph TD
         W2 --> SQL2[SQL UPDATE row 2]
         SQL2 --> Cache2[Clear record cache]
     end
+```
 
+```mermaid
+graph TD
     subgraph "Batch Pattern: 1 Query & 1 Round Trip"
         Batch[records.write...] --> SQLB[SQL UPDATE table WHERE id IN ...]
         SQLB --> CacheB[Update cache once]
     end
-
-    %% Force vertical stacking of subgraphs
-    Cache2 ~~~ Batch
 ```
 
 ---
