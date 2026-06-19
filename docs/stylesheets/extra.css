@@ -444,7 +444,6 @@ body {
   background-color: var(--theme-content-bg);
 }
 
-/* --- Mermaid Responsiveness --- */
 .mermaid {
   background-color: var(--theme-content-bg) !important;
   padding: 1rem;
@@ -452,6 +451,11 @@ body {
   overflow-x: auto !important;
   max-width: 100% !important;
   transition: filter 0.3s ease;
+}
+
+.mermaid svg {
+  max-width: none !important;
+  height: auto !important;
 }
 
 /* Smart Fix for Mermaid diagrams in Dark Mode (Double Inversion Trick) */
