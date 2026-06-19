@@ -8,7 +8,7 @@ description: The most comprehensive guide to Odoo 19 development. Master the ORM
 <div class="admonition info">
   <p class="admonition-title">New! Follow the Masterclass Roadmap</p>
   <p>Whether you're a beginner or an experienced developer, follow our structured 10-phase progression to master Odoo 19.</p>
-  <a href="learning_path.md" class="md-button md-button--primary">View Course Roadmap</a>
+  <a href="learning_path/" class="md-button md-button--primary">View Course Roadmap</a>
 </div>
 
 <div class="admonition info" id="resume-container" style="display: none; border-left-color: var(--odoo-teal) !important;">
