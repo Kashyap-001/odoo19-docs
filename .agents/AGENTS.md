@@ -11,3 +11,7 @@ When verifying site ownership or integrating search console tags for `*.workers.
 ## 🛠️ MkDocs Build and Navigation Integrity
 *   **Nav Configuration**: Every Markdown file (`.md`) added to the `docs/` directory must be explicitly mapped under the `nav` key in `mkdocs.yml`.
 *   **Verification**: Always run `./venv/bin/mkdocs build --strict` after modifying documentation structure to ensure all internal cross-links and navigation items are properly resolved.
+*   **Content Preservation**: When splitting or refactoring documentation pages, verify that no information (including inline quizzes, code challenges, senior checkpoints, or breaking changes notes) is lost. Ensure the beginner-to-senior phase-based learning path remains logical.
+
+## 🚀 Git & Deployment Constraints
+*   **No Remote Deploys**: Do not run Wrangler deployment commands (e.g., `wrangler deploy`). Only compile/validate locally and commit all finalized changes cleanly to the local Git tree.
