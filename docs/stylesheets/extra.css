@@ -683,3 +683,129 @@ pre {
   color: var(--odoo-teal) !important;
   fill: var(--odoo-teal) !important;
 }
+
+/* --- CLI COMMAND BUILDER WIDGET --- */
+.cli-builder-container {
+  background-color: var(--theme-quiz-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.cli-builder-container h3 {
+  margin-top: 0 !important;
+  color: var(--odoo-purple);
+}
+
+[data-md-color-scheme="slate"] .cli-builder-container h3 {
+  color: var(--odoo-teal);
+}
+
+.cli-builder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cli-builder-grid label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.cli-builder-grid select,
+.cli-builder-grid input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  background-color: var(--theme-content-bg);
+  color: var(--theme-text);
+  font-size: 0.85rem;
+}
+
+.cli-builder-grid select:focus,
+.cli-builder-grid input:focus {
+  border-color: var(--odoo-purple);
+  outline: none;
+}
+
+[data-md-color-scheme="slate"] .cli-builder-grid select:focus,
+[data-md-color-scheme="slate"] .cli-builder-grid input:focus {
+  border-color: var(--odoo-teal);
+}
+
+.cli-command-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--theme-code-bg);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--theme-border);
+}
+
+.cli-command-box code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--theme-text);
+  word-break: break-all;
+}
+
+#cli-copy-btn {
+  background-color: var(--odoo-purple);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: 1rem;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+#cli-copy-btn:hover {
+  background-color: var(--odoo-purple-dark);
+}
+
+[data-md-color-scheme="slate"] #cli-copy-btn {
+  background-color: var(--odoo-teal);
+  color: #0f172a;
+}
+
+[data-md-color-scheme="slate"] #cli-copy-btn:hover {
+  background-color: #019ea5;
+}
+
+/* --- BACKUP & RESTORE SECTION --- */
+.backup-restore-container {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.backup-btn {
+  background-color: transparent;
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.backup-btn:hover {
+  background-color: var(--theme-hover);
+  border-color: var(--theme-text);
+}
+

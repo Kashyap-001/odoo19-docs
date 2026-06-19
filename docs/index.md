@@ -11,6 +11,12 @@ description: The most comprehensive guide to Odoo 19 development. Master the ORM
   <a href="learning_path.md" class="md-button md-button--primary">View Course Roadmap</a>
 </div>
 
+<div class="admonition info" id="resume-container" style="display: none; border-left-color: var(--odoo-teal) !important;">
+  <p class="admonition-title">🎯 Resume Where You Left Off</p>
+  <p>You have progress saved! Jump straight back into your next lesson to continue your journey.</p>
+  <a id="resume-link" href="#" class="md-button md-button--primary" style="background-color: var(--odoo-teal) !important;">Resume Learning &rarr;</a>
+</div>
+
 Welcome to the **most comprehensive Odoo 19 development guide** on the web. This curriculum is designed to take you from a complete beginner (newbie) to a Senior Odoo Architect.
 
 ---

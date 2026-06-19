@@ -12,6 +12,12 @@ Welcome to your Senior Architect journey. Use this page to track your progress t
     <div id="global-progress-text">Mastery: 0% (0/0 Lessons)</div>
 </div>
 
+<div class="backup-restore-container">
+    <button class="backup-btn" onclick="exportProgress()">📤 Export Progress Backup</button>
+    <button class="backup-btn" onclick="document.getElementById('import-file').click()">📥 Import Progress Backup</button>
+    <input type="file" id="import-file" style="display: none;" onchange="importProgress(this)" accept=".json">
+</div>
+
 ---
 
 ## Phase 1: The Foundations 🏗️
