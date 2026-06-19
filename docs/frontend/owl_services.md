@@ -8,6 +8,14 @@ In Odoo's frontend framework (OWL), **Services** are global, long-lived objects 
 
 A service in OWL is a piece of logic that runs in the background and can be accessed from any component. They handle cross-cutting concerns like showing notifications, making RPC calls to the server, or triggering window actions.
 
+```mermaid
+graph TD
+    Comp[OWL Component] -->|useService| Hook[useService Hook]
+    Hook -->|orm| Service[ORM Service]
+    Service -->|RPC call| Net[Network JSON-RPC]
+    Net -->|execute| Back[Odoo Python Backend]
+```
+
 To use a service, you inject it into your component using the `useService` hook.
 
 ```javascript

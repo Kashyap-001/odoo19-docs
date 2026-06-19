@@ -20,6 +20,13 @@ graph TD
 
 `useState()` defines a reactive object. When any property in this object changes, OWL automatically schedules a re-render of the component template.
 
+```mermaid
+graph TD
+    Component[Component Setup] -->|useState| State[Reactive State created via Proxy]
+    State -->|State Mutation occurs| ReRender[Schedules DOM Re-render]
+    ReRender -->|Update View| View[UI Updated]
+```
+
 *   **Rule**: `useState` must be declared inside the component `setup()` method.
 *   **Behavior**: It wraps the object in a JavaScript `Proxy` to track mutations.
 

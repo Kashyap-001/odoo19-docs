@@ -8,19 +8,15 @@ In Odoo, inheritance is the mechanism used to extend or modify existing models w
 
 ```mermaid
 graph TD
-    A[Inheritance Types] --> B(_inherit)
-    A --> C(_inherits)
-    
-    B --> B1[Classic Inheritance]
-    B1 --> B1a[Modifies existing table]
-    B1 --> B1b[Adds fields/methods to same record]
-    
-    C --> C1[Delegation Inheritance]
-    C1 --> C1a[Creates linked table]
-    C1 --> C1b[Composition: One-to-One link]
-    
-    style B fill:#e1f5fe,stroke:#01579b
-    style C fill:#fff3e0,stroke:#e65100
+    subgraph "Classical / Prototype Inheritance"
+        ModelA[Model A] -->|_inherit = 'model.a'<br>_name = 'model.b'| ModelB[Model B - creates new database table]
+    end
+    subgraph "Extension Inheritance (In-Place)"
+        Partner[res.partner] -->|_inherit = 'res.partner'<br>no new _name| PartnerExt[res.partner - modifies same database table]
+    end
+    subgraph "Delegation Inheritance"
+        Parent[Parent Model - e.g. res.partner] <.. _inherits .. Child[Child Model - e.g. res.users<br>linked via Many2one]
+    end
 ```
 
 ---

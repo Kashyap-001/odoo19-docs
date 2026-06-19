@@ -15,6 +15,14 @@ Odoo is designed to be lazy. When you fetch a recordset, Odoo doesn't load all t
 
 However, when you access a relational field (like `partner_id`) on *one* record in a recordset, Odoo assumes you will likely need that same field for the *other* records in that same recordset.
 
+```mermaid
+graph TD
+    Recs["100 records (Recordset)"] --> Prefetch[Prefetch Set in memory]
+    Prefetch --> Query[Single SQL SELECT query executed]
+    Query --> Cache[Loaded into Environment Cache]
+    Cache --> Field[Subsequent field accesses read from Cache]
+```
+
 **It prefetches the data for all records in the recordset in one single SQL query.**
 
 ---

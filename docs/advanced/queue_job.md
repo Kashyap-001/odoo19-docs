@@ -10,10 +10,11 @@ In a standard Odoo setup, when a user triggers an action (like validating an ord
 The **OCA `queue_job`** framework is the community-standard solution for offloading long-running, CPU-intensive, or external integration tasks to background workers.
 
 ```mermaid
-graph LR
-    User[User Session] -->|with_delay| JobDB[(Queue Job Table)]
-    JobDB -->|Picked Up| Worker[Queue Runner Process]
-    Worker -->|Execute| Task[Background Action]
+graph TD
+    Method[Business Method invoked] --> Delay[with_delay() execution modifier]
+    Delay --> Queue[Queue Job database entry created]
+    Queue --> Worker[Worker Thread picks up job]
+    Worker --> Execution[Job execution runs in background]
 ```
 
 ---

@@ -170,6 +170,16 @@ category_ids = fields.Many2many('product.category', string="Categories")
 
 ### Compute
 Used to make a field calculated based on other fields. Computed fields are **not** stored in the database by default.
+
+```mermaid
+graph TD
+    Change[Dependent field changed] --> Depends[@api.depends dependency trigger]
+    Depends --> Compute[Compute method executed]
+    Compute --> Stored{Is store=True set?}
+    Stored -- Yes --> DB[Saved to PostgreSQL Database]
+    Stored -- No --> Cache[Retained in Environment Cache memory only]
+```
+
 ```python
 total_price = fields.Float(compute="_compute_total_price", store=True)
 
