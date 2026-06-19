@@ -74,52 +74,6 @@ pip install -r requirements.txt
 
 ---
 
-## 💻 Code Challenge
-
-**Fill in the missing parts to create and activate a virtual environment for Odoo 19:**
-
-<div class="code-challenge">
-<pre><code>python3.12 -m <input type="text" class="quiz-input-inline w-50" data-answer="venv"> odoo-venv
-<input type="text" class="quiz-input-inline w-60" data-answer="source"> odoo-venv/bin/<input type="text" class="quiz-input-inline w-80" data-answer="activate">
-</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
----
-
-## 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the minimum Python version required for Odoo 19?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Python 3.12 or higher." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. Which database management system does Odoo use?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="PostgreSQL." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">3. Why is it recommended to use a virtual environment for Odoo development?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="To manage Python dependencies and avoid conflicts with system packages." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">4. What command is used to start the Odoo server from the source?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="./odoo-bin --addons-path=addons -d my_database" onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
----
-
 ## 🏁 Senior Checkpoint
 *   **Key Concept:** Odoo 19 requires Python 3.12+ and PostgreSQL 16+ for optimal performance.
 *   **Architect Insight:** Always use virtual environments (`venv`) to isolate your Odoo installation from the system Python to avoid dependency hell.
@@ -157,6 +111,55 @@ One of the most common beginner frustrations is seeing "no changes" in Odoo afte
     (Remove `--stop-after-init` to keep the server running).
 
 ---
+
+## 💻 Code Challenge
+
+**Fill in the missing parts to create and activate a virtual environment for Odoo 19:**
+
+<div class="code-challenge">
+<pre><code>python3.12 -m <input type="text" class="quiz-input-inline w-50" data-answer="venv"> odoo-venv
+<input type="text" class="quiz-input-inline w-60" data-answer="source"> odoo-venv/bin/<input type="text" class="quiz-input-inline w-80" data-answer="activate">
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the minimum Python version required for Odoo 19?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Python 3.12 or higher." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. Which database management system does Odoo use?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="PostgreSQL." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">3. Why is it recommended to use a virtual environment for Odoo development?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="To manage Python dependencies and avoid conflicts with system packages." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">4. What command is used to start the Odoo server from the source?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="./odoo-bin --addons-path=addons -d my_database" onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+
+---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

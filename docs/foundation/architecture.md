@@ -109,6 +109,16 @@ The server sends back a JSON response. The OWL components in the browser catch t
 
 ---
 
+## 🏁 Senior Checkpoint
+*   **Key Concept:** Odoo is a **stateful** application server communicating via **JSON-RPC**.
+*   **Architect Insight:** The boundary between the Frontend (OWL) and Backend (Python) is bridged by the **Bus Service**, enabling real-time WebSocket updates.
+*   **Verify Your Knowledge:** Can you explain why Odoo rarely requires raw SQL? (Answer: Because the ORM handles SQL generation and security automatically).
+
+!!! success "Next Step"
+    Now that you understand the big picture, let's [Set up your Environment](setup.md) to start coding.
+
+---
+
 ## 📝 Knowledge Check
 
 <div class="quiz-container">
@@ -139,17 +149,9 @@ The server sends back a JSON response. The OWL components in the browser catch t
   <div class="quiz-result"></div>
 </div>
 
----
-
-## 🏁 Senior Checkpoint
-*   **Key Concept:** Odoo is a **stateful** application server communicating via **JSON-RPC**.
-*   **Architect Insight:** The boundary between the Frontend (OWL) and Backend (Python) is bridged by the **Bus Service**, enabling real-time WebSocket updates.
-*   **Verify Your Knowledge:** Can you explain why Odoo rarely requires raw SQL? (Answer: Because the ORM handles SQL generation and security automatically).
-
-!!! success "Next Step"
-    Now that you understand the big picture, let's [Set up your Environment](setup.md) to start coding.
 
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

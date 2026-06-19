@@ -105,23 +105,6 @@ commands = [Command.link(tag.id) for tag in tags]
 listing.write({'tag_ids': commands})
 ```
 
-### 💻 Code Challenge
-
-**Refactor this loop to update all draft listings to open in a single batch operation:**
-
-```python
-# Before:
-# for listing in self.search([('state', '=', 'draft')]):
-#     listing.write({'state': 'open'})
-```
-
-<div class="code-challenge">
-<pre><code>self.search([('state', '=', 'draft')]).<input type="text" class="quiz-input-inline w-150" data-answer="write({'state': 'open'})">
-</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Batch Execution & Loop Traps
@@ -174,6 +157,26 @@ graph TD
         SQLB --> CacheB[Update cache once]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Refactor this loop to update all draft listings to open in a single batch operation:**
+
+```python
+# Before:
+# for listing in self.search([('state', '=', 'draft')]):
+#     listing.write({'state': 'open'})
+```
+
+<div class="code-challenge">
+<pre><code>self.search([('state', '=', 'draft')]).<input type="text" class="quiz-input-inline w-150" data-answer="write({'state': 'open'})">
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
 
 ---
 

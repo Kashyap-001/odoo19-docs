@@ -168,3 +168,5 @@ def copy(self, default=None):
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
 </div>
+
+---

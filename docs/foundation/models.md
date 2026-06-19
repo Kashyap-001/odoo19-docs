@@ -311,6 +311,35 @@ class AuctionListing(models.Model):
 
 ---
 
+## 🛠️ Master Project Challenge: The Auction Base
+Now it's your turn to start building the **Auction Marketplace**.
+
+**Goal:** Define the core model for our auctions.
+1.  Create a model named `auction.listing`.
+2.  Add a `name` field for the item title.
+3.  Add a `description` field for the item condition.
+4.  Add a `state` field with options: `draft`, `open`, `closed`.
+
+> **Hint:** Use the CamelCase class name `AuctionListing` to let Odoo 19 automatically set the `_name`.
+
+??? success "Show Solution"
+    ```python title="models/auction_listing.py"
+    from odoo import models, fields
+
+    class AuctionListing(models.Model):
+        _description = 'Auction Listing'
+
+        name = fields.Char(string="Title")
+        description = fields.Text(string="Condition")
+        state = fields.Selection([
+            ('draft', 'Draft'),
+            ('open', 'Open'),
+            ('closed', 'Closed')
+        ], string="State", default='draft')
+    ```
+
+---
+
 ## 💻 Code Challenge
 
 **Fill in the missing parts to define a new Odoo 19 model:**
@@ -327,6 +356,7 @@ class AuctionListing(<input type="text" class="quiz-input-inline w-120" data-ans
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
 </div>
+
 
 ---
 
@@ -360,36 +390,9 @@ class AuctionListing(<input type="text" class="quiz-input-inline w-120" data-ans
   <div class="quiz-result"></div>
 </div>
 
----
-
-## 🛠️ Master Project Challenge: The Auction Base
-Now it's your turn to start building the **Auction Marketplace**.
-
-**Goal:** Define the core model for our auctions.
-1.  Create a model named `auction.listing`.
-2.  Add a `name` field for the item title.
-3.  Add a `description` field for the item condition.
-4.  Add a `state` field with options: `draft`, `open`, `closed`.
-
-> **Hint:** Use the CamelCase class name `AuctionListing` to let Odoo 19 automatically set the `_name`.
-
-??? success "Show Solution"
-    ```python title="models/auction_listing.py"
-    from odoo import models, fields
-
-    class AuctionListing(models.Model):
-        _description = 'Auction Listing'
-
-        name = fields.Char(string="Title")
-        description = fields.Text(string="Condition")
-        state = fields.Selection([
-            ('draft', 'Draft'),
-            ('open', 'Open'),
-            ('closed', 'Closed')
-        ], string="State", default='draft')
-    ```
 
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

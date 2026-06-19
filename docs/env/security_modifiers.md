@@ -105,15 +105,6 @@ class AuctionListing(models.Model):
                     record.winning_bid_amount = record.winner_id.credit_limit
 ```
 
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What does `sudo()` do?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="It bypasses all security rules and access rights, effectively acting as the Administrator/Superuser for that operation." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Sudo Abuse & Privilege Escalation Traps
@@ -157,6 +148,18 @@ graph TD
     %% Force vertical stacking of subgraphs
     DB1 ~~~ E2
 ```
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What does `sudo()` do?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It bypasses all security rules and access rights, effectively acting as the Administrator/Superuser for that operation." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

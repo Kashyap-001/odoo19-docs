@@ -273,6 +273,7 @@ Senior Architects design the system's extensibility guidelines and build automat
   <div class="quiz-result"></div>
 </div>
 
+
 ---
 
 ## Related Guides
@@ -283,6 +284,7 @@ Senior Architects design the system's extensibility guidelines and build automat
 *   [Defining Models](../foundation/models.md)
 
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

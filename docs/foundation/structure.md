@@ -153,6 +153,16 @@ def post_init_hook(env):
 
 ---
 
+## 🏁 Senior Checkpoint
+*   **Key Concept:** Odoo modules are Python packages with a mandatory `__manifest__.py` file.
+*   **Architect Insight:** Proper folder structure (models, views, security) is not just a convention—it is critical for multi-developer collaboration and upgradeability.
+*   **Verify Your Knowledge:** What happens if you forget to import a model file in `models/__init__.py`? (Answer: Odoo will not create the database table for that model).
+
+!!! success "Next Step"
+    Structure is clear. Now let's [Define your first Model](models.md).
+
+---
+
 ## 📝 Knowledge Check
 
 <div class="quiz-container">
@@ -183,17 +193,9 @@ def post_init_hook(env):
   <div class="quiz-result"></div>
 </div>
 
----
-
-## 🏁 Senior Checkpoint
-*   **Key Concept:** Odoo modules are Python packages with a mandatory `__manifest__.py` file.
-*   **Architect Insight:** Proper folder structure (models, views, security) is not just a convention—it is critical for multi-developer collaboration and upgradeability.
-*   **Verify Your Knowledge:** What happens if you forget to import a model file in `models/__init__.py`? (Answer: Odoo will not create the database table for that model).
-
-!!! success "Next Step"
-    Structure is clear. Now let's [Define your first Model](models.md).
 
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

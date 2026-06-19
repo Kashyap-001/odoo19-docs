@@ -152,22 +152,6 @@ Below is a complete, real-world example of an Auction Listing form view includin
 </record>
 ```
 
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. Which Python method should you override to dynamically modify a view's XML before it is rendered?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="The `get_views()` method." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. What widget should you use to display a User Many2one field as an avatar and name?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="`widget=&quot;many2one_avatar_user&quot;`." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Invalid XML Nesting & Missing Field Modifiers
@@ -224,6 +208,25 @@ graph TD
     Sheet --> NB
     Sheet --> Chat
 ```
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Which Python method should you override to dynamically modify a view's XML before it is rendered?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="The `get_views()` method." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. What widget should you use to display a User Many2one field as an avatar and name?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="`widget=&quot;many2one_avatar_user&quot;`." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

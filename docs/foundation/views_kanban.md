@@ -101,15 +101,6 @@ Below is a complete Odoo 19 Kanban view for Auction Listings grouped by state, f
 </record>
 ```
 
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the main advantage of the new `<card>` element in Kanban views?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="It provides a structured layout without the need for complex custom DIV nesting or QWeb logic, resulting in cleaner code and better performance." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Invalid Card Loops & Broken XML Elements
@@ -161,6 +152,18 @@ graph LR
     Board --> Column2[Open]
     Board --> Column3[Done]
 ```
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the main advantage of the new `<card>` element in Kanban views?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It provides a structured layout without the need for complex custom DIV nesting or QWeb logic, resulting in cleaner code and better performance." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

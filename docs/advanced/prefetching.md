@@ -99,6 +99,12 @@ for record in large_set:
 
 ---
 
+## 🏁 Senior Checkpoint
+*   **Key Concept**: Odoo uses shared prefetch sets to load values for an entire recordset into the environment cache in a single SQL operation.
+*   **Architect Insight**: Never loop over `browse(id)` inside ID-based lists; keep records bundled in a recordset as long as possible to prevent SQL N+1 storms.
+*   **Verify Your Knowledge**: How do you disable prefetching during massive data updates? (Answer: Use `with_context(prefetch_fields=False)` on the recordset).
+---
+
 ## 📝 Knowledge Check
 
 <div class="quiz-container">
@@ -108,9 +114,5 @@ for record in large_set:
   <div class="quiz-result"></div>
 </div>
 
----
 
-## 🏁 Senior Checkpoint
-*   **Key Concept**: Odoo uses shared prefetch sets to load values for an entire recordset into the environment cache in a single SQL operation.
-*   **Architect Insight**: Never loop over `browse(id)` inside ID-based lists; keep records bundled in a recordset as long as possible to prevent SQL N+1 storms.
-*   **Verify Your Knowledge**: How do you disable prefetching during massive data updates? (Answer: Use `with_context(prefetch_fields=False)` on the recordset).
+---

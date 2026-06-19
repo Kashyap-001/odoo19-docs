@@ -93,23 +93,6 @@ class AuctionListing(models.Model):
     )
 ```
 
-### 💻 Code Challenge
-
-**Define a partial index in Odoo 19 that indexes the code field only for active partners (active = True):**
-
-<div class="code-challenge">
-<pre><code>class ResPartner(models.Model):
-    _inherit = 'res.partner'
-    
-    code = fields.Char("Code")
-    active = fields.Boolean("Active")
-    
-    _partner_code_idx = <input type="text" class="quiz-input-inline w-250" data-answer="models.Index('(code)', where=&quot;active = True&quot;)">
-</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Database Indexing Anti-patterns
@@ -167,6 +150,26 @@ graph TD
         DirectRow --> OutputI[Return Row Data]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Define a partial index in Odoo 19 that indexes the code field only for active partners (active = True):**
+
+<div class="code-challenge">
+<pre><code>class ResPartner(models.Model):
+    _inherit = 'res.partner'
+    
+    code = fields.Char("Code")
+    active = fields.Boolean("Active")
+    
+    _partner_code_idx = <input type="text" class="quiz-input-inline w-250" data-answer="models.Index('(code)', where=&quot;active = True&quot;)">
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
 
 ---
 

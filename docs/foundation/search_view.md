@@ -93,46 +93,6 @@ To activate specific filters automatically when a user opens a view menu, set co
 </record>
 ```
 
-### 💻 Code Challenge
-
-**Create a filter for the Auction Marketplace that finds all "High Value" listings (start_price > 1000):**
-
-<div class="code-challenge">
-<pre><code>&lt;filter string="High Value" name="high_value" <input type="text" class="quiz-input-inline w-150" data-answer="domain=\"[('start_price', '>', 1000)]\"">/&gt;</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. Which XML tag is used to create a sidebar navigation for filtering?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="The `<searchpanel>` tag." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. How do you group records in a search view?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="By using a `<filter>` tag inside a `<group>` block with a `context={'group_by': 'field_name'}`." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">3. What does `operator="child_of"` do on a search field?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="It allows searching for a parent record and automatically includes all its children (hierarchical search)." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">4. Where should you place a Search View definition?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Inside an `ir.ui.view` record with the `model` set to the target model." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Broken Fields & Invalid Domain Mappings
@@ -174,6 +134,52 @@ graph TD
         ORM -->|SQL SELECT ... WHERE ... GROUP BY ...| DB[(PostgreSQL)]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Create a filter for the Auction Marketplace that finds all "High Value" listings (start_price > 1000):**
+
+<div class="code-challenge">
+<pre><code>&lt;filter string="High Value" name="high_value" <input type="text" class="quiz-input-inline w-150" data-answer="domain=\"[('start_price', '>', 1000)]\"">/&gt;</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Which XML tag is used to create a sidebar navigation for filtering?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="The `<searchpanel>` tag." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. How do you group records in a search view?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="By using a `<filter>` tag inside a `<group>` block with a `context={'group_by': 'field_name'}`." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">3. What does `operator="child_of"` do on a search field?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It allows searching for a parent record and automatically includes all its children (hierarchical search)." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">4. Where should you place a Search View definition?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Inside an `ir.ui.view` record with the `model` set to the target model." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

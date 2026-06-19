@@ -118,6 +118,21 @@ If a user is in **two groups** and each group has a record rule for the same mod
 
 ---
 
+## 🏁 Senior Checkpoint
+*   **Key Concept:** Record Rules (Row-level) act as a secondary filter after ACL (Model-level).
+*   **Architect Insight:** Group-specific rules are combined with **OR**, while Global rules are combined with **AND**. This distinction is critical for multi-company isolation.
+*   **Verify Your Knowledge:** Does the Admin user (UID 1) follow Record Rules? (Answer: No, the Superuser bypasses all security).
+
+!!! success "Next Step"
+    The skeleton is complete. Now dive into the [ORM Engine](../env/env_deep_dive.md) to write the brain of your app.
+
+---
+
+## Summary
+Record Rules are the "scalpel" of Odoo security. While ACLs grant broad access, Record Rules refine that access to ensure data privacy and integrity. Mastering the `domain_force` syntax is key to building professional Odoo modules.
+
+---
+
 ## 📝 Knowledge Check
 
 <div class="quiz-container">
@@ -148,22 +163,9 @@ If a user is in **two groups** and each group has a record rule for the same mod
   <div class="quiz-result"></div>
 </div>
 
----
-
-## 🏁 Senior Checkpoint
-*   **Key Concept:** Record Rules (Row-level) act as a secondary filter after ACL (Model-level).
-*   **Architect Insight:** Group-specific rules are combined with **OR**, while Global rules are combined with **AND**. This distinction is critical for multi-company isolation.
-*   **Verify Your Knowledge:** Does the Admin user (UID 1) follow Record Rules? (Answer: No, the Superuser bypasses all security).
-
-!!! success "Next Step"
-    The skeleton is complete. Now dive into the [ORM Engine](../env/env_deep_dive.md) to write the brain of your app.
 
 ---
 
-## Summary
-Record Rules are the "scalpel" of Odoo security. While ACLs grant broad access, Record Rules refine that access to ensure data privacy and integrity. Mastering the `domain_force` syntax is key to building professional Odoo modules.
-
----
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

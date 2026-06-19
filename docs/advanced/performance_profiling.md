@@ -101,14 +101,6 @@ def update_bid_amounts_raw(self, new_amount):
     self.invalidate_recordset(['amount'])
 ```
 
-### 💻 Code Challenge
-
-**Complete the code sequence to flush, run a raw query safely, and invalidate the ORM cache:**
-
-<div class="code-challenge">
-<pre><code># Flush cache
-self.env['auction.bid'].<input type="text" class="quiz-input-inline w-180" data-answer="flush_model(['amount'])">
-
 # Run safe query
 query = SQL("UPDATE auction_bid SET amount = 500 WHERE id = %s", self.id)
 self.env.cr.execute(query)
@@ -159,6 +151,17 @@ graph TD
         D1 --> DB["PostgreSQL INSERT/UPDATE [Width: 55%]"]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Complete the code sequence to flush, run a raw query safely, and invalidate the ORM cache:**
+
+<div class="code-challenge">
+<pre><code># Flush cache
+self.env['auction.bid'].<input type="text" class="quiz-input-inline w-180" data-answer="flush_model(['amount'])">
+
 
 ---
 

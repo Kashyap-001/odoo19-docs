@@ -3,6 +3,27 @@ title: Odoo 19 Advanced Fields Tutorial — Compute, Related, Company Dependent
 description: Learn Odoo 19 advanced field properties: Compute, Related, compute_sudo, company_dependent, field-level ACLs, and recursive evaluations.
 ---
 
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the purpose of the `compute` attribute on a field?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It is used to define a field whose value is calculated by a Python method rather than being directly stored in the database." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. What is the difference between `related` and `compute` fields?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Related fields mirror data from another record, while compute fields execute Python logic." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+
+---
+
 # Odoo 19 Advanced Field Logic: Compute, Related & Security Attributes
 
 Advanced fields allow developers to calculate values dynamically, mirror relational data, restrict access dynamically, and store values on a per-company basis.
@@ -127,22 +148,6 @@ class CatalogCategory(models.Model):
                 ('category_id', '=', category.id)
             ])
 ```
-
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the purpose of the `compute` attribute on a field?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="It is used to define a field whose value is calculated by a Python method rather than being directly stored in the database." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. What is the difference between `related` and `compute` fields?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Related fields mirror data from another record, while compute fields execute Python logic." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
 
 ---
 

@@ -108,6 +108,16 @@ When a field expects a non-string value.
 
 ---
 
+## 🏁 Senior Checkpoint
+*   **Key Concept:** XML Data files are the "Hydration" engine for Odoo, converting text to database records.
+*   **Architect Insight:** `noupdate="1"` is essential for user-editable records (like settings) to prevent upgrades from overwriting local changes.
+*   **Verify Your Knowledge:** What is the difference between an ID and an External ID? (Answer: An ID is an integer in Postgres; an External ID is a string in XML that Odoo maps to that integer).
+
+!!! success "Next Step"
+    Data is loaded. Now learn to [Secure it](../business/security.md) using ACLs.
+
+---
+
 ## 💻 Code Challenge
 
 **Create a new record for the 'auction.listing' model with the unique ID 'listing_vintage_car'.**
@@ -120,6 +130,7 @@ When a field expects a non-string value.
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
 </div>
+
 
 ---
 
@@ -153,17 +164,9 @@ When a field expects a non-string value.
   <div class="quiz-result"></div>
 </div>
 
----
-
-## 🏁 Senior Checkpoint
-*   **Key Concept:** XML Data files are the "Hydration" engine for Odoo, converting text to database records.
-*   **Architect Insight:** `noupdate="1"` is essential for user-editable records (like settings) to prevent upgrades from overwriting local changes.
-*   **Verify Your Knowledge:** What is the difference between an ID and an External ID? (Answer: An ID is an integer in Postgres; an External ID is a string in XML that Odoo maps to that integer).
-
-!!! success "Next Step"
-    Data is loaded. Now learn to [Secure it](../business/security.md) using ACLs.
 
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

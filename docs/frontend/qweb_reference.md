@@ -82,20 +82,6 @@ Formatting classes dynamically based on conditional states:
 </t>
 ```
 
-### 💻 Code Challenge
-
-**Write a QWeb loop to show only bids higher than 100:**
-
-<div class="code-challenge">
-<pre><code>&lt;div t-foreach="record.bid_ids" t-as="bid"&gt;
-    &lt;p <input type="text" class="quiz-input-inline w-120" data-answer="t-if=\"bid.amount > 100\""&gt;
-        Bidder: &lt;span <input type="text" class="quiz-input-inline w-100" data-answer="t-out=\"bid.name\""&gt;&lt;/span&gt;
-    &lt;/p&gt;
-&lt;/div&gt;</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
 ---
 
 ## XML Parsing Errors & Undefined Variable Scope
@@ -148,6 +134,23 @@ graph TD
         Wkhtmltopdf --> PDF[PDF Document]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Write a QWeb loop to show only bids higher than 100:**
+
+<div class="code-challenge">
+<pre><code>&lt;div t-foreach="record.bid_ids" t-as="bid"&gt;
+    &lt;p <input type="text" class="quiz-input-inline w-120" data-answer="t-if=\"bid.amount > 100\""&gt;
+        Bidder: &lt;span <input type="text" class="quiz-input-inline w-100" data-answer="t-out=\"bid.name\""&gt;&lt;/span&gt;
+    &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
 
 ---
 

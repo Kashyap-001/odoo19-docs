@@ -203,7 +203,9 @@ if auction.state == 'closed':
   <div class="quiz-result"></div>
 </div>
 
+
 ---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

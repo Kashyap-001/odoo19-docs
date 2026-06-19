@@ -85,17 +85,6 @@ setup() {
 
 ---
 
-## 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the primary purpose of useService?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="To inject global Odoo framework services (like orm, notification, action) into a component." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
----
-
 ## 🏁 Senior Checkpoint
 *   **Architect Insight:** Always inject services in `setup()`.
 *   **Pro Tip:** Use the Registry to decouple your components. Instead of hardcoding component references, register them and retrieve them via the Registry category.
@@ -258,6 +247,19 @@ registry.category("fields").add("auction_star_rating", {
     Components are ready. Now learn to [Register Assets](assets.md) in the Odoo bundle system.
 
 ---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the primary purpose of useService?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="To inject global Odoo framework services (like orm, notification, action) into a component." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+
+---
+
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>

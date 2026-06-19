@@ -115,22 +115,6 @@ class ProductWarranty(models.Model):
     )
 ```
 
-### 📝 Knowledge Check & Code Challenge
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the difference between `Char` and `Text` fields?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="`Char` is for single-line text with a limited length (usually 255), while `Text` is for multi-line text with no length limit." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. How do you make a field required in Odoo?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="By setting the `required=True` parameter in the field definition." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Precision Errors & Binary File Bloat
@@ -192,6 +176,25 @@ graph TD
     Boolean --> BoolDB --> Checkbox
     Selection --> VarcharSel --> Dropdown
 ```
+
+---
+
+## 📝 Knowledge Check & Code Challenge
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the difference between `Char` and `Text` fields?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="`Char` is for single-line text with a limited length (usually 255), while `Text` is for multi-line text with no length limit." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. How do you make a field required in Odoo?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="By setting the `required=True` parameter in the field definition." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

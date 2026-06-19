@@ -90,49 +90,6 @@ This example injects a starting bid field directly after the list price inside t
 </record>
 ```
 
-### 💻 Code Challenge
-
-**Use XPath to insert a new field named 'expiry_date' immediately after the 'list_price' field.**
-
-<div class="code-challenge">
-<pre><code>&lt;xpath <input type="text" class="quiz-input-inline w-50" data-answer="expr">="//field[@name='list_price']" <input type="text" class="quiz-input-inline w-80" data-answer="position">="<input type="text" class="quiz-input-inline w-60" data-answer="after">"&gt;
-    &lt;field name="expiry_date"/&gt;
-&lt;/xpath&gt;
-</code></pre>
-<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
-<div class="quiz-result"></div>
-</div>
-
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. What is the purpose of the <code>inherit_id</code> field in a view record?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="It is used to specify the XML ID of the original view that you want to inherit and modify." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. Name four possible values for the <code>position</code> attribute in an XPath expression.</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="before, after, inside, replace, and attributes." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">3. How do you modify a field's attributes (like making it readonly) using XPath?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Use position='attributes' and then use the &lt;attribute&gt; tag to set the desired attribute value." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">4. What is the benefit of using direct paths instead of deep searches (<code>//</code>) in XPath expressions?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Direct paths are faster for the XML engine to process, especially in large and complex views, leading to better performance." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Brittle Selectors & Missing Field Dependencies
@@ -167,6 +124,55 @@ graph TD
         Target -->|position = 'replace'| Replace[Replacement Node]
     end
 ```
+
+---
+
+## 💻 Code Challenge
+
+**Use XPath to insert a new field named 'expiry_date' immediately after the 'list_price' field.**
+
+<div class="code-challenge">
+<pre><code>&lt;xpath <input type="text" class="quiz-input-inline w-50" data-answer="expr">="//field[@name='list_price']" <input type="text" class="quiz-input-inline w-80" data-answer="position">="<input type="text" class="quiz-input-inline w-60" data-answer="after">"&gt;
+    &lt;field name="expiry_date"/&gt;
+&lt;/xpath&gt;
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
+
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. What is the purpose of the <code>inherit_id</code> field in a view record?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="It is used to specify the XML ID of the original view that you want to inherit and modify." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. Name four possible values for the <code>position</code> attribute in an XPath expression.</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="before, after, inside, replace, and attributes." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">3. How do you modify a field's attributes (like making it readonly) using XPath?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Use position='attributes' and then use the &lt;attribute&gt; tag to set the desired attribute value." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">4. What is the benefit of using direct paths instead of deep searches (<code>//</code>) in XPath expressions?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="Direct paths are faster for the XML engine to process, especially in large and complex views, leading to better performance." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 

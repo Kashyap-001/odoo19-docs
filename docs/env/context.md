@@ -101,15 +101,6 @@ class AuctionListing(models.Model):
 # listing_model.create([{'name': 'Automated Import Item'}])
 ```
 
-### 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. Is the Odoo Context mutable (can it be changed directly)?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="No, the Odoo context is immutable. You must use with_context() to create a new recordset with an updated context." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
 ---
 
 ## Context Leakage & Evaluation Pitfalls
@@ -162,6 +153,18 @@ graph TD
         Env2 -->|context (merged)| Ctx2["Context: lang, tz, active_test=False"]
     end
 ```
+
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Is the Odoo Context mutable (can it be changed directly)?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="No, the Odoo context is immutable. You must use with_context() to create a new recordset with an updated context." onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
 
 ---
 
