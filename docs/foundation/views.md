@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Views XML Tutorial — List, Form, Kanban Views Syntax
+description: Master Odoo 19 XML UI view design. Learn how to write list, form, and Kanban views, configure header action buttons, and customize user layouts.
+---
+
 # Views & XML Syntax: Building the UI
 
 In Odoo, the User Interface is defined using **XML**. These XML files describe how the data from your Python models should be presented to the user.

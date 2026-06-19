@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Models Tutorial — Model, TransientModel, AbstractModel
+description: Master the core Odoo 19 model types. Learn when to use standard permanent models, temporary transient wizards, and reusable abstract model patterns.
+---
+
 # Odoo 19 Models: The Foundation of Data
 
 In Odoo, **Models** are the backbone of the entire system. They define how data is structured, stored in the PostgreSQL database, and interacted with via the ORM (Object-Relational Mapping).

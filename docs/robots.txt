@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://odoo19-masterclass.pages.dev/sitemap.xml
+Sitemap: https://odoo19-docs.kashyap6334.workers.dev/sitemap.xml

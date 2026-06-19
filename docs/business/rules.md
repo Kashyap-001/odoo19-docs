@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Record Rules Tutorial — Row-Level Security & Multi-Company Constraints
+description: Learn to configure Odoo 19 record rules. Write custom SQL domain filters, configure allowed_company_ids variables, and prevent data leakage.
+---
+
 # Security: Record Rules (Row-Level Security)
 
 While Access Control Lists (ACL) handle permissions at the model level, **Record Rules** provide granular, record-level security. They determine exactly which records a user can see or modify based on a domain filter.

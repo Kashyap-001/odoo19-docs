@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Inheritance Tutorial — Classic, Prototype, and Delegation Inheritance
+description: Master Odoo 19 model inheritance techniques. Learn the key differences between classic in-place overrides, prototype creation, and delegation.
+---
+
 # Odoo 19 Inheritance
 
 In Odoo, inheritance is the mechanism used to extend or modify existing models without altering the original source code. This is fundamental for building modular and maintainable applications.
