@@ -12,7 +12,7 @@ Welcome to the **Odoo 19 Senior Masterclass**, the most comprehensive "Zero-to-S
 This project was designed to bridge the gap between basic Odoo tutorials and the complex reality of a **Senior Odoo Architect**. It currently holds a **10/10 rating** for its breadth, covering everything from fundamental model definitions to ultra-advanced ORM internals and real-time frontend services.
 
 ### Key Highlights:
-- **28+ Hours of Content**: A structured, phase-by-phase roadmap.
+- **29+ Hours of Content**: A structured, phase-by-phase roadmap.
 - **Master Project (`pways_auction`)**: Build a real-world Auction Marketplace throughout the course.
 - **v18 to v19 Migration Delta**: A deep dive into breaking changes and new Odoo 19 APIs.
 - **Senior Architect's Toolkit**: Professional VS Code setup, CLI aliases, and debugging workflows.

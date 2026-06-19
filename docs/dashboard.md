@@ -38,7 +38,7 @@ Welcome to your Senior Architect journey. Use this page to track your progress t
 
 | Lesson | Core Skill | Senior Insight | Status |
 | :--- | :--- | :--- | :---: |
-| [Model Inheritance](business/inheritance.md) | _inherit vs _inherits | Prototype Pattern | [ ] |
+| [Model Inheritance](business/inheritance.md) | _inherit vs _inherits | Prototype & Oversight Flow | [ ] |
 | [XPath & View Overrides](foundation/xpath.md) | XML Patching | mode="inner" | [ ] |
 | [Record Rules](business/rules.md) | Row-level Security | allowed_company_ids | [ ] |
 
