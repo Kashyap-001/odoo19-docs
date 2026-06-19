@@ -137,5 +137,5 @@ access_listing,auction.listing,model_auction_listing,base.group_user,1,1,1,0
 
 ## 10. Related Topics
 *   **Previous Lesson**: [XML Data Engine](../foundation/data_files.md)
-*   **Next Lesson**: [Views Syntax (List, Form, Kanban)](../foundation/views.md)
+*   **Next Lesson**: [List Views](../foundation/views_list.md)
 *   **See Also**: [Record Rules (Row-level Security)](rules.md), [Security Modifiers (sudo)](../env/security_modifiers.md)

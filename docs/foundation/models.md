@@ -307,7 +307,7 @@ class AuctionListing(models.Model):
 *   **Verify Your Knowledge:** Why is `_name` now optional in Odoo 19? (Answer: Because Odoo can derive it automatically from the class name).
 
 !!! success "Next Step"
-    Data needs types. Let's explore [Advanced Fields](fields.md) to define your data structure.
+    Data needs types. Let's explore [Basic Fields](fields_basic.md) to define your data structure.
 
 ---
 

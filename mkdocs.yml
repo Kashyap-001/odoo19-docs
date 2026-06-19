@@ -119,10 +119,14 @@ nav:
           - "Setup Environment": foundation/setup.md
           - "Addon Anatomy": foundation/structure.md
           - "Defining Models": foundation/models.md
-          - "Advanced Fields": foundation/fields.md
+          - "Basic Fields": foundation/fields_basic.md
+          - "Relational Fields": foundation/fields_relational.md
+          - "Advanced Field Logic": foundation/fields_advanced.md
           - "XML Data Engine": foundation/data_files.md
           - "Security & ACLs": business/security.md
-          - "Views Syntax (List, Form, Kanban)": foundation/views.md
+          - "List Views": foundation/views_list.md
+          - "Form Views": foundation/views_form.md
+          - "Kanban Views": foundation/views_kanban.md
           - "Search View & Search Panel": foundation/search_view.md
       - "🧩 Phase 2: Inheritance":
           - "Inheritance Masterclass": business/inheritance.md

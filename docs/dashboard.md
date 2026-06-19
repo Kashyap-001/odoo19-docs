@@ -22,10 +22,14 @@ Welcome to your Senior Architect journey. Use this page to track your progress t
 | [Architecture](foundation/architecture.md) | 3-Tier System | Real-time Bus Logic | [ ] |
 | [Environment Setup](foundation/setup.md) | Python 3.12 / Odoo 19 | Docker Orchestration | [ ] |
 | [Defining Models](foundation/models.md) | Table Mapping | models.Constraint | [ ] |
-| [Fields Deep Dive](foundation/fields.md) | Data Types | compute_sudo=True | [ ] |
+| [Basic Fields](foundation/fields_basic.md) | Standard Types | translatable & monetary | [ ] |
+| [Relational Fields](foundation/fields_relational.md) | Database Links | Command namespace | [ ] |
+| [Advanced Field Logic](foundation/fields_advanced.md) | Functional fields | compute_sudo / groups | [ ] |
 | [XML Data Engine](foundation/data_files.md) | Record IDs | dynamic eval | [ ] |
 | [Security (ACL)](business/security.md) | CRUD Permissions | Public vs. User | [ ] |
-| [Views Syntax](foundation/views.md) | List/Form/Kanban | get_views() hook | [ ] |
+| [List Views](foundation/views_list.md) | Grid aggregations | decoration / editable | [ ] |
+| [Form Views](foundation/views_form.md) | Sheet design | get_views() hook | [ ] |
+| [Kanban Views](foundation/views_kanban.md) | Card pipelines | card layout shift | [ ] |
 
 ---
 
