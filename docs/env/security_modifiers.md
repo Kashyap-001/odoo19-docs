@@ -140,7 +140,7 @@ In Odoo 19:
 This diagram contrasts the database query pipelines between a standard user environment validation and a sudoed superuser environment bypass:
 
 ```mermaid
-graph LR
+graph TD
     subgraph "Standard User Env (UID: 102)"
         E1[self.env] -->|Checks ACL| ACL1{User has rights?}
         ACL1 -- Yes --> RR1{Record Rules: company_id = User company?}
@@ -148,9 +148,14 @@ graph LR
     end
 
     subgraph "Sudoed Env (UID: 1 / __system__)"
-        E1 -->|self.sudo()| E2[self.env.sudo()]
-        E2 -->|Bypasses ACL| DB2[Query DB: SELECT... without WHERE clauses]
+        E2[self.env.sudo()] -->|Bypasses ACL| DB2[Query DB: SELECT... without WHERE clauses]
     end
+
+    %% Transition
+    E1 -->|self.sudo()| E2
+
+    %% Force vertical stacking of subgraphs
+    DB1 ~~~ E2
 ```
 
 ---

@@ -170,6 +170,9 @@ graph TD
         Batch[records.write...] --> SQLB[SQL UPDATE table WHERE id IN ...]
         SQLB --> CacheB[Update cache once]
     end
+
+    %% Force vertical stacking of subgraphs
+    Cache2 ~~~ Batch
 ```
 
 ---

@@ -163,6 +163,9 @@ graph TD
         Pointer -->|Direct Page Seek| DirectRow[Target Row in Table]
         DirectRow --> OutputI[Return Row Data]
     end
+
+    %% Force vertical stacking of subgraphs
+    OutputS ~~~ BTree
 ```
 
 ---
