@@ -3,15 +3,37 @@ title: Odoo 19 Search View & Search Panel Guide
 description: Master Odoo 19 search views, filters, grouping, and the modern sidebar searchpanel for elite data navigation.
 ---
 
-# Odoo 19 Search View & Search Panel Guide
+# Search Views & Search Panels: Data Filtering & Sidebar Navigation
 
-Every module in Odoo requires a **Search View**. While List and Kanban views show your data, the Search View determines how users filter, group, and navigate that data.
+Every transactional model in Odoo requires a **Search View**. While list and kanban views layout records, the search view governs how users find, filter, and group that data.
 
 ---
 
-## 1. Basic Structure
+## 1. What is it
+An Odoo Search View is an XML record containing directives that define the search parameters in the top-right search box, the available toggle filters, standard group-by configurations, and the left-side hierarchical selection panel (Search Panel).
 
-A search view is defined with the `<search>` tag. It is always linked to a specific model.
+---
+
+## 2. Why
+Enterprise databases contain thousands of records. Search views allow users to locate specific entries using keyword lookups, pre-defined domain filters, and dynamic grouping pipelines, rendering queries instantly.
+
+---
+
+## 3. When
+*   Use to define searchable fields on all main menu list and kanban layouts.
+*   Use to create logical group-by categories (e.g. group sales by representative).
+*   Use to configure date range selection inputs (e.g. filter entries by month).
+*   Use left-sidebar `<searchpanel>` lists to categorize records matching key relational nodes (e.g. sorting items by folder category).
+
+---
+
+## 4. When Not
+*   **Do not** add a `<searchpanel>` sidebar for high-cardinality fields (like `res.partner` or numeric ID fields) because Odoo will attempt to fetch and render all unique options in the sidebar, causing serious view load latency.
+
+---
+
+## 5. Syntax
+Here is the Odoo 19 XML structure for declaring a Search View:
 
 ```xml
 <record id="view_auction_listing_search" model="ir.ui.view">
@@ -19,20 +41,24 @@ A search view is defined with the `<search>` tag. It is always linked to a speci
     <field name="model">auction.listing</field>
     <field name="arch" type="xml">
         <search string="Auction Search">
-            <!-- 1. Searchable Fields -->
-            <field name="name" string="Listing Title"/>
+            <!-- 1. Searchable fields -->
+            <field name="name" string="Title"/>
             <field name="seller_id"/>
-            <field name="category_id" operator="child_of"/>
             
-            <!-- 2. Filters -->
-            <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
-            <filter string="Open" name="state_open" domain="[('state', '=', 'open')]"/>
+            <!-- 2. Toggle Filters -->
+            <filter string="Open Listings" name="state_open" domain="[('state', '=', 'open')]"/>
+            <separator/> <!-- Separator forces AND logic between adjacent filter groups -->
+            <filter string="High Value" name="high_value" domain="[('initial_price', '>', 5000)]"/>
             
-            <!-- 3. Group By -->
+            <!-- 3. Group By options -->
             <group expand="0" string="Group By">
                 <filter string="Seller" name="group_seller" context="{'group_by': 'seller_id'}"/>
-                <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
             </group>
+            
+            <!-- 4. Left sidebar search panel -->
+            <searchpanel>
+                <field name="state" icon="fa-filter" select="multi"/>
+            </searchpanel>
         </search>
     </field>
 </record>
@@ -40,113 +66,36 @@ A search view is defined with the `<search>` tag. It is always linked to a speci
 
 ---
 
-## 2. Advanced Filters & Grouping
+## 6. Examples
 
-### Common Filter Patterns
-Filters use Odoo **Domains** to slice data.
-*   **My Records:** `<filter string="My Auctions" name="my_auctions" domain="[('seller_id', '=', uid)]"/>`
-*   **Logical OR vs AND (Separators)**: Filters defined consecutively without a separator are combined in the UI with a logical **OR** (`|`). Placing a `<separator/>` between filters forces them to be combined with a logical **AND** (`&`).
-    ```xml
-    <!-- Toggling both Active and Draft will show Active OR Draft records -->
-    <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
-    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-    <separator/>
-    <!-- But they are ANDed with the following filters -->
-    <filter string="High Price" name="high_price" domain="[('price', '>', 5000)]"/>
-    ```
-*   **Declarative Date Filters**: Odoo provides a special `date` attribute for filter fields. When defined, Odoo automatically generates a nested dropdown containing date periods (Today, This Week, This Month, This Year, etc.) in the UI search panel.
-    ```xml
-    <!-- Automatically generates date range selectors for creation date -->
-    <filter string="Creation Date" name="create_date" date="create_date"/>
-    ```
-
-### Default Filters via Action
-You can force a filter to be active by default when a menu is clicked by setting the `context` in the **Window Action**:
-```xml
-<field name="context">{'search_default_state_open': 1}</field>
-```
-
----
-
-## 3. The Modern Search Panel
-
-Odoo 19 heavily utilizes the `<searchpanel>`, which appears as a sidebar on the left of List and Kanban views.
-
+### A. Advanced Date and Multi-field Filter Domains
 ```xml
 <search>
-    ...
-    <searchpanel>
-        <field name="category_id" icon="fa-filter" groupby="parent_id" select="multi"/>
-        <field name="state" icon="fa-list" select="multi"/>
-    </searchpanel>
+    <!-- One search box checking both Listing Name AND Seller Name (OR search) -->
+    <field name="name" string="Search Title/Seller" 
+           filter_domain="['|', ('name', 'ilike', self), ('seller_id.name', 'ilike', self)]"/>
+           
+    <!-- Declarative date filter: generates Today, This Month, etc. dropdown options -->
+    <filter string="Ending Date" name="end_date" date="date_end"/>
 </search>
 ```
 
-- **`groupby`**: Hierarchical filtering (e.g., Parent Category > Child Category).
-- **`select="multi"`**: Allows users to select multiple categories at once.
-
----
-
-## 4. Senior: Dynamic Search Panels
-
-For Senior Architects, static search panels are often not enough. If you need to restrict the categories shown in the sidebar based on complex logic (e.g., only show categories that have active auctions), you can use the `_search_panel_domain_image` hook or dynamic domains in the action.
-
-### Python-side Dynamic Filtering
-While most search panel logic is handled by the web client, you can influence it by overriding `search_panel_select_multi_range` or using `search_panel_select_range`.
-
----
-
-## 5. Senior: Advanced Logic & Inheritance
-
-### Multi-field Searching with `filter_domain`
-By default, a `<field>` in a search view only searches its own column. `filter_domain` allows one field to search across multiple attributes using an OR (`|`) domain.
+### B. Configuring Default View Filters in Window Actions
+To activate specific filters automatically when a user opens a view menu, set context flags in the Action record:
 
 ```xml
-<!-- One search box that checks both name AND reference -->
-<field name="name" string="Title or Ref" 
-       filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"/>
-```
-
-### Search View Inheritance
-Just like Forms or Lists, you can inherit and extend existing search views. This is critical for adding custom filters to core Odoo modules (like CRM or Sales).
-
-```xml
-<record id="view_auction_listing_search_inherit" model="ir.ui.view">
-    <field name="inherit_id" ref="pways_auction.view_auction_listing_search"/>
-    <field name="model">auction.listing</field>
-    <field name="arch" type="xml">
-        <xpath expr="//filter[@name='state_open']" position="after">
-            <filter string="High Value" name="high_value" domain="[('price', '>', 5000)]"/>
-        </xpath>
-    </field>
+<record id="action_auction_listings" model="ir.actions.act_window">
+    <field name="name">Active Auctions</field>
+    <field name="res_model">auction.listing</field>
+    <field name="view_mode">list,form</field>
+    <!-- Context prefix search_default_ activates the corresponding filter -->
+    <field name="context">{'search_default_state_open': 1}</field>
 </record>
 ```
 
-### Explicitly Selecting a Search View
-If a model has multiple search views, you can specify which one a Window Action should use by setting the `search_view_id`.
+### 💻 Code Challenge
 
-```xml
-<record id="action_auction_special" model="ir.actions.act_window">
-    ...
-    <field name="search_view_id" ref="view_auction_listing_search_advanced"/>
-</record>
-```
-
-!!! tip "Architect Insight"
-    The Search Panel is a "heavy" component. Avoid using it on fields with thousands of unique values (like `res.partner`), as it will slow down the initial view load significantly.
-
----
-
-## 🏁 Senior Checkpoint
-*   **Key Concept:** Search views define the interface for `fields`, `filters`, and `groups`.
-*   **Architect Insight:** Use `filter_domain` to create intuitive "Global Search" fields and `<searchpanel>` for e-commerce-style sidebar filtering.
-*   **Verify Your Knowledge:** How do you make a filter active by default? (Answer: Use `search_default_<filter_name>` in the action context).
-
----
-
-## 💻 Code Challenge
-
-**Create a filter for the Auction Marketplace that finds all "High Value" listings (price > 1000):**
+**Create a filter for the Auction Marketplace that finds all "High Value" listings (start_price > 1000):**
 
 <div class="code-challenge">
 <pre><code>&lt;filter string="High Value" name="high_value" <input type="text" class="quiz-input-inline w-150" data-answer="domain=\"[('start_price', '>', 1000)]\"">/&gt;</code></pre>
@@ -154,9 +103,7 @@ If a model has multiple search views, you can specify which one a Window Action 
 <div class="quiz-result"></div>
 </div>
 
----
-
-## 📝 Knowledge Check
+### 📝 Knowledge Check
 
 <div class="quiz-container">
   <div class="quiz-question">1. Which XML tag is used to create a sidebar navigation for filtering?</div>
@@ -188,10 +135,49 @@ If a model has multiple search views, you can specify which one a Window Action 
 
 ---
 
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 7. Common Mistakes
+1.  **Missing Separators in Filters**: Defining toggle filters next to each other without placing a `<separator/>` tag between them. By default, Odoo combines adjacent filters using a logical **OR** (`|`) statement. Adding a `<separator/>` forces a logical **AND** (`&`) operation.
+2.  **Referencing fields omitted from models**: Specifying search fields in the XML layout that are not defined in the model’s Python class. This triggers database loading warnings at server boot.
+
+---
+
+## 8. Performance
+*   **Logical ANDs / ORs**: Keep filter domains simple. Complex OR queries require index scans on multiple keys, increasing database query latency.
+*   **Search Panel Select Options**: Setting `select="multi"` on search panels accelerates filtering but queries count groups in background queries. Ensure the groupby field in the search panel is indexed.
+
+---
+
+## 9. Senior
+In Odoo 19:
+*   Use `filter_domain` to implement dynamic "Global Search" inputs where a single search box queries across multiple model fields:
+    ```xml
+    <field name="name" string="Keyword" 
+           filter_domain="['|', '|', ('name', 'ilike', self), ('ref', 'ilike', self), ('partner_id.name', 'ilike', self)]"/>
+    ```
+*   You can extend existing search views using standard XPath inheritance records pointing to parent view identifiers.
+
+---
+
+## 10. Diagrams
+
+This diagram shows how search inputs and panels inside Odoo's Web Client UI map to ORM domains and compile into SQL select queries:
+
+```mermaid
+graph TD
+    subgraph "Web Client UI Search Layer"
+        SearchBox[Global Search Input] -->|filter_domain ilike| ORM[ORM Domain Compiler]
+        Filters[Filters Dropdown] -->|Active state domains| ORM
+        GroupBy[Group By Dropdown] -->|context: group_by| ORM
+        Panel[Sidebar SearchPanel] -->|select='multi' checkboxes| ORM
+    end
+    subgraph "PostgreSQL Database Layer"
+        ORM -->|SQL SELECT ... WHERE ... GROUP BY ...| DB[(PostgreSQL)]
+    end
+```
+
+---
+
+## 11. Related
+*   [List Views](views_list.md)
+*   [Form Views](views_form.md)
+*   [Kanban Views](views_kanban.md)
