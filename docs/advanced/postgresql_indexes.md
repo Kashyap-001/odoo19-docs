@@ -3,123 +3,97 @@ title: Odoo 19 & PostgreSQL: Database Indexes & Optimization
 description: Learn how to optimize Odoo 19 database queries using indexes. Master models.Index, index=True, and how to analyze query performance using EXPLAIN ANALYZE in PostgreSQL.
 ---
 
-# PostgreSQL and Indexes: Database Optimization
+# PostgreSQL and Indexes: Database Optimization & Diagnostic Plans
 
-At scale, database query performance is the primary bottleneck for Odoo installations. A single slow query can tie up a worker thread, leading to a cascade of blocked requests for all users. 
-
-As a Senior Architect, you must know how to design efficient indexes and analyze execution plans using PostgreSQL's **`EXPLAIN ANALYZE`**.
+At scale, database query performance is the primary bottleneck for Odoo installations. A single slow query can tie up a worker thread, leading to blocked requests for concurrent users.
 
 ---
 
-## 1. Indexing Basics: `index=True`
+## 1. What is it
+An index is a database schema structure that PostgreSQL uses to locate records without scanning the entire table. In Odoo 19, indexes are declared on field definitions (`index=True`) or at the model class level using the `models.Index` class wrapper.
 
-Adding `index=True` to an Odoo field tells the ORM to create a standard B-tree database index on that column.
+---
+
+## 2. Why
+Without indexes, PostgreSQL must perform sequential table scans (page-by-page reads from disk). B-Tree indexes structure column values into balanced search trees, reducing key lookups from $O(N)$ sequential operations to $O(\log N)$ tree path traversals.
+
+---
+
+## 3. When
+*   Use on fields frequently used in search domains (e.g. `[('reference', '=', val)]`).
+*   Use on fields declared in sorting rules (`_order = 'create_date DESC'`).
+*   Use composite indexes when queries routinely filter using combinations of multiple fields.
+*   Use partial indexes for dashboards that target specific row flags (like active records).
+
+---
+
+## 4. When Not
+*   **Do not** index fields with low selectivity (e.g. Booleans or status flags with only two options) as PostgreSQL will bypass the index and perform sequential scans anyway, unless you wrap it in a partial index filter.
+*   **Do not** add indexes to models with heavy write frequency (`INSERT`/`UPDATE`/`DELETE`) on columns that change continuously (like counter fields) as index table rebuilding slows down database write execution.
+
+---
+
+## 5. Syntax
+Here is the Odoo 19 syntax for defining indexes:
 
 ```python
-# Create an index on the 'reference' field
-reference = fields.Char("Reference", index=True)
-```
+from odoo import models, fields
 
-### When to use index=True:
-1.  **Search Fields**: Fields frequently used in search domains (e.g. `[('reference', '=', val)]`).
-2.  **Join Fields (Many2one)**: Relational fields (e.g. `seller_id = fields.Many2one('res.users')`). *Odoo automatically indexes Many2one fields by default.*
-3.  **Order By**: Fields used in sorting (`_order = 'date_end DESC'`).
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    # 1. Simple column index
+    reference = fields.Char("Ref Code", index=True)
+
+    # 2. Composite Index (Multi-field query)
+    _name_ref_idx = models.Index('(name, reference)')
+
+    # 3. Partial Index (Filters subset of rows)
+    _active_code_idx = models.Index(
+        '(reference)', 
+        where="active = True"
+    )
+```
 
 ---
 
-## 2. Advanced Odoo 19 Indexes: `models.Index`
+## 6. Examples
 
-Odoo 19 replaces old-style SQL index overrides with the declarative **`models.Index`** wrapper, enabling composite, partial, and custom indexes directly in Python.
-
-### Composite (Multi-field) Indexes
-If you frequently query a model using multiple conditions, a single composite index can be much faster than individual indexes.
-
+### A. Composite and Sorting Indexes
 ```python
 from odoo import models, fields
 
 class AuctionBid(models.Model):
     _name = 'auction.bid'
+    _description = 'Auction Bid'
 
     listing_id = fields.Many2one('auction.listing')
     amount = fields.Monetary("Bid Amount")
+    create_date = fields.Datetime("Date")
 
     # Composite index: Speeds up queries searching by listing AND sorting by amount
     _listing_bid_idx = models.Index('(listing_id, amount DESC)')
+
+    # Date-sort index for descending queries
+    _date_idx = models.Index('(create_date DESC)')
 ```
 
-### Partial (Conditional) Indexes
-A **Partial Index** is an index built over a subset of a table defined by a conditional expression (a SQL `WHERE` clause). This reduces index size and keeps writing operations fast.
-
+### B. Partial Indexing Configuration
 ```python
 class AuctionListing(models.Model):
     _name = 'auction.listing'
-    state = fields.Selection([('draft', 'Draft'), ('active', 'Active'), ('done', 'Done')])
+    _description = 'Auction Item Listing'
 
-    # Index ONLY the active listings. Perfect for dashboards!
+    state = fields.Selection([('draft', 'Draft'), ('active', 'Active')])
+
+    # Index active listings only. Ideal for active dashboard metrics!
     _active_listing_idx = models.Index(
         '(id)', 
         where="state = 'active'"
     )
 ```
 
----
-
-## 3. Tracing Bottlenecks with `EXPLAIN ANALYZE`
-
-If a query is slow, do not guess which index to add. Execute the query directly on the PostgreSQL database prefixing it with `EXPLAIN (ANALYZE, BUFFERS)`.
-
-```sql
-EXPLAIN (ANALYZE, BUFFERS) 
-SELECT id FROM auction_listing 
-WHERE state = 'active' AND price > 5000;
-```
-
-### How to Read the Execution Plan
-
-`EXPLAIN` outputs the query plan tree. Let's look at the two main search operations:
-
-#### 1. Seq Scan (Sequential Scan) ❌
-Postgres reads the entire table from disk page-by-page.
-*   **Symptom**: High execution time, slow queries on large tables.
-*   **Fix**: Add an index on the filter conditions.
-
-```text
--> Seq Scan on auction_listing (cost=0.00..385.00 rows=15 width=4) (actual time=0.012..8.450 rows=12 loops=1)
-   Filter: ((state = 'active'::text) AND (price > 5000))
-```
-
-#### 2. Index Scan / Index Only Scan ✅
-Postgres queries the index directly to find matching records.
-*   **Symptom**: Fast lookup, database buffers hit.
-*   **Fix**: Query optimized.
-
-```text
--> Index Scan using active_listing_idx on auction_listing (cost=0.15..12.30 rows=5 width=4) (actual time=0.004..0.025 rows=12 loops=1)
-```
-
-### EXPLAIN vs. EXPLAIN ANALYZE
-*   **`EXPLAIN`**: Estimates the cost based on database statistics *without* actually running the query.
-*   **`EXPLAIN ANALYZE`**: **Runs the query** and records actual execution times and buffer hits. 
-
-> [!CAUTION]
-> Because `EXPLAIN ANALYZE` executes the query, running it on an `UPDATE` or `DELETE` statement will modify database records. Wrap write queries in a rollback transaction when testing:
-> ```sql
-> BEGIN;
-> EXPLAIN ANALYZE UPDATE ... ;
-> ROLLBACK;
-> ```
-
----
-
-## 🏁 Senior Checkpoint
-
-*   **Key Concept**: Indexes speed up read queries but slow down write operations (`create`, `write`, `unlink`) because the index must be updated in Postgres. Do not index columns with high write frequency unless necessary.
-*   **Architect Insight**: Use partial indexes (`where="state='active'"`) for high-churn transactional tables to keep indexes small enough to fit entirely inside RAM memory buffers.
-*   **Verify Your Knowledge**: What is the difference between an Index Scan and an Index Only Scan? (Answer: Index Scan fetches pointers from the index and then reads the table data; Index Only Scan reads the data directly from the index because all requested columns are stored within the index).
-
----
-
-## 💻 Code Challenge
+### 💻 Code Challenge
 
 **Define a partial index in Odoo 19 that indexes the code field only for active partners (active = True):**
 
@@ -135,3 +109,65 @@ Postgres queries the index directly to find matching records.
 <button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
 <div class="quiz-result"></div>
 </div>
+
+---
+
+## 7. Common Mistakes
+1.  **Over-Indexing**: Adding indexes to every single model column. Every active index slows down PostgreSQL `write` performance because index tables must be updated dynamically with each insert or delete.
+2.  **Indexing Unstored Computed Fields**: Setting `index=True` on a computed field without `store=True`. Unstored computed fields do not exist inside PostgreSQL tables, making indexing impossible.
+
+---
+
+## 8. Performance
+To locate database bottlenecks, prepend queries using `EXPLAIN (ANALYZE, BUFFERS)` to inspect database scan strategies:
+*   **Seq Scan (Sequential Scan) ❌**: Postgres reads the entire table from disk page-by-page. High cost.
+    ```text
+    -> Seq Scan on auction_listing (cost=0.00..385.00 rows=15 width=4) (actual time=0.012..8.450 rows=12 loops=1)
+       Filter: ((state = 'active'::text) AND (price > 5000))
+    ```
+*   **Index Scan ✅**: Postgres queries the B-Tree index to locate row pointers, then reads specific table pages. High performance.
+    ```text
+    -> Index Scan using active_listing_idx on auction_listing (cost=0.15..12.30 rows=5 width=4) (actual time=0.004..0.025 rows=12 loops=1)
+    ```
+
+---
+
+## 9. Senior
+In Odoo 19:
+*   **Index Only Scan**: If your SQL query only selects columns that are defined within the active index key, PostgreSQL reads value structures directly from the index tree without loading table data pages, achieving maximum performance.
+*   **Rollback Safety Caution**: Since `EXPLAIN ANALYZE` actually executes the query to collect timing metrics, running it on an `UPDATE` or `DELETE` statement will modify records. Always wrap diagnostic writes in rollback blocks:
+    ```sql
+    BEGIN;
+    EXPLAIN ANALYZE UPDATE auction_bid SET amount = 1000 WHERE id = 5;
+    ROLLBACK;
+    ```
+
+---
+
+## 10. Diagrams
+
+This diagram illustrates the data access difference between a Sequential Table Scan and a B-Tree Index Scan:
+
+```mermaid
+graph TD
+    subgraph "Sequential Scan (Page-by-Page disk read)"
+        TableDisk[Table Data on Disk] -->|Read Row 1| P1[Row 1]
+        TableDisk -->|Read Row 2| P2[Row 2]
+        TableDisk -->|Read Row N| PN[Row N]
+        PN --> MatchS{Matches Filter?}
+        MatchS -- Yes --> OutputS[Return Row Data]
+    end
+
+    subgraph "B-Tree Index Scan (Key node lookup)"
+        BTree[B-Tree Index Key Lookup] -->|Navigate Nodes| Pointer[Find Row Pointer]
+        Pointer -->|Direct Page Seek| DirectRow[Target Row in Table]
+        DirectRow --> OutputI[Return Row Data]
+    end
+```
+
+---
+
+## 11. Related
+*   [Performance & Set Operations](../search/performance_optimization.md)
+*   [Performance Profiling & SQL](performance_profiling.md)
+*   [SQL Performance](../integration/performance.md)

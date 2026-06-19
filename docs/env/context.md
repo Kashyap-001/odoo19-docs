@@ -3,61 +3,105 @@ title: Odoo 19 Context and with_context()
 description: Master the Odoo Context dictionary. Learn how to pass data between methods, use with_context(), and leverage environment helpers.
 ---
 
-# Odoo 19 Context and with_context()
+# Odoo 19 Context: Metadata & Execution Modification
 
-The **Context** is a python dictionary containing shared data such as the user's timezone, language, and custom flags. 
-
-### 💡 Analogy: The Developer's Backpack
-Think of the Context as a **Backpack** that Odoo carries through every function, from the UI down to the database.
-
-*   **Standard Tools**: Inside the backpack are tools everyone needs: the current user's language (`lang`), their timezone (`tz`), and their active company.
-*   **Custom Flags**: You can slip a **Note** into the backpack (e.g., `{'skip_validation': True}`) at the start of a function. Every subsequent function that Odoo calls can "open the backpack" and see your note to change its behavior.
-*   **with_context()**: This is like **swapping backpacks** for a specific mission. You give Odoo a new backpack with different tools, but once the mission is over, Odoo goes back to using the original one.
+The **Context** is a python dictionary containing shared metadata such as the active user's timezone, language, active company, and custom execution flags.
 
 ---
 
-## 2. Core Context Key Catalogue
+## 1. What is it
+The Odoo Context is a key-value dictionary attached to the environment (`self.env.context`). It carries localization settings and system flags down the execution callstack. Importantly, the context dictionary is **immutable**; changes are applied by cloning the environment using the `with_context()` method.
 
-Odoo reserves several context keys for system-wide behaviors. As an architect, you must know how to leverage these flags:
+---
 
-### A. Prefills: `default_<field_name>`
-Any context key starting with `default_` will automatically be loaded by Odoo as the default value for the field matching that name during record creation or form pre-filling.
+## 2. Why
+Modern ERP applications execute deep callstacks. Passing metadata (like language or active timezone) through every intermediate method signature is impractical. The Context acts as a "backpack" that is automatically carried by Odoo’s ORM throughout the transaction.
+
+---
+
+## 3. When
+*   Use to set default values for record creation (`default_<field_name>`).
+*   Use to bypass standard active filters (`active_test=False`) to retrieve archived records.
+*   Use to override language codes (`lang='fr_FR'`) to force translations on invoices or emails.
+*   Use to suppress automated logs (`tracking_disable=True`) during bulk data migration.
+
+---
+
+## 4. When Not
+*   **Do not** attempt to mutate the context dictionary directly (e.g. `self.env.context['key'] = value`). It will raise a TypeError.
+*   **Do not** use the context to pass mandatory business parameters that should be explicit method arguments. Doing so obscures the API design and makes debugging difficult.
+
+---
+
+## 5. Syntax
+Here is the core Python syntax for interacting with the Context:
+
 ```python
-# Open a wizard with the current partner automatically selected
-action_context = {'default_partner_id': self.partner_id.id}
+# 1. Reading values from the context
+user_lang = self.env.context.get('lang')  # Returns language code (e.g. 'en_US')
+active_id = self.env.context.get('active_id')  # Returns current record ID from UI
+
+# 2. Cloning the environment with context modifiers
+# (Does not alter 'self', returns a new recordset pointing to modified env)
+modified_recordset = self.with_context(active_test=False)
+
+# 3. Injecting multiple key-values
+custom_env = self.with_context(
+    lang='fr_FR',
+    default_user_id=self.env.user.id,
+    custom_flag=True
+)
 ```
 
-### B. Bypassing Inactive Filters: `active_test`
-By default, the ORM filters out archived records (records where `active = False`). If you need to search, read, or link archived records, you must set `active_test=False` in the context.
+---
+
+## 6. Examples
+
+### A. Context Key overrides & Bypasses
 ```python
 # Find all products, including archived ones
 all_products = self.env['product.product'].with_context(active_test=False).search([])
-```
 
-### C. Translation & Localization: `lang`
-The `lang` key contains the language code of the active user session (e.g. `en_US` or `fr_FR`). This controls which translation strings are loaded from database translation catalogs.
-```python
 # Force-translate a description into French for a dynamic email template
 french_listing = self.with_context(lang='fr_FR')
 email_body = french_listing.description
 ```
 
-### D. Timezone Calculations: `tz`
-The `tz` key stores the user's active timezone name (e.g. `America/New_York` or `Europe/Paris`). Odoo stores all Datetime values in UTC in the PostgreSQL database. When displaying timestamps in the UI or printing reports, Odoo looks at `tz` to convert UTC to the user's local time.
-```python
-# Convert UTC database datetime to user's local timezone manually if needed
-user_tz = self.env.context.get('tz') or 'UTC'
-```
-
----
-
-## 🏗️ Master Project Challenge: The Context
+### B. Master Project Challenge: Dynamic Email Bypass Flag
 1.  **Task**: Add a flag `is_automated_process` to the context when creating an `auction.listing` from a scheduled action.
 2.  **Goal**: In your `create()` method, check this flag and skip the "Congratulations Email" if the flag is `True`.
 
----
+```python
+from odoo import models, fields, api
 
-## 📝 Knowledge Check
+class AuctionListing(models.Model):
+    _name = 'auction.listing'
+    _description = 'Auction Listing'
+
+    name = fields.Char("Title")
+    state = fields.Selection([('draft', 'Draft'), ('open', 'Open')], default='draft')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        
+        # Check context for automation flag
+        if not self.env.context.get('is_automated_process'):
+            for record in records:
+                record._send_congratulations_email()
+                
+        return records
+
+    def _send_congratulations_email(self):
+        # Email transmission logic
+        pass
+
+# Triggering code from scheduled cron script:
+# listing_model = self.env['auction.listing'].with_context(is_automated_process=True)
+# listing_model.create([{'name': 'Automated Import Item'}])
+```
+
+### 📝 Knowledge Check
 
 <div class="quiz-container">
   <div class="quiz-question">1. Is the Odoo Context mutable (can it be changed directly)?</div>
@@ -68,34 +112,60 @@ user_tz = self.env.context.get('tz') or 'UTC'
 
 ---
 
-## 3. Senior: High-Performance Imports
+## 7. Common Mistakes
+1.  **Direct Mutation Attempts**: Writing code like `self.env.context['my_key'] = True`. The dictionary is a read-only mapping and will raise a runtime exception.
+2.  **Discarding the Returned Recordset**: Calling `self.with_context(key=val)` as a standalone line without capturing the result. Always capture it: `self = self.with_context(...)` or `records = records.with_context(...)`.
+3.  **Default Value Overrides Colliding**: Setting `default_partner_id` in the context, forgetting that it will propagate and populate fields in any sub-records or line items created during that execution block.
 
-When importing thousands of records (like bulk auction bids), Odoo will try to post a log message to the Chatter for every single field change if `tracking=True` is enabled. This can crash the system.
+---
 
-### The `tracking_disable` Pattern
-Senior architects always disable tracking during bulk imports to save massive amounts of SQL `INSERT` time.
+## 8. Performance
+During bulk imports of thousands of records, Odoo will trigger Chatter tracking logs (`tracking=True`) for every modified field. This results in heavy SQL insert operations and slows down imports.
+*   **The `tracking_disable` Pattern**: Use `with_context(tracking_disable=True)` to temporarily disable chatter tracking and dramatically increase import speed.
 
 ```python
 @api.model_create_multi
 def import_bids(self, vals_list):
-    # Disable Chatter tracking for this transaction
+    # Disable Chatter tracking for this transaction to optimize write times
     env_fast = self.with_context(tracking_disable=True)
     return env_fast.create(vals_list)
 ```
 
 ---
 
-## 🏁 Senior Checkpoint
-*   **Key Concept:** The Context is a dictionary passed through the Environment to share metadata (lang, tz) and custom flags.
-*   **Architect Insight:** Context is **immutable**; `with_context()` returns a new recordset. Always capture the result!
-*   **Pro Tip:** Use `with_context(tracking_disable=True)` when executing bulk scripts or imports to bypass expensive Chatter logging and optimize database write speed.
+## 9. Senior
+In Odoo 19:
+*   **Cache Splitting**: If a computed field depends on context keys, you must declare it using the `@api.depends_context` decorator. This ensures Odoo partitions the recordset cache per context value, preventing a user in French (`lang='fr_FR'`) from reading translated fields cached by an English user (`lang='en_US'`).
+```python
+@api.depends('name')
+@api.depends_context('lang', 'company')
+def _compute_display_name(self):
+    ...
+```
 
 ---
 
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 10. Diagrams
+
+This diagram shows how `with_context()` clones the environment context, establishing a separate, immutable metadata execution branch while leaving the original recordset environment intact:
+
+```mermaid
+graph TD
+    subgraph "Original Context Path"
+        R1[Recordset: self] -->|env| Env1[self.env]
+        Env1 -->|context| Ctx1[Context: lang, tz]
+    end
+
+    subgraph "Modified Context Path"
+        R1 -->|with_context(active_test=False)| R2[New Recordset]
+        R2 -->|env (cloned)| Env2[New Environment]
+        Env2 -->|context (merged)| Ctx2["Context: lang, tz, active_test=False"]
+    end
+```
+
+---
+
+## 11. Related
+*   [Environment Deep Dive](env_deep_dive.md)
+*   [Recordset Helpers](recordset_helpers.md)
+*   [Decorators (@api)](../advanced/decorators.md)

@@ -3,52 +3,122 @@ title: Odoo 19 Constraints and Indexes Tutorial — models.Constraint & models.I
 description: Learn how to configure database validation rules and composite indexes using Odoo 19 declarative Constraint and Index classes.
 ---
 
-# Odoo 19 Constraints and Indexes
+# Odoo 19 Constraints and Indexes: Schema Integrity & Performance
 
-Odoo 19 introduces a more modern and declarative way to handle database-level constraints and indexes using the `models.Constraint` and `models.Index` classes.
+Odoo 19 provides declarative classes (`models.Constraint` and `models.Index`) to enforce schema rules at the database level and optimize search lookup performance.
 
-## Database Constraints (models.Constraint)
-In Odoo 19, the old `_sql_constraints` list is replaced by individual class attributes using `models.Constraint`. This makes constraints easier to read and inherit.
+---
 
-### Unique Constraint
-Ensures that no two records have the same value in a specific field.
+## 1. What is it
+Constraints are validation rules that prevent invalid data from being saved to the database. Indexes are data structures that PostgreSQL uses to speed up queries, preventing slow sequential table scans.
+
+---
+
+## 2. Why
+*   **Data Integrity**: Validation at the Python layer is bypassable. Database-level constraints are absolute safeguards.
+*   **Search Optimization**: Without indexes, searching millions of records forces PostgreSQL to read every row from disk. Correct indexing reduces search times from seconds to milliseconds.
+
+---
+
+## 3. When
+*   Use **`models.Constraint`** for simple value validations (e.g. `price > 0`) or uniqueness constraints across single or multiple fields.
+*   Use **`@api.constrains`** (Python constraints) when validation rules require checking relationships or comparing data from multiple tables.
+*   Use **`models.Index`** to create composite indexes (multi-field lookups) or partial indexes for subset filtering.
+
+---
+
+## 4. When Not
+*   **Do not** use `models.Constraint` for logic that changes dynamically (like configuration parameters that users can edit in the UI).
+*   **Do not** index columns with low cardinality (e.g., Booleans or status flags with only two states) unless creating a partial index.
+
+---
+
+## 5. Syntax
+Here is the Odoo 19 syntax for declaring constraints and indexes:
 
 ```python
-from odoo import models, fields
+from odoo import models, fields, api
 
-class Product(models.Model):
+class HospitalPatient(models.Model):
     _name = 'hospital.patient'
+    _description = 'Patient Record'
 
     code = fields.Char(required=True)
-
-    # UNIQUE constraint
+    age = fields.Integer(default=0)
+    
+    # 1. SQL UNIQUE Constraint (Odoo 19 Declarative Style)
     _unique_code = models.Constraint(
         'UNIQUE(code)',
         'The patient code must be unique!'
     )
-```
-
-### Check Constraint
-Ensures that a field value meets a specific SQL condition (e.g., must be positive).
-
-```python
-class Stock(models.Model):
-    _name = 'stock.inventory'
-
-    quantity = fields.Integer()
-
-    # CHECK constraint
-    _check_quantity = models.Constraint(
-        'CHECK(quantity >= 0)',
-        'Quantity cannot be negative!'
+    
+    # 2. SQL CHECK Constraint
+    _check_age = models.Constraint(
+        'CHECK(age >= 0)',
+        'Age cannot be negative!'
     )
 ```
 
 ---
 
-## SQL Constraints vs. Python Constraints (@api.constrains)
+## 6. Examples
 
-Odoo offers two ways to enforce data rules. Choosing the right one is a key "Senior" decision.
+### A. Python Constraints (`@api.constrains`)
+For validation logic requiring relational lookups:
+
+```python
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
+class HospitalAppointment(models.Model):
+    _name = 'hospital.appointment'
+    _description = 'Patient Appointment'
+
+    patient_id = fields.Many2one('hospital.patient', string="Patient", required=True)
+    date = fields.Date("Date", required=True)
+
+    @api.constrains('date', 'patient_id')
+    def _check_appointment_date(self):
+        for record in self:
+            # Check if patient already has an appointment on this date
+            duplicate = self.search([
+                ('patient_id', '=', record.patient_id.id),
+                ('date', '=', record.date),
+                ('id', '!=', record.id)
+            ], limit=1)
+            if duplicate:
+                raise ValidationError("This patient already has an appointment scheduled for this date.")
+```
+
+### B. Database Indexes (`models.Index`)
+```python
+class AuctionBid(models.Model):
+    _name = 'auction.bid'
+    _description = 'Auction Bid'
+
+    listing_id = fields.Many2one('auction.listing')
+    bid_amount = fields.Float()
+
+    # 1. Composite Index on listing_id and bid_amount
+    _listing_bid_idx = models.Index('(listing_id, bid_amount)')
+
+    # 2. Index for descending date searches
+    create_date = fields.Datetime("Created On")
+    _date_idx = models.Index('(create_date DESC)')
+```
+
+---
+
+## 7. Common Mistakes
+1.  **Trying to run joins in SQL Constraints**: SQL check constraints can only evaluate columns within the same row of the current table. They cannot contain subqueries or references to other tables.
+2.  **Using Python Constraints for Uniqueness**: Writing `@api.constrains` check search loops for uniqueness. Under high concurrency, two parallel requests might check simultaneously, find no duplicates, and write duplicate records, causing race conditions. Always use `UNIQUE(field)` sql constraints instead.
+3.  **Over-Indexing**: Adding indexes on high-write fields that are rarely searched. Every index slows down SQL writes (`INSERT`, `UPDATE`, `DELETE`) because PostgreSQL must rebuild the index structure.
+
+---
+
+## 8. Performance
+
+This table compares SQL constraints and Python constraints:
 
 | Feature | SQL Constraint (`models.Constraint`) | Python Constraint (`@api.constrains`) |
 | :--- | :--- | :--- |
@@ -57,69 +127,38 @@ Odoo offers two ways to enforce data rules. Choosing the right one is a key "Sen
 | **Scope** | Simple Logic (Unique, Check, etc.) | Complex Logic (relational lookups, multi-model) |
 | **Trigger** | SQL Insert/Update | Odoo `create()` / `write()` calls |
 
-**Architect Tip**: Use **SQL Constraints** whenever possible for simple rules (like uniqueness or positive numbers). Use **Python Constraints** only when your rule requires looking up data in other models or complex business logic that SQL cannot easily express.
+---
+
+## 9. Senior
+In Odoo 19:
+*   **Partial Indexing**: You can specify `where` parameters in `models.Index` to index a subset of records. This is highly performant for massive transactional tables:
+    ```python
+    # Creates an index ONLY for active records, keeping the index size tiny
+    _active_listing_idx = models.Index(
+        '(id)', 
+        where="state = 'active'"
+    )
+    ```
+*   The transition from the legacy `_sql_constraints = [...]` list to individual `models.Constraint` class attributes makes inheritance and overrides cleaner.
 
 ---
 
-## Database Indexes (models.Index)
-Indexes are used to speed up database searches. While you can still use `index=True` on a field, Odoo 19 provides `models.Index` for more advanced scenarios like composite indexes.
+## 10. Diagrams
 
-### Simple Field Index
-The easiest way to add an index is on the field definition:
-```python
-name = fields.Char(index=True)
-```
+This decision tree helps select the correct validation type based on business requirements:
 
-### Composite Index (Multi-field)
-If you frequently search or filter by two fields together, a composite index can significantly improve performance.
-
-```python
-class AuctionBid(models.Model):
-    _name = 'auction.bid'
-
-    listing_id = fields.Many2one('auction.listing')
-    bid_amount = fields.Float()
-
-    # Composite index on listing_id and bid_amount
-    _listing_bid_idx = models.Index('(listing_id, bid_amount)')
-```
-
-### Custom Index Options
-You can also specify sorting order or other PostgreSQL-specific index options.
-
-```python
-# Index for descending date searches
-_date_idx = models.Index('(create_date DESC)')
-```
-
-### Senior: Partial Indexing
-A **Partial Index** is an index created on a subset of rows in a table. This is extremely efficient for tables with millions of records where you only ever care about a few (e.g., "Active" auctions).
-
-```python
-# Creates an index ONLY for active records. 
-# The index size is tiny compared to a full table index.
-_active_listing_idx = models.Index(
-    '(id)', 
-    where="state = 'active'"
-)
+```mermaid
+graph TD
+    Start[New validation rule needed] --> Rel{Does validation require checking relational data or Python logic?}
+    Rel -- Yes --> PyConstraint[Use Python Constraint: @api.constrains]
+    Rel -- No --> Simple{Is it a simple check on a single table column?}
+    Simple -- Yes --> SQLConstraint[Use SQL Constraint: models.Constraint]
+    Simple -- No --> PyConstraint
 ```
 
 ---
 
-## 🏁 Senior Checkpoint
-*   **Key Concept:** Constraints enforce data integrity at the database level; Indexes speed up searches.
-*   **Architect Insight:** Partial Indexes (`where="state='active'"`) are the most efficient way to optimize dashboard performance without bloating the DB size.
-*   **Verify Your Knowledge:** What happens if a Python constraint fails? (Answer: The transaction is rolled back and an error is shown to the user).
-
-!!! success "Next Step"
-    Performance mastered. Now learn about [Cache Management](cache_management.md).
-
----
-
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 11. Related
+*   [Defining Models](../foundation/models.md)
+*   [Decorators (@api)](decorators.md)
+*   [Cache Management](cache_management.md)
