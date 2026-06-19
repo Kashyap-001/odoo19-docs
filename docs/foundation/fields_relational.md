@@ -177,6 +177,7 @@ classDiagram
 </div>
 
 
+
 ---
 
 ## 📝 Knowledge Check
@@ -187,6 +188,7 @@ classDiagram
   <button class="quiz-check" data-answer="`Many2one`, `One2many`, and `Many2many`." onclick="checkQuiz(this)">Check Answer</button>
   <div class="quiz-result"></div>
 </div>
+
 
 
 ---

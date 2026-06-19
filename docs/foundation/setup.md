@@ -125,6 +125,7 @@ One of the most common beginner frustrations is seeing "no changes" in Odoo afte
 </div>
 
 
+
 ---
 
 ## 📝 Knowledge Check
@@ -158,7 +159,9 @@ One of the most common beginner frustrations is seeing "no changes" in Odoo afte
 </div>
 
 
+
 ---
+
 
 
 <div class="feedback-container">

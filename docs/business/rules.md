@@ -164,7 +164,9 @@ Record Rules are the "scalpel" of Odoo security. While ACLs grant broad access, 
 </div>
 
 
+
 ---
+
 
 
 <div class="feedback-container">

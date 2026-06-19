@@ -141,6 +141,7 @@ graph TD
 </div>
 
 
+
 ---
 
 ## 📝 Knowledge Check
@@ -172,6 +173,7 @@ graph TD
   <button class="quiz-check" data-answer="Direct paths are faster for the XML engine to process, especially in large and complex views, leading to better performance." onclick="checkQuiz(this)">Check Answer</button>
   <div class="quiz-result"></div>
 </div>
+
 
 
 ---

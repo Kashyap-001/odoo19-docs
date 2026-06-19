@@ -1,3 +1,8 @@
+---
+title: OWL Services Catalogue - Odoo 19 Frontend Utilities
+description: Learn about global services in Odoo 19's frontend OWL framework. Catalogue of default core services like notification, dialog, action, and RPC.
+---
+
 # OWL Services Catalogue
 
 In Odoo's frontend framework (OWL), **Services** are global, long-lived objects that provide utility functions to your components. They are the JavaScript equivalent of Odoo's Python Environment tools.

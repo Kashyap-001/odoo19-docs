@@ -163,6 +163,7 @@ graph TD
 self.env['auction.bid'].<input type="text" class="quiz-input-inline w-180" data-answer="flush_model(['amount'])">
 
 
+
 ---
 
 ## Related Tuning Guides

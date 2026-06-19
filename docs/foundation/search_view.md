@@ -148,6 +148,7 @@ graph TD
 </div>
 
 
+
 ---
 
 ## 📝 Knowledge Check
@@ -179,6 +180,7 @@ graph TD
   <button class="quiz-check" data-answer="Inside an `ir.ui.view` record with the `model` set to the target model." onclick="checkQuiz(this)">Check Answer</button>
   <div class="quiz-result"></div>
 </div>
+
 
 
 ---

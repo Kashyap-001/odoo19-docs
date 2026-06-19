@@ -204,7 +204,9 @@ if auction.state == 'closed':
 </div>
 
 
+
 ---
+
 
 
 <div class="feedback-container">

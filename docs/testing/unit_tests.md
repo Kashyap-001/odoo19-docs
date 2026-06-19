@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Unit Testing & TransactionCase Tutorial
+description: Master unit testing in Odoo 19 using unittest and TransactionCase. Learn class set up, test isolation, database rollbacks, and assertions.
+---
+
 # Odoo 19 Unit Testing: Masterclass
 
 In Odoo, unit tests are the backbone of a stable enterprise application. They ensure that business logic remains correct as the codebase evolves. Odoo 19 continues to leverage `unittest` with specialized classes like `TransactionCase`.
