@@ -22,51 +22,62 @@ listing.write({
 
 ---
 
-## Relational Commands (The 5 Magic Tuples)
+## Relational Commands: Modern `Command` Helpers vs. Legacy Raw Tuples
 
-Updating relational fields (`One2many` or `Many2many`) is different from updating standard fields. You cannot pass a list of IDs directly. Instead, Odoo uses special "Command Tuples."
+Updating relational fields (`One2many` or `Many2many`) is different from updating standard fields. You cannot pass a list of IDs directly. Instead, Odoo uses special commands. Modern Odoo 19 code uses the `odoo.Command` namespace, but legacy code and raw imports frequently use **Legacy Raw Tuples** (lists of 3-element tuples). 
 
-| Command Tuple | `odoo.Command` Helper | Action |
+Senior developers must be fluent in both formats:
+
+| Command (Raw Tuple) | Modern `odoo.Command` Helper | Action / Description |
 | :--- | :--- | :--- |
-| `(0, 0, {vals})` | `Command.create({vals})` | Create a new record and link it. |
-| `(1, id, {vals})` | `Command.update(id, {vals})` | Update an existing record. |
-| `(2, id, 0)` | `Command.delete(id)` | **Remove and Delete** from database. |
-| `(3, id, 0)` | `Command.unlink(id)` | **Unlink** only (removes relationship). |
-| `(4, id, 0)` | `Command.link(id)` | Link an existing record. |
-| `(5, 0, 0)` | `Command.clear()` | Remove ALL links (doesn't delete). |
-| `(6, 0, [ids])` | `Command.set([ids])` | **Replace All** existing links with these IDs. |
+| **`(0, 0, {vals})`** | `Command.create({vals})` | **Create & Link**: Creates a new record in the comodel with the provided values, links it to this record, and saves it in the database. |
+| **`(1, id, {vals})`** | `Command.update(id, {vals})` | **Update Linked**: Updates the linked record matching `id` with the provided field values. |
+| **`(2, id, 0)`** or `(2, id)` | `Command.delete(id)` | **Unlink & Hard Delete**: Removes the relationship link and executes a SQL `DELETE` to completely remove the record from the database. |
+| **`(3, id, 0)`** or `(3, id)` | `Command.unlink(id)` | **Unlink Only**: Breaks the relationship link, but keeps the record in the database (sets foreign key to `NULL` or deletes row in join table for Many2many). |
+| **`(4, id, 0)`** or `(4, id)` | `Command.link(id)` | **Link Existing**: Creates a relationship link to an already existing record in the database. |
+| **`(5, 0, 0)`** or `(5,)` | `Command.clear()` | **Unlink All**: Breaks all relationship links in the relation (but does not hard delete the related records). |
+| **`(6, 0, [ids])`** | `Command.set([ids])` | **Replace All**: Replaces all existing links with the new list of IDs. Equivalent to running clear (`5`) followed by linking (`4`) for each ID. |
 
-### Beginner: Why "Command Tuples"?
+### Why Odoo Uses Commands
 Beginners often ask: *"Why can't I just pass a list of IDs like `write({'tags': [1,2,3]})`?"*
 
-**The Problem:** Odoo needs to know *exactly* what you want to do with the existing relationship. 
-- If you pass `[1, 2, 3]`, are you **adding** those IDs to the existing ones? 
-- Are you **replacing** the existing ones? 
-- Are you **removing** 1, 2, and 3 but keeping 4 and 5?
+**The Problem:** Odoo needs to know *exactly* what database action you want to perform on the associated records. 
+- Do you want to **add** a tag without touching existing ones? Use `Command.link(id)` / `(4, id, 0)`.
+- Do you want to **replace** the entire set? Use `Command.set([ids])` / `(6, 0, [ids])`.
+- Do you want to **update** a line's description in-place? Use `Command.update(id, {'name': 'New'})` / `(1, id, {'name': 'New'})`.
 
-The Command Tuples (or `odoo.Command` helpers) remove this ambiguity. For example, `Command.set([1,2,3])` explicitly tells Odoo: "Clear all existing links and make these the only ones."
+Using `odoo.Command` or raw tuples removes this ambiguity and translates directly to optimized backend SQL commands.
 
-### Most Common Patterns
+### Modern vs. Legacy Syntax Comparison
 
-**1. Adding a Single Tag (M2M)**
-```python
-from odoo import Command
-listing.write({'tag_ids': [Command.link(new_tag_id)]})
-```
+=== "Modern (Command Namespace)"
+    ```python
+    from odoo import Command
 
-**2. Replacing All Tags (M2M)**
-This is the standard way to "sync" tags from a UI selection.
-```python
-listing.write({'tag_ids': [Command.set([1, 2, 3])]})
-```
+    # Update listing tags, create a new bid, and delete an old one
+    listing.write({
+        'tag_ids': [Command.set([1, 2, 3])],
+        'bid_ids': [
+            Command.create({'amount': 1500.0, 'bidder_id': 5}),
+            Command.delete(12)
+        ]
+    })
+    ```
 
-**3. Adding Bids (O2M)**
-```python
-listing.write({'bid_ids': [Command.create({'amount': 500})]})
-```
+=== "Legacy (Raw Tuples)"
+    ```python
+    # Does the exact same database actions using raw Python lists/tuples
+    listing.write({
+        'tag_ids': [(6, 0, [1, 2, 3])],
+        'bid_ids': [
+            (0, 0, {'amount': 1500.0, 'bidder_id': 5}),
+            (2, 12, 0)
+        ]
+    })
+    ```
 
 !!! danger "Common Mistake"
-    Passing a raw list of IDs like `write({'tag_ids': [1, 2, 3]})` will **FAIL** or behave unexpectedly. You must use the `Command.set` or tuple syntax.
+    Passing a raw list of IDs like `write({'tag_ids': [1, 2, 3]})` will **FAIL** with an ORM TypeError. You must wrap them in the `Command.set()` helper or use the raw tuple `(6, 0, [1, 2, 3])`.
 
 ---
 
@@ -74,13 +85,13 @@ listing.write({'bid_ids': [Command.create({'amount': 500})]})
 
 Relational commands are hard to memorize. Use the **"CURL LCS"** acronym to recall the most common ones:
 
-*   **C**reate: **`Command.create()`**
-*   **U**pdate: **`Command.update()`**
-*   **R**emove: **`Command.delete()`**
-*   **L**ink: **`Command.link()`**
-*   **L**ist: **`Command.set()`** (Replace All)
-*   **C**lear: **`Command.clear()`**
-*   **S**ever: **`Command.unlink()`**
+*   **C**reate: **`Command.create()`** / `(0, 0, {vals})`
+*   **U**pdate: **`Command.update()`** / `(1, id, {vals})`
+*   **R**emove: **`Command.delete()`** / `(2, id, 0)`
+*   **L**ink: **`Command.link()`** / `(4, id, 0)`
+*   **L**ist: **`Command.set()`** / `(6, 0, [ids])` (Replace All)
+*   **C**lear: **`Command.clear()`** / `(5, 0, 0)`
+*   **S**ever: **`Command.unlink()`** / `(3, id, 0)`
 
 ---
 

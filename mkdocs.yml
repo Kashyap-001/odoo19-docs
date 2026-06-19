@@ -157,9 +157,6 @@ nav:
           - "Wizards & TransientModels": wizards/wizards.md
           - "Scheduled Actions (Crons)": business/crons.md
           - "Reporting & Specialized Views": foundation/advanced_views.md
-          - "mapped() Method": search/mapped.md
-          - "filtered() Method": search/filtered.md
-          - "sorted() Method": search/sorted.md
           - "Actions, Menus & Automation": business/actions.md
           - "Constraints & Indexes": advanced/constraints_indexes.md
           - "Cache Management": advanced/cache_management.md

@@ -107,7 +107,7 @@ Process records in chunks and commit the transaction explicitly.
 *   **Verify Your Knowledge:** Why must a cron method use `@api.model`? (Answer: Because the cron doesn't have an active recordset when it wakes up; it calls the method on the class itself).
 
 !!! success "Next Step"
-    Automation is running. Now learn about transforming your logic with [mapped, filtered, and sorted](../search/mapped.md).
+    Automation is running. Now learn about transforming your logic with [mapped, filtered, and sorted](../search/performance_optimization.md).
 
 ---
 

@@ -58,7 +58,7 @@ Welcome to your Senior Architect journey. Use this page to track your progress t
 | [Wizards](wizards/wizards.md) | TransientModels | State Persistence | [ ] |
 | [Actions & AI](business/actions.md) | Server Actions | Prompt Engineering | [ ] |
 | [Search Domains](search/search.md) | Polish Notation | _name_search override | [ ] |
-| [Recordset Logic](search/mapped.md) | mapped/filtered/sorted | filtered_domain | [ ] |
+| [Performance & Set Operations](search/performance_optimization.md) | mapped/filtered/sorted | filtered_domain | [ ] |
 
 ---
 

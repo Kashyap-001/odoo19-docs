@@ -116,7 +116,7 @@ graph TD
 *   **Verify Your Knowledge:** Why do Wizards not need record rules? (Answer: They do! But often they are restricted to specific groups in ACL).
 
 !!! success "Next Step"
-    Wizards collect data. Now learn to [Transform Recordsets](../search/mapped.md) using mapped, filtered, and sorted.
+    Wizards collect data. Now learn to [Transform Recordsets](../search/performance_optimization.md) using mapped, filtered, and sorted.
 
 ---
 
