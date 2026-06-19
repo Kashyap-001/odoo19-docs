@@ -4,6 +4,8 @@ tags:
   - Javascript
   - OWL 2.0
   - Components
+title: Odoo 19 OWL Basics Tutorial — Components, Templates, and Rendering
+description: Learn the basics of the Odoo Web Library (OWL) in Odoo 19. Configure component setup methods, QWeb templates, and functional bindings.
 ---
 
 # Odoo 19 OWL Framework

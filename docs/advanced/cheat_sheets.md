@@ -1,3 +1,8 @@
+---
+title: Senior Odoo Developer Cheat Sheets — Rapid Reference Guide
+description: A collection of quick reference sheets, common ORM methods, XML views syntax, and controller decorators for Senior Odoo developers.
+---
+
 # Odoo 19 Senior Cheat Sheets
 
 A high-density reference for professional Odoo 19 development. Bookmark this page for quick access to core syntax and patterns.

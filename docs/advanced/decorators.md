@@ -4,6 +4,8 @@ tags:
   - ORM
   - Reactivity
   - Odoo 19
+title: Odoo 19 API Decorators Tutorial — depends, constrains, onchange, model_create_multi
+description: Complete guide to Odoo 19 method decorators. Learn when to use depends, constrains, onchange, and batch-create decorators.
 ---
 
 # Odoo 19 API Decorators

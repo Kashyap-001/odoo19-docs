@@ -1,3 +1,8 @@
+---
+title: Odoo 19 ensure_one() Safety Tutorial — Preventing Recordset Errors
+description: Learn how to use ensure_one() to safeguard Odoo 19 methods. Prevent singleton errors and write clean, defensive python code.
+---
+
 # Odoo 19 ensure_one() Method
 
 ## Definition and Usage

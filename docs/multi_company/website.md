@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Multi-Website Tutorial — Domain Routing & Portal Views
+description: Master Odoo 19 multi-website routing. Learn how to configure company-specific portals, website domain bindings, and localized layouts.
+---
+
 # Multi-Website Support
 
 Odoo allows you to host multiple websites (different domains, themes, and content) on a single database. This is critical for businesses with multiple brands.

@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Web Controllers Tutorial — Routing HTTP and JSON Requests
+description: Master Odoo 19 web controllers. Learn how to write HTTP routes, serialize data to JSON, handle authentication, and build public endpoints.
+---
+
 # Odoo Controllers: Building Web Endpoints
 
 Odoo is not just a backend ERP; it's a powerful web server. Controllers allow you to create custom HTTP routes, enabling you to build web portals, mobile app integrations, or public-facing APIs.

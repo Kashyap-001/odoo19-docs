@@ -1,3 +1,8 @@
+---
+title: OWL Reactive State & Store Tutorial — Global State Management
+description: Master global state management in Odoo 19's frontend. Learn how to build reactive stores and share states across OWL components.
+---
+
 # Reactive State & Shared Stores
 
 In modern Odoo development, managing data across multiple components requires a robust strategy. Odoo 19 leverages OWL's **Reactive System** and the **Service Architecture** to provide a centralized, shared state (often called a "Store").

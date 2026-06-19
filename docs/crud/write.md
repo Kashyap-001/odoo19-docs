@@ -1,3 +1,8 @@
+---
+title: Odoo 19 write() Method Tutorial — Updating Records and Relational Commands
+description: Master the Odoo 19 write() method. Update fields in batch, use Command helper objects, and reference raw legacy tuples.
+---
+
 # Odoo 19: The write() Method
 
 The `write()` method is used to update existing records in the database.

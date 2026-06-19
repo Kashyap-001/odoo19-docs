@@ -1,6 +1,6 @@
 ---
-title: Odoo 19 Error Handling: UserError vs ValidationError
-description: Master Odoo 19 exception handling. Learn when to use UserError, ValidationError, AccessError, and RedirectWarning for best UX.
+title: Odoo 19 Exceptions & Error Handling Tutorial — UserError vs ValidationError
+description: Learn how to raise secure exceptions and handle business logic errors in Odoo 19 Python models.
 ---
 
 # Exceptions & Error Handling

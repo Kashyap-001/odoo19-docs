@@ -1,83 +1,232 @@
-# Odoo 19 QWeb Reports
+---
+title: Odoo 19 QWeb Reports Tutorial — XML PDF Templates & Data Providers
+description: Master Odoo 19 PDF printing and QWeb templates. Learn how to write report actions, define layouts, optimize loop speed, and write AbstractModel data providers.
+---
 
-In Odoo 19, QWeb reports have been updated to improve performance and developer efficiency. This guide covers the essential updates for professional Odoo developers.
+# QWeb & Reports (v19)
+
+## 1. What is it?
+In Odoo 19, printable documents (such as Invoices, Purchase Orders, and Custom Certificates) are designed using **QWeb HTML/XML Templates**. 
+
+When a user clicks "Print," Odoo renders these templates into high-quality HTML, which is then parsed and compiled into a PDF file using the **`wkhtmltopdf`** command-line utility.
+
+```mermaid
+graph TD
+    Click[1. User clicks 'Print' in UI] --> Action[2. ir.actions.report record triggered]
+    Action --> QWeb[3. QWeb Engine parses HTML template & variables]
+    QWeb --> Data{4. Custom AbstractModel data provider?}
+    Data -- Yes --> Python[Run _get_report_values and fetch dataset]
+    Data -- No --> ORM[Read fields directly from active recordset]
+    Python --> HTML[5. HTML document generated]
+    ORM --> HTML
+    HTML --> Wk[6. wkhtmltopdf compiles HTML to PDF binary]
+    Wk --> Browser[7. PDF downloaded or printed directly]
+```
 
 ---
 
-## The t-out Directive
+## 2. Why does it exist?
+Traditional PDF generation libraries (like ReportLab or raw PDF code) require developers to specify coordinates and layout parameters manually, which is extremely tedious. 
 
-The `t-out` directive is the new standard for outputting values in Odoo 19.
+Odoo's QWeb Report Engine solves this by allowing developers to write printable layouts using standard web standards: HTML5, CSS3, and Bootstrap grid styling. This decouples visual layout styling from backend database records.
 
-### Why use t-out?
-The previously used `t-esc` directive is now **deprecated**. Odoo 19 uses `t-out` as a safer and more versatile alternative. It automatically escapes HTML content unless the value is marked as "safe" (e.g., using `Markup` in Python).
+---
 
-### Example
+## 3. When should I use it?
+Use QWeb Reports whenever you need to produce standardized, printable business documents:
+*   Official invoices and tax reports.
+*   Product barcodes and shipping labels.
+*   Auction certificates of authenticity or bid receipts.
+*   Timesheets and activity logs.
+
+---
+
+## 4. When should I NOT use it?
+*   Do not use QWeb Reports to output raw data grids (e.g. exporting 10,000 sales lines to Excel). Generating giant PDF layouts consumes massive server memory and triggers connection timeouts. Use **CSV/XLSX export controllers** instead.
+*   Do not use QWeb HTML templates for emails; emails require a simpler in-line CSS structure (compiled via mail templates).
+
+---
+
+## 5. Syntax
+
+To create a PDF report, you must define:
+1.  An **`ir.actions.report`** record to define the report properties.
+2.  A **QWeb `<template>`** to design the HTML layout.
+
+### A. The Report Action
 ```xml
-<!-- Deprecated: Avoid using t-esc -->
-<span t-esc="o.name"/>
-
-<!-- Standard: Use t-out in Odoo 19 -->
-<span t-out="o.name"/>
+<record id="action_report_auction_listing" model="ir.actions.report">
+    <field name="name">Auction Listing Receipt</field>
+    <field name="model">auction.listing</field>
+    <field name="report_type">qweb-pdf</field> <!-- qweb-pdf or qweb-html -->
+    <field name="report_name">pways_auction.report_listing_template</field>
+    <field name="report_file">pways_auction.report_listing_template</field>
+    <field name="binding_model_id" ref="model_auction_listing"/>
+    <field name="binding_type">report</field>
+</record>
 ```
 
-## Template Inheritance: inheritance_mode="inner" (New)
-
-Odoo 19 introduces `inheritance_mode="inner"` at the template level. This is distinct from the `mode="inner"` attribute on XPath tags and is specifically designed for QWeb template extension.
-
-### What is inheritance_mode="inner"?
-When defined on a `<template>` tag, it allows the inheriting module to replace only the **inner content** of the parent template's root element, rather than the entire element itself. This is extremely useful for maintaining layout consistency while changing the content.
-
-### Example
+### B. Standard Layout Structure
+QWeb utilizes structural Odoo wrappers (like `web.html_container` and `web.external_layout`) to ensure consistent corporate headers, footers, and page numbers:
 ```xml
-<template id="report_custom_header" inherit_id="base.report_header" inheritance_mode="inner">
-    <!-- This content replaces everything INSIDE the base header, 
-         but the base header's <header> tag and its classes remain! -->
-    <div class="custom-logo">...</div>
+<template id="report_listing_template">
+    <t t-call="web.html_container">
+        <!-- Iterate over records inside active recordset (passed as 'docs') -->
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- HTML Page Content Here -->
+                    <h2 t-out="o.name"/>
+                </div>
+            </t>
+        </t>
+    </t>
 </template>
 ```
 
 ---
 
-## XPath Positioning: mode="inner"
+## 6. Multiple Examples
 
-## Senior Tip: High-Performance Loops
-
-When generating reports that loop over a large recordset, database query overhead can significantly slow down the rendering process.
-
-### Use prefetch=True for ORM Efficiency
-In Odoo 19, ensure you are utilizing the ORM's prefetching capabilities. When you pass a list of IDs to `browse()` or use the new `search_fetch()` method, Odoo automatically groups records into "prefetch sets."
-
-This means that when you access a field for the first record in a loop, Odoo "pre-fetches" that field for **all** records in the set in a single SQL query, rather than one query per record (the N+1 problem).
-
-### Example
-```python
-# Senior Pro Approach: Browse all IDs at once to trigger prefetching
-listing_ids = self.env['auction.listing'].search([]).ids
-listings = self.env['auction.listing'].browse(listing_ids)
-
-for listing in listings:
-    # Accessing listing.name here will fetch names for ALL listings in one query!
-    print(listing.name) 
+### Beginner: Simple Certificate Template
+Create a basic certificate sheet displaying a listing name and starting price using the new `t-out` directive.
+```xml
+<template id="report_listing_certificate">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <div class="page text-center border p-5 mt-5">
+                <h1>Certificate of Authenticity</h1>
+                <p>This document certifies the registration of:</p>
+                <h2 class="text-primary" t-out="o.name"/>
+                <p>Starting Value: <span t-field="o.starting_price"/></p>
+            </div>
+        </t>
+    </t>
+</template>
 ```
 
-> **Senior Tip:** Always browse recordsets as a batch before passing them to the QWeb context. This ensures the report engine can render loops with minimal database round-trips.
+### Intermediate: Loop-Based Bid History Receipt
+Loop through an auction's child bid records inside the printable invoice using Bootstrap tables.
+```xml
+<template id="report_listing_bids">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Bid History: <span t-out="o.name"/></h2>
+                    <table class="table table-striped mt-4">
+                        <thead>
+                            <tr>
+                                <th>Bidder</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.bid_ids" t-as="bid">
+                                <td><span t-out="bid.bidder_name"/></td>
+                                <td><span t-field="bid.create_date"/></td>
+                                <td><span t-field="bid.amount"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+```
+
+### Real-World: Custom Data Provider via AbstractModel
+For complex reports requiring raw SQL queries, aggregates, or calculations that aren't stored on the model, create an **AbstractModel Data Provider**.
+
+=== "Python Data Provider"
+    ```python
+    from odoo import api, models
+
+    # Name MUST match 'report.your_module_name.your_template_id'
+    class BidHistoryReport(models.AbstractModel):
+        _name = 'report.pways_auction.report_bid_summary_template'
+        _description = 'Bid Summary Data Provider'
+
+        @api.model
+        def _get_report_values(self, docids, data=None):
+            # 1. Fetch listings
+            docs = self.env['auction.listing'].browse(docids)
+            
+            # 2. Run complex query to fetch top bid stats
+            self.env.cr.execute("""
+                SELECT listing_id, MAX(amount) as max_amount, COUNT(id) as bid_count 
+                FROM auction_bid 
+                WHERE listing_id IN %s 
+                GROUP BY listing_id
+            """, [tuple(docids)])
+            stats = {row['listing_id']: row for row in self.env.cr.dictfetchall()}
+
+            # 3. Return variables injected into QWeb evaluation context
+            return {
+                'doc_ids': docids,
+                'doc_model': 'auction.listing',
+                'docs': docs,
+                'bid_stats': stats,
+            }
+    ```
+
+=== "QWeb Template"
+    ```xml
+    <template id="report_bid_summary_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 t-out="o.name"/>
+                        <!-- Read data from python injected dict 'bid_stats' -->
+                        <div class="alert alert-info mt-3">
+                            Total Bids: <span t-out="bid_stats.get(o.id, {}).get('bid_count', 0)"/><br/>
+                            Highest Bid: <span t-out="bid_stats.get(o.id, {}).get('max_amount', 0.0)"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    ```
 
 ---
 
-## 🏁 Senior Checkpoint
-*   **Key Concept:** `t-out` is the mandatory Odoo 19 replacement for `t-esc`.
-*   **Architect Insight:** `mode="inner"` in XPath allows you to surgically replace content inside a tag without losing its attributes or CSS classes.
-*   **Verify Your Knowledge:** Why is prefetching important in reports? (Answer: To avoid the N+1 query problem during PDF generation for multiple records).
+## 7. Common Mistakes
 
-!!! success "Next Step"
-    You're almost there. Now verify your work with [Unit Testing](../testing/unit_tests.md).
+### ❌ Using Deprecated `t-esc` Directive
+In legacy Odoo, fields were printed using `t-esc`. In Odoo 19, this is deprecated and can trigger security warnings or fail to escape raw values.
+```xml
+<!-- Wrong: Deprecated syntax -->
+<div t-esc="o.description"/>
+```
+
+### ✅ Using `t-out`
+```xml
+<!-- Right: Safe HTML escape engine standard in Odoo 19 -->
+<div t-out="o.description"/>
+```
+
+### ❌ Accessing Uncached Fields inside Loops (N+1 Query)
+Evaluating computed values or un-prefetched attributes inside template tables forces the report engine to execute database SELECT queries inside the render loop, making the print job take minutes.
 
 ---
 
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 8. Performance Notes
+*   **Batch Prefetching**: Always pre-load relational fields by calling `browse()` on all IDs at the start of your print method.
+*   **Avoid complex Python methods inside the QWeb XML template**: Instead of executing `t-out="o.calculate_totals()"` inside a loop, pre-calculate the values in your Python report data provider class and pass them to the rendering context.
+
+---
+
+## 9. Senior Notes
+*   **Paper Format Rules**: Define custom margins, layouts, and page dimension records (`report.paperformat`) to print label or envelope formats accurately.
+*   **Multi-language Support**: Use `t-lang` inside the html container wrapper to translate PDF reports according to each recipient partner's preferred language code (`o.partner_id.lang`).
+
+---
+
+## 10. Related Topics
+*   **Previous Lesson**: [Assets & Bundles](assets.md)
+*   **Next Lesson**: [Unit Testing](../testing/unit_tests.md)
+*   **See Also**: [AbstractModel Pattern](../advanced/abstract_models.md), [Prefetching Mechanism](../advanced/prefetching.md)

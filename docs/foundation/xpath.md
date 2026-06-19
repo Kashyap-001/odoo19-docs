@@ -1,3 +1,8 @@
+---
+title: Odoo 19 XPath XML Tutorial — Inheriting and Overriding Views
+description: Master XML view inheritance in Odoo 19. Learn how to write XPaths, use positioning (inside, replace, before, after), and override form pages.
+---
+
 # View Inheritance (XPath)
 
 Odoo allows you to modify existing views without changing the original source code. This is achieved using **Inheritance** and **XPath** expressions.

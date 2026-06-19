@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Specialized Views Tutorial — Pivot, Graph, and Calendar Syntax
+description: Master Odoo 19 business intelligence views. Learn how to configure pivot charts, graphs, calendar calendars, and cohort analysis views.
+---
+
 # Reporting & Specialized Views
 
 Beyond the standard List and Form views, Odoo provides a powerful suite of reporting and specialized views to visualize data and manage business processes.

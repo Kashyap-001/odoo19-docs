@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Actions & Automation Tutorial — Window, Server, and Client Actions
+description: Complete guide to Odoo 19 action types. Configure window actions, server actions, automated actions, and client tag references.
+---
+
 # Odoo 19 Actions & Menus
 
 Actions define what happens when a user clicks a button or a menu item. They are the glue between the UI and the business logic.

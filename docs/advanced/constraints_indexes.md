@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Constraints and Indexes Tutorial — models.Constraint & models.Index
+description: Learn how to configure database validation rules and composite indexes using Odoo 19 declarative Constraint and Index classes.
+---
+
 # Odoo 19 Constraints and Indexes
 
 Odoo 19 introduces a more modern and declarative way to handle database-level constraints and indexes using the `models.Constraint` and `models.Index` classes.

@@ -1,3 +1,8 @@
+---
+title: Odoo 19 search_fetch() Tutorial — High-Performance Field Retrieval
+description: Master Odoo 19 search_fetch(). Learn how to combine searching and reading into a single SQL query to bypass N+1 loops.
+---
+
 # Odoo 19: search_fetch() vs search()
 
 Odoo 19 introduces `search_fetch()`, a high-performance alternative to the traditional `search()` method. It is designed to minimize database overhead by combining searching and field retrieval into a single step.

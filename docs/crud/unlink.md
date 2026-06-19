@@ -1,3 +1,8 @@
+---
+title: Odoo 19 unlink() Tutorial — Deleting Database Records
+description: Learn how to delete records in Odoo 19. Override unlink() to add security checks, validation constraints, and clean up associated assets.
+---
+
 # Odoo Delete (unlink)
 
 Deleting records in Odoo is handled by the `unlink()` method. This removes the records from the database.

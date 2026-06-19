@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Core Mixins Tutorial — Chatter, Activities, and Social Tracking
+description: Learn how to inherit and configure Odoo core mixins. Add mail.thread and mail.activity.mixin to custom models for Chatter logging.
+---
+
 # Odoo Mixins: mail.thread & AbstractModel
 
 Mixins are **Abstract Models** that provide "off-the-shelf" functionality to any model that inherits them. In Odoo 19, mastering mixins is the difference between a developer who copies code and an architect who builds systems.

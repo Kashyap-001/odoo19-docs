@@ -1,3 +1,8 @@
+---
+title: Odoo 19 UI Display Tutorial — Customizing display_name & name_get
+description: Learn how to customize how records are displayed in Many2one dropdowns and breadcrumbs by overriding display_name in Odoo 19.
+---
+
 # Odoo 19 UI Display Customization
 
 In Odoo, every record has a "Display Name" used in Many2one fields, Breadcrumbs, and Search results. In newer versions of Odoo (including Odoo 19), this is handled by a special computed field called `display_name`.

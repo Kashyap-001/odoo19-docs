@@ -1,3 +1,8 @@
+---
+title: Odoo 19 QWeb Template Reference — Directives, Variables, and Syntax
+description: Complete QWeb reference guide for Odoo 19. Learn how to use t-if, t-foreach, t-out, t-field, and custom template attributes.
+---
+
 # QWeb: The Odoo Template Engine
 
 QWeb is the primary templating engine used by Odoo. It is used for **PDF Reports**, **Email Templates**, and **OWL Component Templates**. Unlike other engines, QWeb is written entirely in XML.

@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Multi-Company Tutorial — Rules, Fields, and Security Constraints
+description: Learn how to design multi-company compatible modules in Odoo 19. Configure company_dependent fields and company security record rules.
+---
+
 # Multi-Company Logic
 
 Odoo is designed to handle multiple companies within a single database. This allows for centralized management of different legal entities, branches, or franchises.

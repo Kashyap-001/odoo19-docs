@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Unique Sequences Tutorial — Configuring ir.sequence auto-numbering
+description: Learn how to generate unique, auto-incrementing serial codes and reference numbers for custom Odoo 19 models.
+---
+
 # Unique Identifiers: ir.sequence
 
 In business applications, you often need a unique, sequential reference number for documents (e.g., `AUC/001`, `AUC/002`). Odoo provides the `ir.sequence` model to handle this automatically.

@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Wizards & TransientModels Tutorial — Multi-step Dialogs
+description: Learn how to build interactive modal dialogs and wizards in Odoo 19 using models.TransientModel. Configure action buttons and values.
+---
+
 # Wizards & TransientModels
 
 Wizards are used in Odoo to perform multi-step actions or to gather user input before executing a process. Unlike regular models, wizards do not store data permanently.

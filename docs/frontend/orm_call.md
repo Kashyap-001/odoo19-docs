@@ -1,3 +1,8 @@
+---
+title: Odoo 19 JS to Python Tutorial — Invoking Python methods via orm.call
+description: Learn how to trigger backend Python model methods from the OWL frontend in Odoo 19 using the orm service's call() method.
+---
+
 # JS to Python: Using orm.call()
 
 In Odoo's frontend framework (OWL), you often need to fetch data from the server or trigger Python methods. The primary tool for this is the `orm` service.

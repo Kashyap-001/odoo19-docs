@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Cache Management Tutorial — flush_model and invalidate_recordset
+description: Master Odoo 19 environment cache management. Learn how to manually flush changes to the database and invalidate recordsets for custom SQL.
+---
+
 # Cache Management: Flush, Invalidate, and Clear
 
 Odoo's ORM uses an internal **Registry Cache** to store record values. This minimizes database hits, but for Senior Developers, understanding how to manually manipulate this cache is critical for data integrity and performance.

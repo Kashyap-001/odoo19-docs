@@ -4,6 +4,8 @@ tags:
   - Backend
   - XML Data
   - Odoo 19
+title: Odoo 19 Scheduled Actions Tutorial — Configuring ir.cron background tasks
+description: Learn how to schedule automated background cron jobs in Odoo 19. Optimize intervals, set user contexts, and prevent concurrency locks.
 ---
 
 # Scheduled Actions (Cron Jobs)

@@ -1,3 +1,8 @@
+---
+title: Odoo 19 CRUD Operations Tutorial — Create, Read, Update, Delete
+description: Learn the fundamentals of Odoo 19 database operations. Master creating, reading, updating, and deleting records via the ORM.
+---
+
 # CRUD Operations in Odoo 19
 
 **CRUD** stands for **C**reate, **R**ead, **U**pdate, and **D**elete. These are the four basic functions of persistent storage. In Odoo 19, the ORM makes these operations highly efficient and batch-friendly.

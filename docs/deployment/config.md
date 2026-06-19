@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Server Configuration Tutorial — odoo.conf Parameters
+description: Complete guide to configuring the Odoo 19 server. Customize ports, worker allocations, database filters, logging levels, and directories.
+---
+
 # Odoo Configuration Deep Dive
 
 Mastering the `odoo.conf` file is the difference between a sluggish instance and a high-performance ERP.

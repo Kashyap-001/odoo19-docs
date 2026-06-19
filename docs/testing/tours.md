@@ -1,3 +1,8 @@
+---
+title: Odoo 19 UI Tours & JS Tests Tutorial — End-to-End browser testing
+description: Master integration UI tests in Odoo 19. Learn how to write JavaScript Tours to simulate user actions, click fields, and assert forms.
+---
+
 # UI Testing: HttpCase and Odoo Tours
 
 While unit tests handle logic, **HttpCase** and **Tours** handle the user experience. They allow you to simulate a real user navigating through the browser, clicking buttons, and filling out forms.

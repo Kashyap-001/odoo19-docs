@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Addon Anatomy Tutorial — Module Structure & Manifest Config
+description: Learn the structural components of an Odoo 19 addon. Meticulous guide to __init__.py, __manifest__.py, static files, and security directories.
+---
+
 # Addon Structure
 
 Understand the file organization of a professional Odoo 19 module.

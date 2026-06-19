@@ -1,3 +1,8 @@
+---
+title: About the Odoo 19 Masterclass — Training Platform
+description: Learn about the creators and vision behind the Odoo 19 Masterclass, the definitive zero-to-senior development guide.
+---
+
 # About the Odoo 19 Masterclass
 
 The **Odoo 19 Senior Masterclass** is a community-focused initiative dedicated to providing high-quality, professional-grade documentation for the Odoo ecosystem. Our mission is to bridge the gap between basic tutorials and senior-level architectural mastery.

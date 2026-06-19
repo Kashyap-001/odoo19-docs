@@ -1,3 +1,8 @@
+---
+title: Odoo 19 XML Data Engine Tutorial — Loading Initial Data & Demo Records
+description: Learn how to load initial, master, and demo data in Odoo 19 using XML data files. Configure noupdate flags and sequence records.
+---
+
 # Data Files (XML)
 
 Odoo is a data-driven framework. Much of its configuration—including views, menus, security rules, and even initial data—is loaded via **XML Data Files**.

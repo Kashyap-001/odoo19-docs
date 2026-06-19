@@ -1,3 +1,8 @@
+---
+title: Odoo 19 External API Tutorial — XML-RPC & JSON-RPC Web Integrations
+description: Learn how to connect external software to Odoo 19 using XML-RPC and JSON-RPC APIs. Write python client authentication and search wrappers.
+---
+
 # External API: Connecting from the Outside
 
 Sometimes you need to interact with Odoo from an external script, a legacy system, or a third-party application. Odoo provides a robust **XML-RPC** and **JSON-RPC** API for this exact purpose.

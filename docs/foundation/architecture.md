@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Core Architecture Tutorial — Multi-tier MVC Web Framework
+description: Learn the fundamentals of Odoo 19 architecture. Understand the PostgreSQL database, ORM python models, XML view layers, and OWL frontend.
+---
+
 # Odoo 19 Architecture: The 3-Tier System
 
 Understanding Odoo's architecture is the first step toward becoming a Senior Developer. Odoo follows a classic **3-Tier Architecture** that separates data, logic, and presentation.

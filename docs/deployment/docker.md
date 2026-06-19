@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Docker Production Deployment — Compose & Container Config
+description: Learn how to deploy Odoo 19 in production using Docker and Docker Compose. Configure Nginx reverse proxy, SSL certs, and persistent volumes.
+---
+
 # Containerizing Odoo 19
 
 Docker is the industry standard for ensuring Odoo runs identically in development, staging, and production. This guide covers senior-grade container orchestration.

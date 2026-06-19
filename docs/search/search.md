@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Search & Domains Tutorial — Writing SQL Domain Mappings
+description: Learn how to write search queries and domain filters in Odoo 19. Master Polish Notation, list operators, and override name_search.
+---
+
 # Odoo Search & Domains
 
 Searching for records is one of the most powerful features of the Odoo ORM. It uses a specific syntax called **Domains**.

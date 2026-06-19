@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Development Setup Tutorial — Installation & Config Guide
+description: Step-by-step setup guide for Odoo 19 development. Install dependencies, set up virtual environments, configure VS Code, and start odoo-bin.
+---
+
 # Odoo 19 Setup
 
 Learn how to set up your environment for Odoo 19 development.

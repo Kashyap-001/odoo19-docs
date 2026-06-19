@@ -4,6 +4,8 @@ tags:
   - Performance
   - SQL
   - ORM
+title: Odoo 19 SQL Performance Tutorial — Query Optimization and EXPLAIN
+description: Master database query speed in Odoo 19. Learn how to optimize joins, analyze execution plans, and write high-performance HTTP routes.
 ---
 
 # SQL & ORM Performance: The Senior Developer's Guide

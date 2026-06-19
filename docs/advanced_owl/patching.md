@@ -1,3 +1,8 @@
+---
+title: OWL Component Patching Tutorial — Modifying Core JS in Odoo 19
+description: Learn how to monkey patch existing OWL components and services in Odoo 19 using the patch() utility safely.
+---
+
 # Advanced OWL: Component Patching
 
 In the Odoo ecosystem, the JavaScript framework (OWL) provides a unique mechanism called **Patching**. While traditional Object-Oriented Programming (OOP) relies on class inheritance, Odoo uses patching to modify the behavior of existing components globally without altering the original source code.

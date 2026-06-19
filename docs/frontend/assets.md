@@ -1,106 +1,187 @@
+---
+title: Odoo 19 Assets & Bundles Tutorial — JS, CSS, and SCSS Bundles
+description: Master the Odoo 19 Assets Bundle system. Learn how to register CSS, SCSS, and OWL JavaScript files, extend core Odoo bundles, and debug asset compilation.
+---
+
 # Assets & Static Files
 
-In Odoo 19, JS, CSS, and SCSS files are managed via the **Assets Bundle** system. You register these files in your `__manifest__.py` file under the `assets` key.
+## 1. What is it?
+In Odoo 19, static files such as JavaScript (ES6 modules), stylesheets (CSS, SCSS), and XML templates are compiled, minified, and delivered to the browser client through a centralized **Assets Bundle System**. You register these files inside the module's `__manifest__.py` file under the `assets` dictionary key.
 
-## The `assets` Key
+```mermaid
+graph TD
+    Source[JS / SCSS / XML source files on Disk] --> Manifest[Registered in __manifest__.py assets]
+    Manifest --> Compiler[Odoo Asset Compiler]
+    Compiler --> Bundle[Minified, preprocessed SCSS, and bundled into single CSS / JS payload]
+    Bundle --> Cache[Saved to database attachments and local cache files]
+    Cache --> Client[Served to Browser Client with Gzip compression]
+```
 
-The manifest structure allows you to group files based on where they should be loaded.
+---
+
+## 2. Why does it exist?
+Modern web applications require hundreds of separate JavaScript modules and stylesheets. If a browser loaded every file individually, it would trigger hundreds of HTTP requests, blocking rendering pipelines and slowing page loads. 
+
+Odoo's assets bundle compiler resolves this by:
+*   Preprocessing SCSS files into standard CSS.
+*   Resolving ES6 import-exports via a custom module loader.
+*   Minifying and combining all static files into a single CSS payload and a single JS payload.
+*   Adding cache-busting hashes to filenames to force clients to download updates only when changes are made.
+
+---
+
+## 3. When should I use it?
+Use the `assets` key inside the manifest whenever you add:
+*   **Custom styles** (CSS/SCSS) to Odoo's backend apps or public portal website.
+*   **OWL Javascript components** (`static/src/**/*.js`).
+*   **XML templates** for OWL components (`static/src/**/*.xml`).
+*   **Custom libraries** (JS/CSS) to extend Odoo's web client capabilities.
+
+---
+
+## 4. When should I NOT use it?
+*   Do not register **standard backend XML views** (like lists, forms, or actions) in the `assets` key; register them under the `'data'` key in `__manifest__.py`.
+*   Do not place raw binary assets like images, logos, fonts, or PDFs in the `assets` bundle list. Simply save them inside your module's `/static/` folder (e.g. `/static/description/icon.png`) and reference them directly via URL.
+
+---
+
+## 5. Syntax
+
+Asset files are declared in your `__manifest__.py` under the `'assets'` dictionary, categorized by **Asset Bundle Target Names**:
 
 ```python
 'assets': {
+    # 1. Target Backend Bundle
     'web.assets_backend': [
-        'pways_auction/static/src/css/custom_backend.css',
-        'pways_auction/static/src/js/backend_logic.js',
+        'your_module/static/src/scss/custom_styles.scss',
+        'your_module/static/src/components/**/*.js',
+        'your_module/static/src/components/**/*.xml',
     ],
+    # 2. Target Public Website/Portal Bundle
     'web.assets_frontend': [
-        'pways_auction/static/src/scss/portal_styles.scss',
+        'your_module/static/src/scss/portal_styles.scss',
     ],
-},
+}
 ```
 
-### Main Asset Bundles
+### Bundle Modifiers (Inheritance & Overrides)
+You can manipulate existing Odoo assets bundles (such as injecting a script before another module, or excluding files):
 
-| Bundle Name | Purpose |
-| :--- | :--- |
-| `web.assets_backend` | Loaded when using the Odoo Backend (Apps, Settings, Models). |
-| `web.assets_frontend` | Loaded on the public website and portal (e.g., Auction Bidding page). |
-| `web.assets_common` | Loaded in both backend and frontend. |
+| Operation | Syntax | Description |
+| :--- | :--- | :--- |
+| **Append** | `'path/to/file.js'` | Appends the file to the end of the bundle (Default). |
+| **Prepend** | `('prepend', 'path/to/file.js')` | Inserts the file at the very beginning of the bundle. |
+| **Before** | `('before', 'target_path.js', 'my_path.js')` | Inserts `my_path.js` right before `target_path.js`. |
+| **After** | `('after', 'target_path.js', 'my_path.js')` | Inserts `my_path.js` right after `target_path.js`. |
+| **Replace** | `('replace', 'target_path.js', 'my_path.js')` | Replaces `target_path.js` with `my_path.js`. |
+| **Remove** | `('remove', 'target_path.js')` | Removes `target_path.js` from the bundle. |
+| **Exclude** | `('include', 'other_bundle')` | Includes an entire other bundle's assets list. |
 
 ---
 
-## Loading Order & Wildcards
+## 6. Multiple Examples
 
-Odoo loads assets in the order they appear in the list. You can use glob patterns to load entire directories.
-
-```python
-'web.assets_backend': [
-    'pways_auction/static/src/components/**/*.js',
-    'pways_auction/static/src/components/**/*.xml',
-],
+### Beginner: Injecting Custom CSS/SCSS Styles
+Apply a global orange color layout to the headers in the Odoo backend.
+```css title="static/src/css/header_override.css"
+.o_main_navbar {
+    background-color: #E27221 !important;
+}
+```
+Register the style sheet in `__manifest__.py`:
+```python title="__manifest__.py"
+'assets': {
+    'web.assets_backend': [
+        'pways_auction/static/src/css/header_override.css',
+    ],
+}
 ```
 
-!!! info "Important"
-    Starting with Odoo 17+, XML templates for OWL components are often included directly in the `assets` bundle alongside JS files.
+### Intermediate: Registering an OWL Component
+Create a dynamic bidding component with JavaScript logic and an XML view template.
+
+=== "static/src/components/bid.js"
+    ```javascript
+    /** @odoo-module **/
+    import { Component } from "@odoo/owl";
+    import { registry } from "@web/core/registry";
+
+    export class AuctionBidWidget extends Component {
+        static template = "pways_auction.AuctionBidWidget";
+        setup() {
+            console.log("Widget initialized!");
+        }
+    }
+    registry.category("view_widgets").add("auction_bid_widget", {
+        component: AuctionBidWidget,
+    });
+    ```
+
+=== "static/src/components/bid.xml"
+    ```xml
+    <templates xml:space="preserve">
+        <t t-name="pways_auction.AuctionBidWidget">
+            <div class="p-4 bg-light border rounded">
+                <h5>Place Bid</h5>
+                <input type="number" class="form-control" placeholder="Amount..."/>
+            </div>
+        </t>
+    </templates>
+    ```
+
+=== "__manifest__.py"
+    ```python
+    'assets': {
+        'web.assets_backend': [
+            'pways_auction/static/src/components/bid.js',
+            'pways_auction/static/src/components/bid.xml',
+        ],
+    }
+    ```
+
+### Real-World: Patching Core Odoo JS (Loading After Base Scripts)
+Ensure a custom JavaScript utility loads immediately after Odoo's primary WebClient boots up.
+```python title="__manifest__.py"
+'assets': {
+    'web.assets_backend': [
+        ('after', 'web/static/src/webclient/webclient.js', 'pways_auction/static/src/utils/post_load_patch.js'),
+    ],
+}
+```
 
 ---
 
-## Registering an OWL Component
+## 7. Common Mistakes
 
-When building a real-time bidding component, you need to register it so Odoo's registry can find it.
-
-### 1. Create the JS File
-`static/src/components/bid_component.js`:
+### ❌ Omitting the `/** @odoo-module **/` Header
+If you do not include this comment as the first line of your JavaScript files, Odoo's module compiler treats the file as a legacy global script, causing import statements (`import { Component } ...`) to raise syntax errors in the browser.
 ```javascript
+// Wrong: Missing module declaration
+import { Component } from "@odoo/owl";
+```
+
+### ✅ Adding Module Flag
+```javascript
+// Right: Tells compiler to translate to Odoo ES module structure
 /** @odoo-module **/
 import { Component } from "@odoo/owl";
-import { registry } from "@web/core/registry";
-
-export class BidComponent extends Component {
-    static template = "pways_auction.BidComponent";
-    // Component logic here
-}
-
-// Register for use in the backend
-registry.category("view_widgets").add("auction_bid_widget", {
-    component: BidComponent,
-});
-```
-
-### 2. Update Manifest
-```python
-'assets': {
-    'web.assets_backend': [
-        'pways_auction/static/src/components/bid_component.js',
-        'pways_auction/static/src/components/bid_component.xml',
-    ],
-},
 ```
 
 ---
 
-## Debugging Assets
-
-If your CSS or JS changes aren't appearing:
-1. **Regenerate Assets:** Activate Developer Mode and click "Regenerate Asset Bundles" in the debug menu.
-2. **Hard Refresh:** Use `Ctrl + F5` to bypass browser cache.
-3. **Check Manifest:** Ensure the file path is correct and the module is upgraded.
+## 8. Performance Notes
+*   **Regenerate Asset Bundles**: While in standard developer mode, Odoo aggressively caches compiled assets. If your CSS or JS updates do not show up, append `?debug=assets` to your browser URL, or click **Regenerate Assets Bundles** in the Developer Debug menu to clear database attachment caches.
+*   **Wildcard Performance**: Glob patterns like `static/src/**/*` compile all files in a folder. While clean, this can slow down developer startup speeds in massive projects. For production stability, declare files explicitly or limit recursive search depths.
 
 ---
 
-## 🏁 Senior Checkpoint
-*   **Key Concept:** The `assets` key in `__manifest__.py` defines which JS/CSS bundles your module contributes to.
-*   **Architect Insight:** `web.assets_backend` is the primary entry point for OWL components; use glob patterns `**/*.js` to maintain clean manifest files.
-*   **Verify Your Knowledge:** What is the difference between `web.assets_backend` and `web.assets_frontend`? (Answer: Backend is for internal apps; Frontend is for the public website/portal).
-
-!!! success "Next Step"
-    Assets registered. Now master [Shared State](../advanced_owl/store.md) using Reactive Stores.
+## 9. Senior Notes
+*   **Module Naming Rules**: Odoo ES modules translate file paths into identifiers. If a file is at `pways_auction/static/src/components/bid.js`, its module path is `@pways_auction/components/bid`. Keep paths predictable.
+*   **Manifest Dependencies**: If you inherit or modify files inside another module's bundle (e.g. `web.assets_backend`), your module manifest **must** list that module inside the `'depends'` key to ensure proper loading order.
 
 ---
 
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
-</div>
+## 10. Related Topics
+*   **Previous Lesson**: [JS to Python (orm.call)](orm_call.md)
+*   **Next Lesson**: [Reactive State (Store)](../advanced_owl/store.md)
+*   **See Also**: [Services & Registry](owl_services_registry.md), [Component Patching](../advanced_owl/patching.md)

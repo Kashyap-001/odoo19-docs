@@ -1,3 +1,8 @@
+---
+title: The Debugging Vault — Advanced Odoo Troubleshooting Guide
+description: Master professional Odoo debugging strategies. Learn how to trace execution with pdb, log SQL queries, and troubleshoot registry lockups.
+---
+
 # The Debugging Vault (Odoo 19)
 
 In Odoo development, debugging is not just about fixing errors; it's about understanding the state of the registry, the environment, and the database cursor. This vault contains the most common pitfalls and the tools to escape them.

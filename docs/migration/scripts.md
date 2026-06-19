@@ -1,3 +1,8 @@
+---
+title: Odoo 19 Database Migration Scripts Tutorial — pre-migration and post-migration
+description: Learn how to write pre-migration and post-migration Python scripts to transition database schemas and records from v18 to v19.
+---
+
 # Odoo Migration Scripts
 
 Upgrading Odoo involves transforming the database schema and data from one version to another. Odoo provides a built-in mechanism to execute migration scripts automatically during a module update.

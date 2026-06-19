@@ -1,3 +1,8 @@
+---
+title: Progress Dashboard — Odoo 19 Masterclass Learning Path
+description: Track your progress throughout the 10-phase Odoo 19 Senior Masterclass developer training program.
+---
+
 # Odoo 19 Masterclass: Progress Dashboard
 
 Welcome to your Senior Architect journey. Use this page to track your progress through the Odoo 19 curriculum. 

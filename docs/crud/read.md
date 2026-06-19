@@ -1,3 +1,8 @@
+---
+title: Odoo 19 read() and browse() Tutorial — Accessing Record Data
+description: Learn the key differences between browse() and read() in Odoo 19. Optimize data fetching and read specific columns from PostgreSQL.
+---
+
 # Odoo Read Operations
 
 In Odoo, reading data is done through recordsets. You can access fields directly, browse records by ID, or use the `read()` method for specific data structures.

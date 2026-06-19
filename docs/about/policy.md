@@ -1,3 +1,8 @@
+---
+title: Privacy Policy & Terms — Odoo 19 Masterclass
+description: Privacy policy and terms of service for the Odoo 19 Masterclass developer portal.
+---
+
 # Privacy Policy & Terms of Service
 
 *Last Updated: June 18, 2026*

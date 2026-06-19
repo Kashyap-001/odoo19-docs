@@ -4,6 +4,8 @@ tags:
   - Global
   - Architecture
   - Odoo 19
+title: Odoo 19 Translations & i18n Tutorial — Translation Files and Catalogs
+description: Learn how Odoo handles multi-language support. Generate PO translation files, translate views, and translate Python methods.
 ---
 
 # Translations (i18n) & Global Readiness
