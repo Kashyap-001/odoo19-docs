@@ -1,186 +1,190 @@
+---
+title: Odoo 19 Performance Profiling & SQL Optimization
+description: Learn how to profile Odoo 19 applications using --dev=profile, the UI Profiler, speedscope flamegraphs, raw SQL wrappers, and cache management.
+---
+
 # Performance Profiling & SQL Optimization
 
-Master the art of identifying bottlenecks and squeezing every millisecond of performance out of Odoo 19.
+At scale, database query execution, memory inflation, and CPU blockages are the primary bottlenecks in any Odoo installation. A single slow request can lock worker threads and trigger a cascade of timeouts for all concurrent users. 
+
+As a Senior Architect, you must know how to trace performance issues using Odoo's built-in Profiler, visualize stack traces with Speedscope, execute raw SQL safely, and manually orchestrate the Environment cache.
 
 ---
 
-## The Odoo 19 Profiler
+## 1. Enabling the Odoo Profiler
 
-Odoo 19 comes with a built-in profiler that provides deep insights into the execution time of your methods and the SQL queries they trigger.
+Odoo 19 offers multiple entry points to profile code execution, ranging from developer-mode UI toggles to command-line startup parameters.
 
-### Enabling the Profiler
-To enable the profiler in the web interface:
+### A. Developer UI Profiler
+To profile standard web requests directly from your browser:
 1. Activate **Developer Mode**.
-2. Click on the "bug" icon in the top right.
-3. Select **Enable Profiling**.
+2. Click the "bug" icon in the top right header.
+3. Select **Enable Profiling**. A speedometer icon will appear in the top-bar.
+4. Run your target business operations.
+5. Click the speedometer icon again, select **Disable Profiling**, and download the generated execution stats file.
 
-Alternatively, you can enable it for a specific request by adding `?profile=1` to the URL.
+*Pro-tip: You can append `?profile=1` to any Odoo URL hash to force profiling for that specific HTTP controller execution.*
 
-### The `profiler` Context Manager
-For surgical precision in your backend code, use the `profiler` context manager:
+### B. Global Request Profiling (`--dev=profile`)
+Start Odoo with the `--dev=profile` flag to profile every incoming HTTP request automatically:
+```bash
+python odoo-bin -c odoo.conf -d my_database --dev=profile
+```
+*   **Behavior**: When active, Odoo saves execution statistics files inside the Odoo data directory (typically `~/.local/share/Odoo/speedscope/`).
+*   **UI Integration**: It also displays the speedometer control in the developer top-bar.
 
+### C. CLI JSON Profiling (`--profile`)
+To profile the entire lifecycle of an Odoo session (including server boot, registry loading, and cron executions), launch Odoo with the `--profile` option:
+```bash
+python odoo-bin --profile -c odoo.conf -d my_database
+```
+This writes speedscope JSON files to the filesystem upon server termination.
+
+---
+
+## 2. Code-Level Profiling: Decorators & Context Managers
+
+For surgical precision in your custom backend code, you can profile specific methods or isolated execution blocks.
+
+### A. The `@profile` Method Decorator
+Decorate any model method to profile its execution every time it is invoked by the ORM:
+```python
+from odoo.tools.profiler import profile
+
+class AuctionListing(models.Model):
+    _inherit = 'auction.listing'
+
+    @profile
+    def action_calculate_winners(self):
+        # Complex calculation logic here
+        pass
+```
+
+### B. The `Profiler` Context Manager
+Instead of profiling an entire method (which may include standard reads and preparation), use the `Profiler` context manager to analyze an isolated block of code:
 ```python
 from odoo.tools.profiler import Profiler
 
-def my_heavy_method(self):
+def process_data(self):
+    # Standard setup
+    self._validate_records()
+
+    # Profile only the heavy database transaction block
     with Profiler():
-        # Your code here
-        result = self._process_data()
-    return result
+        self._execute_heavy_calculations()
 ```
 
 ---
 
-## Interpreting Speedscope Flamegraphs
+## 3. Visualizing Stack Traces with Speedscope
 
-Odoo's profiler generates results that can be exported to **Speedscope**, a high-performance web-based flamegraph visualizer.
+The profiler outputs execution stats in JSON files compatible with **Speedscope**, a high-performance web-based flamegraph visualizer.
 
-### Key Concepts:
-*   **Flamegraph:** A visualization of stack traces where each box represents a function. The width of the box represents the total time spent in that function (including its children).
-*   **Heavy (Bottom Up):** Identifies which functions are consuming the most time directly.
-*   **Sandwich (Top Down):** Shows the caller and callee relationship.
+1. Locate the generated profile JSON file.
+2. Navigate to [speedscope.app](https://www.speedscope.app/).
+3. Drag and drop the JSON file into the browser.
 
-!!! tip "Senior Insight"
-    Look for "wide" boxes that don't have many children—these are your "leaf" functions doing actual work and are often the best candidates for optimization.
-
----
-
-## Common SQL Bottlenecks
-
-Even with Odoo's powerful ORM, inefficient SQL patterns can cripple performance.
-
-### 1. The N+1 Problem
-Occurs when you loop over a recordset and access a relational field that hasn't been prefetched.
-*   **Symptom:** Hundreds of similar SELECT queries.
-*   **Fix:** Use `prefetch_fields` or ensure you are processing recordsets in batch.
-
-### 2. Missing Indexes
-*   **Symptom:** Sequential scans on large tables.
-*   **Fix:** Add `index=True` to fields used frequently in search domains or as join keys.
-
-### 3. Excessive `search_count()`
-*   **Symptom:** Unnecessary overhead just to check for existence.
-*   **Fix:** Use `search(limit=1)` if you only need to know if at least one record exists.
+### Key Speedscope Views:
+*   **Time Grid (Flamegraph)**: A visualization of call stacks where each box is a function call. The width of a box is proportional to the total time spent in that function (including its children).
+*   **Heavy (Bottom-Up)**: Lists individual functions sorted by the time spent *directly* inside them (excluding call chains).
+*   **Sandwich (Top-Down)**: Shows caller-callee hierarchies. Ideal for tracking which business method triggered a specific slow ORM method.
 
 ---
 
-## ORM Internals: Why Odoo is Fast (or Slow)
+## 4. Real-time Database Tracing
 
-To be a Senior Architect, you must understand how the ORM handles data behind the scenes.
+If your CPU usage is low but execution is slow, the database is bottlenecked. Use these tools to track query counts and performance.
 
-### 1. Prefetching: The Anti-N+1 Shield
-When you access a field on one record in a recordset (e.g., `self[0].name`), Odoo doesn't just fetch that one field. It automatically fetches that field for **all records** in the current recordset and stores them in the cache.
+### A. Real-time Query Counting: `self.env.cr.statistics`
+You can trace SQL query volume programmatically by checking the database cursor stats:
+```python
+stats_before = self.env.cr.statistics
+self.execute_business_action()
+stats_after = self.env.cr.statistics
 
-- **How it works:** Odoo tracks a "prefetch set" for every recordset. 
-- **Senior Tip:** If you are processing thousands of records and only need one field, you can disable prefetching to save memory: `records.with_context(prefetch_fields=False)`.
+queries_executed = stats_after['sql_count'] - stats_before['sql_count']
+print(f"Total SQL Queries Executed: {queries_executed}")
+```
+*If `sql_count` grows linearly with the number of records, you have an **N+1 query bug** that needs batch optimization or `search_fetch` preloading.*
 
-### 2. The Environment Cache (`self.env.cache`)
-Odoo maintains an in-memory cache for the duration of a transaction.
-- When you read a field, Odoo checks the cache first.
-- When you write a field, Odoo updates the cache and marks it "dirty" to be flushed to SQL later.
+### B. SQL Debug Logging (`--log-level=debug_sql`)
+Start the Odoo server with SQL logging active to inspect every query in the terminal log stream:
+```bash
+python odoo-bin -c odoo.conf -d my_database --log-level=debug_sql
+```
 
-#### Cache Management Hooks
-As a Senior Architect, you must manually manage the cache when mixing ORM calls with raw SQL.
-- **`flush_model(fields)`**: Forces the ORM to write pending changes for specific fields from the cache to the database. Essential before running a raw SQL `SELECT`.
-- **`invalidate_recordset(fields)`**: Tells the ORM that the data in the database has changed (e.g., via a raw SQL `UPDATE`) and the cache should be cleared so the next read fetches fresh data.
+---
+
+## 5. Cache Management: `flush_model` and `invalidate_recordset`
+
+Odoo maintains an in-memory cache for the duration of a database transaction (`self.env.cache`).
+*   **Read**: Reads the cache first before querying Postgres.
+*   **Write**: Updates the cache and marks the records "dirty" to be flushed to PostgreSQL later.
+
+When running raw SQL commands alongside ORM calls, Odoo's cache does not automatically sync. You must manage it manually using cache hooks.
 
 ```python
-# Force-write name changes to DB so SQL can see them
-self.env['auction.listing'].flush_model(['name'])
+# 1. Force the ORM to write pending cache changes to Postgres before running SQL
+self.env['auction.listing'].flush_model(['name', 'price'])
 
-# Run raw SQL
-self.env.cr.execute("UPDATE auction_listing SET name = 'Fixed' WHERE id = %s", [self.id])
+# 2. Run raw SQL command directly on the database
+self.env.cr.execute(
+    "UPDATE auction_listing SET price = price + 100 WHERE id = %s",
+    [self.id]
+)
 
-# Clear cache so recordset sees the SQL update
-self.invalidate_recordset(['name'])
+# 3. Invalidate the cache to force the next ORM read to query the database
+self.invalidate_recordset(['price'])
 ```
 
-### 3. Safe Raw SQL with the `SQL()` Wrapper
-Odoo 19 (and backported to late 17/18) introduces the `odoo.tools.SQL` wrapper. It is the new gold standard for writing raw SQL that is safe from injection while being highly readable.
+---
+
+## 6. Safe Raw SQL: The Odoo 19 `SQL()` Wrapper
+
+Executing raw SQL using cursor commands can expose your system to **SQL Injection** if parameters are concatenated. Odoo 19 introduces the declarative `SQL()` wrapper to prevent safety exploits while keeping raw queries composable and readable.
+
+> [!IMPORTANT]
+> Always wrap raw SQL query parameters using the `odoo.tools.SQL` class rather than formatting strings manually.
 
 ```python
 from odoo.tools import SQL
 
 def get_high_bids(self, limit):
+    # Safe from SQL injection! Parameters are escaped automatically by PostgreSQL
     query = SQL(
         "SELECT id FROM auction_bid WHERE amount > %s LIMIT %s",
-        5000, limit
+        5000, 
+        limit
     )
     self.env.cr.execute(query)
     return self.env.cr.fetchall()
 ```
-!!! success "Why use SQL()?"
-    It prevents accidental SQL injection by automatically handling parameter escaping and allowing you to compose complex queries by nesting `SQL()` objects.
 
 ---
 
-### 4. Recordsets vs. Loops
-Always prefer **Set Operations** over manual Python loops.
-- **Bad:** `[r.id for r in records if r.state == 'open']`
-- **Good:** `records.filtered(lambda r: r.state == 'open').ids`
-- **Why?** Set operations are implemented in optimized C/Python and better utilize Odoo's prefetching logic.
+## 🏁 Senior Checkpoint
+
+*   **Key Concept**: Use `--dev=profile` to capture global request patterns and Speedscope flamegraphs to pinpoint the exact functions responsible for performance bottlenecks.
+*   **Architect Insight**: When bypassing the ORM for raw SQL, always sequence your transactions: **Flush ORM Cache** -> **Run SQL Wrapper** -> **Invalidate ORM Cache**.
+*   **Verify Your Knowledge**: Why should you write raw SQL using `SQL()` instead of `f"SELECT * FROM table WHERE id = {self.id}"`? (Answer: String formatting leaves the code vulnerable to SQL injection. The `SQL()` wrapper sanitizes and parameters-binds the inputs safely).
 
 ---
 
-## 💻 Code Challenge: Optimization
+## 💻 Code Challenge
 
-Rewrite the following inefficient method using Odoo 19 best practices.
+**Complete the code sequence to flush, run a raw query safely, and invalidate the ORM cache:**
 
-```python
-# Inefficient Version
-def calculate_totals(self):
-    for record in self:
-        # This triggers a query for every iteration!
-        lines = self.env['auction.bid'].search([('listing_id', '=', record.id)])
-        record.total_bids = len(lines)
-```
+<div class="code-challenge">
+<pre><code># Flush cache
+self.env['auction.bid'].<input type="text" class="quiz-input-inline w-180" data-answer="flush_model(['amount'])">
 
-??? tip "Solution"
-    ```python
-    # Optimized Version using read_group
-    def calculate_totals(self):
-        # Batch fetch counts for all records in one query
-        bid_data = self.env['auction.bid'].read_group(
-            [('listing_id', 'in', self.ids)],
-            ['listing_id'],
-            ['listing_id']
-        )
-        mapped_data = {d['listing_id'][0]: d['listing_id_count'] for d in bid_data}
-        for record in self:
-            record.total_bids = mapped_data.get(record.id, 0)
-    ```
+# Run safe query
+query = SQL("UPDATE auction_bid SET amount = 500 WHERE id = %s", self.id)
+self.env.cr.execute(query)
 
----
-
-## 📝 Knowledge Check
-
-<div class="quiz-container">
-  <div class="quiz-question">1. Which tool does Odoo 19 use to visualize profiling data?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="Speedscope" onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">2. What attribute should you add to a field to improve search performance on large datasets?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="index=True" onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
-<div class="quiz-container">
-  <div class="quiz-question">3. How can you enable profiling for a specific URL request?</div>
-  <input type="text" class="quiz-input" placeholder="Type your answer here...">
-  <button class="quiz-check" data-answer="By adding ?profile=1 to the URL." onclick="checkQuiz(this)">Check Answer</button>
-  <div class="quiz-result"></div>
-</div>
-
----
-
-<div class="feedback-container">
-    <span class="feedback-label">Was this page helpful?</span>
-    <div class="feedback-buttons">
-        <button class="feedback-btn" onclick="sendFeedback(true)">👍 Yes</button>
-        <button class="feedback-btn" onclick="sendFeedback(false)">👎 No</button>
-    </div>
+# Invalidate cache
+self.<input type="text" class="quiz-input-inline w-200" data-answer="invalidate_recordset(['amount'])">
+</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
 </div>

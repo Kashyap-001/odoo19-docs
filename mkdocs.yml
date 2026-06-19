@@ -116,7 +116,6 @@ nav:
   - "📚 Part 1: Backend Developer":
       - "🚀 Phase 1: Foundations":
           - "Odoo 19 Architecture": foundation/architecture.md
-          - "AbstractModel Pattern": advanced/abstract_models.md
           - "Setup Environment": foundation/setup.md
           - "Addon Anatomy": foundation/structure.md
           - "Defining Models": foundation/models.md
@@ -127,6 +126,7 @@ nav:
           - "Search View & Search Panel": foundation/search_view.md
       - "🧩 Phase 2: Inheritance":
           - "Inheritance Masterclass": business/inheritance.md
+          - "AbstractModel Pattern": advanced/abstract_models.md
           - "Core Mixins (Chatter & Activities)": business/mixins.md
           - "XPath & View Overrides": foundation/xpath.md
           - "Record Rules (Row-level Security)": business/rules.md
@@ -140,16 +140,16 @@ nav:
           - "State Initialization (default_get)": crud/state_initialization.md
           - "create() Multi": crud/create.md
           - "read() & browse()": crud/read.md
+          - "Search & Domains": search/search.md
+          - "search_fetch() [New v19]": crud/search_fetch.md
           - "Lookups & name_search": crud/lookups_names.md
           - "write() method": crud/write.md
           - "copy() & copy_data()": crud/copy.md
           - "Relational Commands (Command)": crud/relational_commands.md
+          - "Deleting Records (unlink)": crud/unlink.md
           - "Batch Operations": crud/batch_operations.md
           - "Prefetching Mechanism": advanced/prefetching.md
           - "Performance & Set Operations": search/performance_optimization.md
-          - "Deleting Records (unlink)": crud/unlink.md
-          - "Search & Domains": search/search.md
-          - "search_fetch() [New v19]": crud/search_fetch.md
           - "Unique Sequences (ir.sequence)": business/sequences.md
       - "🧠 Phase 4: Business Intelligence":
           - "Decorators (@api)": advanced/decorators.md
@@ -192,8 +192,7 @@ nav:
           - "Docker Production Deployment": deployment/docker.md
           - "Workers and Scaling": deployment/scaling.md
           - "Migration Scripts": migration/scripts.md
-          - "Performance Profiling": migration/profiling.md
-          - "SQL & Performance": advanced/performance_profiling.md
+          - "Performance Profiling & SQL": advanced/performance_profiling.md
           - "PostgreSQL and Indexes": advanced/postgresql_indexes.md
           - "OCA queue_job": advanced/queue_job.md
       - "🛠️ Phase 10: Career & Standards":

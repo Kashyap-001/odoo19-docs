@@ -69,7 +69,7 @@ Executed at the very end of the migration process for all modules. Used for clea
 *   **Verify Your Knowledge:** When does a `post-migration` script run? (Answer: After Odoo has updated the module schema and loaded the new XML data).
 
 !!! success "Next Step"
-    Database updated. Now [Profile your Performance](profiling.md) like a pro.
+    Database updated. Now [Profile your Performance](../advanced/performance_profiling.md) like a pro.
 
 ---
 
