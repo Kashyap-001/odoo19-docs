@@ -6,16 +6,25 @@ function updateDashboardProgress() {
     const tables = document.querySelectorAll('.md-typeset table');
     if (tables.length === 0) return;
 
-    const getSlug = (path) => {
-        if (!path) return '';
-        // Handle relative paths like '../foundation/models.md'
-        return path.split(/[?#]/)[0]
-            .replace(/^\.\.\//, '')
+    const getSlug = (href) => {
+        if (!href) return '';
+        let path = href;
+        try {
+            path = new URL(href, window.location.href).pathname;
+        } catch (e) {}
+        
+        let cleanPath = path.split(/[?#]/)[0]
             .replace(/^\/|\/$/g, '')
             .replace(/\.html$/, '')
             .replace(/\.md$/, '')
             .replace(/\/index$/, '')
             .replace(/^index$/, '');
+            
+        const segments = cleanPath.split('/').filter(Boolean);
+        if (segments.length >= 2) {
+            return segments[segments.length - 2] + '/' + segments[segments.length - 1];
+        }
+        return segments[0] || '';
     };
 
     let completedCount = 0;

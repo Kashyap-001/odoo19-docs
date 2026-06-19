@@ -1,3 +1,25 @@
+// Global helper to get the canonical course slug from any page path or URL
+const getSlug = (href) => {
+    if (!href) return '';
+    let path = href;
+    try {
+        path = new URL(href, window.location.href).pathname;
+    } catch (e) {}
+    
+    let cleanPath = path.split(/[?#]/)[0]
+        .replace(/^\/|\/$/g, '')
+        .replace(/\.html$/, '')
+        .replace(/\.md$/, '')
+        .replace(/\/index$/, '')
+        .replace(/^index$/, '');
+        
+    const segments = cleanPath.split('/').filter(Boolean);
+    if (segments.length >= 2) {
+        return segments[segments.length - 2] + '/' + segments[segments.length - 1];
+    }
+    return segments[0] || '';
+};
+
 function checkQuiz(button) {
     const container = button.closest('.quiz-container');
     const input = container.querySelector('.quiz-input');
@@ -56,15 +78,6 @@ function checkPageCompletion() {
     const correctQuizzes = document.querySelectorAll('.quiz-result.success').length;
 
     if (totalQuizzes > 0 && totalQuizzes === correctQuizzes) {
-        const getSlug = (path) => {
-            if (!path) return '';
-            return path.split(/[?#]/)[0]
-                .replace(/^\/|\/$/g, '')
-                .replace(/\.html$/, '')
-                .replace(/\.md$/, '')
-                .replace(/\/index$/, '')
-                .replace(/^index$/, '');
-        };
         const slug = getSlug(window.location.pathname);
         localStorage.setItem('completed_' + slug, 'true');
         markSidebarAsComplete(window.location.pathname);
@@ -72,15 +85,6 @@ function checkPageCompletion() {
 }
 
 function markSidebarAsComplete(path) {
-    const getSlug = (p) => {
-        if (!p) return '';
-        return p.split(/[?#]/)[0]
-            .replace(/^\/|\/$/g, '')
-            .replace(/\.html$/, '')
-            .replace(/\.md$/, '')
-            .replace(/\/index$/, '')
-            .replace(/^index$/, '');
-    };
     const currentSlug = getSlug(path);
     const links = document.querySelectorAll('.md-nav__link');
     links.forEach(link => {
@@ -98,15 +102,6 @@ function markSidebarAsComplete(path) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const getSlug = (p) => {
-        if (!p) return '';
-        return p.split(/[?#]/)[0]
-            .replace(/^\/|\/$/g, '')
-            .replace(/\.html$/, '')
-            .replace(/\.md$/, '')
-            .replace(/\/index$/, '')
-            .replace(/^index$/, '');
-    };
     const links = document.querySelectorAll('.md-nav__link');
     links.forEach(link => {
         const href = link.getAttribute('href');
@@ -120,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-...
+
     document.querySelectorAll('.quiz-input, .quiz-input-inline').forEach(input => {
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
