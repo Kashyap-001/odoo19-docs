@@ -28,8 +28,42 @@ function updateDashboardProgress() {
     const tables = document.querySelectorAll('.md-typeset table');
     if (tables.length === 0) return;
 
-    let completedCount = 0;
-    let totalLessons = 0;
+    const recalculateProgress = () => {
+        let completedCount = 0;
+        let totalLessons = 0;
+        
+        tables.forEach(table => {
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const link = row.querySelector('a');
+                const checkbox = row.querySelector('.progress-checkbox');
+                if (link && checkbox) {
+                    totalLessons++;
+                    if (checkbox.checked) {
+                        completedCount++;
+                    }
+                }
+            });
+        });
+        
+        const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+        
+        const progressBar = document.getElementById('global-progress-fill');
+        const progressText = document.getElementById('global-progress-text');
+        if (progressBar) progressBar.style.width = progressPercent + '%';
+        if (progressText) progressText.innerText = 'Mastery: ' + progressPercent + '% (' + completedCount + '/' + totalLessons + ' Lessons)';
+
+        const certBtn = document.getElementById('claim-certificate-btn');
+        if (certBtn) {
+            if (progressPercent === 100) {
+                certBtn.disabled = false;
+                certBtn.classList.add('active');
+            } else {
+                certBtn.disabled = true;
+                certBtn.classList.remove('active');
+            }
+        }
+    };
 
     tables.forEach(table => {
         const rows = table.querySelectorAll('tr');
@@ -38,38 +72,37 @@ function updateDashboardProgress() {
             const statusCell = row.querySelector('td:last-child');
             
             if (link && statusCell) {
-                totalLessons++;
+                if (statusCell.querySelector('.progress-checkbox')) return;
+                
                 const href = link.getAttribute('href');
                 const slug = getSlug(href);
-                
                 const isComplete = localStorage.getItem('completed_' + slug) === 'true';
                 
-                if (isComplete) {
-                    statusCell.innerHTML = '✅';
-                    completedCount++;
-                } else {
-                    statusCell.innerHTML = '[ ]';
-                }
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'progress-checkbox';
+                checkbox.checked = isComplete;
+                checkbox.style.cursor = 'pointer';
+                checkbox.style.transform = 'scale(1.2)';
+                checkbox.style.accentColor = 'var(--odoo-purple)';
+                
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        localStorage.setItem('completed_' + slug, 'true');
+                    } else {
+                        localStorage.removeItem('completed_' + slug);
+                    }
+                    recalculateProgress();
+                });
+                
+                statusCell.innerHTML = '';
+                statusCell.style.textAlign = 'center';
+                statusCell.appendChild(checkbox);
             }
         });
     });
 
-    const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-    
-    const progressBar = document.getElementById('global-progress-fill');
-    const progressText = document.getElementById('global-progress-text');
-    if (progressBar) progressBar.style.width = progressPercent + '%';
-    if (progressText) progressText.innerText = 'Mastery: ' + progressPercent + '% (' + completedCount + '/' + totalLessons + ' Lessons)';
-
-    const certBtn = document.getElementById('claim-certificate-btn');
-    if (certBtn) {
-        if (progressPercent === 100) {
-            certBtn.disabled = false;
-            certBtn.classList.add('active');
-        } else {
-            certBtn.disabled = true;
-        }
-    }
+    recalculateProgress();
 }
 
 function initResumeButton() {
@@ -107,10 +140,8 @@ function initResumeButton() {
     }
 
     if (started && nextLesson) {
-        // Resolve URL base path in case the site is run in a subdirectory
         let pathPrefix = '/';
         const pathname = window.location.pathname;
-        // If hosted on GitHub Pages or custom sub-path, find repository prefix
         const categories = ['foundation', 'business', 'crud', 'env', 'search', 'advanced', 'wizards', 'frontend', 'advanced_owl', 'multi_company', 'integration', 'testing', 'deployment', 'migration', 'about'];
         for (const cat of categories) {
             const idx = pathname.indexOf('/' + cat + '/');
