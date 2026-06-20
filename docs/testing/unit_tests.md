@@ -1,6 +1,6 @@
 ---
 title: Odoo 19 Unit Testing & TransactionCase Tutorial
-description: Master unit testing in Odoo 19 using unittest and TransactionCase. Learn class set up, test isolation, database rollbacks, and assertions.
+description: Master unit testing in Odoo 19 using unittest and TransactionCase. Learn class set up, test isolation, database rollbacks, and running tests via CLI.
 ---
 
 # Odoo 19 Unit Testing: Masterclass
@@ -136,20 +136,53 @@ def test_invalid_bid_amount(self):
 
 ---
 
-## Running Tests via the CLI
+## Odoo 19 Test Runner CLI Command Reference
 
-Writing tests is only half the battle; knowing how to execute them efficiently without crashing your main database is critical.
+To execute unit tests in Odoo 19, you use the standard Odoo command-line binary (`odoo-bin`). You must combine flags to configure test execution environment, database targets, and target filters.
 
-### The Basic Command
-To run tests, you must tell Odoo to update the module (`-u`) and enable the test runner (`--test-enable`). The `--stop-after-init` flag ensures the server shuts down immediately after the tests finish.
+### Core CLI Testing Flags
 
+| Flag | Purpose | Example |
+| :--- | :--- | :--- |
+| **`--test-enable`** | Globally enables Odoo's test runner engine. If not provided, tests are completely ignored. | `--test-enable` |
+| **`--test-tags <tags>`** | Specifies exactly which tests to execute based on path or tags. | `--test-tags /pways_auction` |
+| **`-i <modules>`** | Installs target modules (triggers tests registered under the `at_install` tag). | `-i pways_auction` |
+| **`-u <modules>`** | Updates target modules (re-runs tests during upgrade cycles). | `-u pways_auction` |
+| **`--stop-after-init`** | Shuts down the Odoo server immediately once tests complete. Essential for CI/CD pipelines. | `--stop-after-init` |
+| **`--log-level`** | Suppresses general logs to make test failures readable. Recommended values: `test` or `warn`. | `--log-level=test` |
+
+---
+
+### Copy-Pasteable Run Command Templates
+
+#### A. Run All Tests for a Module (On Install/Update)
+This command installs the module, executes its tests, and stops immediately.
 ```bash
-./odoo-bin -c odoo.conf -d my_test_db -u pways_auction --test-enable --stop-after-init
+./odoo-bin -c odoo.conf -d test_database -i pways_auction --test-enable --stop-after-init --log-level=test
 ```
 
-### Tag Filtering (`--test-tags`)
+#### B. Run a Single Specific Test Method
+Saves time by executing only a single test method, bypassing all other tests in the module.
+```bash
+./odoo-bin -c odoo.conf -d test_database --test-enable --test-tags /pways_auction:TestAuctionBidding.test_invalid_low_bid --stop-after-init --log-level=test
+```
 
-Running the entire Odoo test suite can take hours. Odoo provides the `--test-tags` parameter to filter and execute specific tests.
+#### C. Run All Tests and Exclude Slow or External Integration Tests
+Executes the standard tests for your module while explicitly skipping slow, headless Chrome tours, or external API tests.
+```bash
+./odoo-bin -c odoo.conf -d test_database --test-enable --test-tags /pways_auction,-slow,-external --stop-after-init --log-level=test
+```
+
+#### D. Run Post-Install Tests Only
+Executes tests that are decorated with `@tagged('post_install')` and run after all system modules are initialized.
+```bash
+./odoo-bin -c odoo.conf -d test_database --test-enable --test-tags post_install --stop-after-init --log-level=test
+```
+
+---
+
+## Tag Filtering (`--test-tags`)
+Odoo provides the `--test-tags` parameter to filter and execute specific tests:
 
 #### 1. Path-based Filtering
 You can filter tests by module, class, or method:
@@ -225,6 +258,8 @@ jobs:
           python-version: '3.12'
       - name: Install Odoo Requirements
         run: pip install -r https://raw.githubusercontent.com/odoo/odoo/19.0/requirements.txt
+    steps:
+      - uses: actions/checkout@v4
       - name: Run Tests
         run: |
           git clone --depth 1 --branch 19.0 https://github.com/odoo/odoo.git odoo_src
@@ -241,43 +276,48 @@ jobs:
 *   **Architect Insight:** Use `setUpClass` to create shared test data once; it saves minutes of execution time in large test suites.
 *   **Verify Your Knowledge:** Why should you wrap `assertRaises` in `self.cr.savepoint()`? (Answer: To prevent a "broken transaction" error from affecting subsequent tests in the same suite).
 
-!!! success "Next Step"
-    Unit tests are solid. Now master [UI Tours](tours.md) to test your frontend.
+---
+
+## 📝 Knowledge Check
+
+<div class="quiz-container">
+  <div class="quiz-question">1. Which command-line flag is required to globally enable the execution of tests in the Odoo test runner?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="--test-enable" onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
+
+<div class="quiz-container">
+  <div class="quiz-question">2. Which flag configuration tells Odoo to immediately terminate and shut down the server process as soon as the test suite completes execution?</div>
+  <input type="text" class="quiz-input" placeholder="Type your answer here...">
+  <button class="quiz-check" data-answer="--stop-after-init" onclick="checkQuiz(this)">Check Answer</button>
+  <div class="quiz-result"></div>
+</div>
 
 ---
 
-## 🛠️ Master Project Challenge: Bulletproof Bids
-We can't afford bugs in the bidding logic.
+## 💻 Code Challenge
 
-**Goal:** Write a test case in `TransactionCase`.
-1.  Create a test auction listing in `setUpClass`.
-2.  Write a test that attempts to place a bid **lower** than the starting price.
-3.  Verify that it raises a `ValidationError` using `assertRaises`.
+**Write a test method that asserts that attempting to save a bid lower than the listing's starting price throws a ValidationError, preventing a broken transaction state:**
 
-??? success "Show Solution"
-    ```python title="tests/test_auction.py"
-    from odoo.tests.common import TransactionCase
-    from odoo.exceptions import ValidationError
-
-    class TestAuctionBidding(TransactionCase):
-        @classmethod
-        def setUpClass(cls):
-            super().setUpClass()
-            cls.listing = cls.env['auction.listing'].create({
-                'name': 'Vintage Lamp',
-                'current_price': 50.0,
-            })
-
-        def test_invalid_low_bid(self):
-            """Test that placing a bid lower than current price raises ValidationError."""
-            with self.assertRaises(ValidationError), self.cr.savepoint():
-                self.env['auction.bid'].create({
-                    'listing_id': self.listing.id,
-                    'amount': 20.0,
-                })
-    ```
+<div class="code-challenge">
+<pre><code>def test_invalid_low_bid(self):
+    """Test that placing a bid lower than starting price raises ValidationError."""
+    with <input type="text" class="quiz-input-inline w-260" data-answer="self.assertRaises(ValidationError)">, <input type="text" class="quiz-input-inline w-180" data-answer="self.cr.savepoint()">:
+        self.env['auction.bid'].create({
+            'listing_id': self.listing.id,
+            'amount': 20.0,
+        })</code></pre>
+<button class="quiz-check" onclick="checkCodeChallenge(this)">Check Code</button>
+<div class="quiz-result"></div>
+</div>
 
 ---
+
+## Related Testing Guides
+*   [UI Tours & JS Tests](tours.md)
+*   [The Debugging Vault](../advanced/debugging_vault.md)
+*   [Scheduled Actions (Crons)](../business/crons.md)
 
 <div class="feedback-container">
     <span class="feedback-label">Was this page helpful?</span>
