@@ -160,7 +160,10 @@ nav:
           - "Exceptions & Error Handling": advanced/exceptions.md
           - "Wizards & TransientModels": wizards/wizards.md
           - "Scheduled Actions (Crons)": business/crons.md
-          - "Reporting & Specialized Views": foundation/advanced_views.md
+          - "Pivot Views (BI)": foundation/views_pivot.md
+          - "Graph Views (BI)": foundation/views_graph.md
+          - "Calendar Views (Scheduling)": foundation/views_calendar.md
+          - "Specialized Views (Enterprise & Activity)": foundation/views_specialized.md
           - "Actions, Menus & Automation": business/actions.md
           - "Constraints & Indexes": advanced/constraints_indexes.md
           - "Cache Management": advanced/cache_management.md
